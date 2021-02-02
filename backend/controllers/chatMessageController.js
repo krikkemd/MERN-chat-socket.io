@@ -3,6 +3,7 @@ const { ChatMessage } = require('../models/ChatMessageModel');
 exports.getAllChatMessages = async (req, res) => {
   try {
     const chatMessages = await ChatMessage.find();
+    // return res.json(chatMessages);
     return res.status(200).json({
       status: 'success',
       results: chatMessages.length,

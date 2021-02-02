@@ -6,16 +6,24 @@ import io from 'socket.io-client';
 // CSS
 import '../css/Chat.scss';
 
+// Redux
+import { connect } from 'react-redux';
+
+// Actions
 import {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
 } from '../redux/actions/chatMessageActions';
 
+// Backend
 let server = 'http://localhost:1337';
 const socket = io(server);
 
-const ChatPage = () => {
+const ChatPage = props => {
+  // TODO: props.createChatMessage DE JUISTE PAYLOAD TERUG STUREN ZODAT props.CHATMESSAGES UPDATE IPV UNDEFINED AudioWorkletNodeDUS DE PAYLOAD JUIST UPDATEN
+  console.log(props.data.chatMessages);
+
   // Local State
   const [chatMessage, setChatMessage] = useState('');
   // const [currentSocket, setCurrentSocket] = useState(null);
@@ -47,14 +55,18 @@ const ChatPage = () => {
     //   }
     // })();
 
-    getAllChatMessages()
-      .then(res => {
-        console.log(res);
-        setMessages(res.data.chatMessages);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    props.getAllChatMessages();
+    // setMessages(props.chatMessages);
+    // setMessages(prevProps => [prevProps, props.chatMessages]);
+
+    // getAllChatMessages()
+    //   .then(res => {
+    //     console.log(res);
+    //     setMessages(res.data.chatMessages);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
   }, []);
 
   //   ComponentDidUpdate
@@ -72,17 +84,17 @@ const ChatPage = () => {
     // Listen for chat messages sent back from server, after the message is inserted into the db
     socket.on('INSERT change stream message', messageFromBackend => {
       console.log(messageFromBackend);
-      setMessages(prevProps => [...prevProps, messageFromBackend]);
+      // setMessages(prevProps => [...prevProps, messageFromBackend]);
     });
 
     socket.on('DELETE change stream message', messageFromBackend => {
       console.log(messageFromBackend);
-      setMessages(prevProps => prevProps.filter(message => message._id !== messageFromBackend));
+      // setMessages(prevProps => prevProps.filter(message => message._id !== messageFromBackend));
     });
 
     socket.on('DROP change stream collection', messageFromBackend => {
       console.log(messageFromBackend);
-      setMessages([]);
+      // setMessages([]);
     });
     // return () => {
     //   console.log('ComponentWillUnmount');
@@ -111,7 +123,7 @@ const ChatPage = () => {
     // let timestamp = moment();
     let sender = true;
 
-    createChatMessage({
+    props.createChatMessage({
       body: chatMessage,
       username,
       sender,
@@ -126,10 +138,11 @@ const ChatPage = () => {
     <div className='chat'>
       <h1>Chat</h1>
       <div>
-        {messages?.map(message => {
+        {/* CHANGED LOCAL STATE (MESSAGES) TO PROPS.CHATMESSAGES */}
+        {props.data.chatMessages?.map(message => {
           return (
             <div key={message._id}>
-              <button onClick={e => deleteChatMessage(message._id)}>X</button>
+              <button onClick={e => props.deleteChatMessage(message._id)}>X</button>
               <p>{message.body}</p>
             </div>
           );
@@ -152,4 +165,15 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+const mapStateToProps = state => {
+  console.log(state);
+  return {
+    data: state.data,
+  };
+};
+
+export default connect(mapStateToProps, {
+  getAllChatMessages,
+  createChatMessage,
+  deleteChatMessage,
+})(ChatPage);
