@@ -25,34 +25,6 @@ export const getAllChatMessages = () => dispatch => {
     });
 };
 
-// Get All Chat Messages NON REDUX
-// export const getAllChatMessages = () => {
-//   return axios
-//     .get(`${endpoint}`)
-//     .then(res => {
-//       // dispatch
-//       return res;
-//     })
-//     .catch(err => {
-//       console.log(err);
-//       // dispatch SET_ERROR
-//     });
-// };
-
-// Create Single Chat Message NON REDUX
-// export const createChatMessage = chatMessage => {
-//   return axios
-//     .post(`${endpoint}`, chatMessage)
-//     .then(res => {
-//       // dispatch
-//       return res;
-//     })
-//     .catch(err => {
-//       console.log(err);
-//       // dispatch SET_ERROR
-//     });
-// };
-
 // Create Single Chat Message REDUX
 export const createChatMessage = chatMessage => dispatch => {
   // dispatch({ type: LOADING_DATA });
@@ -62,36 +34,10 @@ export const createChatMessage = chatMessage => dispatch => {
   });
 };
 
-// Delete Single Chat Message NON REDUX
-// export const deleteChatMessage = chatMessageId => {
-//   return axios
-//     .delete(`${endpoint}/${chatMessageId}`)
-//     .then(res => {
-//       console.log('deleted successfully');
-//       console.log(res);
-//       return res;
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
-
 // Delete Single Chat Message REDUX
 export const deleteChatMessage = chatMessageId => dispatch => {
   dispatch({
     type: DELETE_CHAT_MESSAGE,
     payload: chatMessageId,
   });
-  // axios
-  //   .delete(`${endpoint}/${chatMessageId}`)
-  //   .then(res => {
-  //     console.log('deleted successfully');
-  //     dispatch({
-  //       type: DELETE_CHAT_MESSAGE,
-  //       payload: chatMessageId,
-  //     });
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //   });
 };
