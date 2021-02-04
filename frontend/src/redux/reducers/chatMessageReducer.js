@@ -16,6 +16,7 @@ export default function (state = initialState, action) {
       };
 
     case CREATE_CHAT_MESSAGE:
+      console.log(state);
       return {
         ...state,
         chatMessages: [...state.chatMessages, action.payload],

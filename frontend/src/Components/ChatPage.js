@@ -21,8 +21,9 @@ let server = 'http://localhost:1337';
 const socket = io(server);
 
 const ChatPage = props => {
-  // TODO: props.createChatMessage DE JUISTE PAYLOAD TERUG STUREN ZODAT props.CHATMESSAGES UPDATE IPV UNDEFINED AudioWorkletNodeDUS DE PAYLOAD JUIST UPDATEN
-  console.log(props.data.chatMessages);
+  // console.log('rendering');
+  // console.log(props.data.chatMessages);
+  console.log(props);
 
   // Local State
   const [chatMessage, setChatMessage] = useState('');
@@ -56,7 +57,14 @@ const ChatPage = props => {
     // })();
 
     props.getAllChatMessages();
-    // setMessages(props.chatMessages);
+    // setCurrentSocket(socket);
+
+    socket.on('REDUX OUTPUT CHAT MESSAGE', messageFromBackend => {
+      console.log('code runs on client!');
+      console.log(messageFromBackend);
+      props.createChatMessage(messageFromBackend);
+    });
+
     // setMessages(prevProps => [prevProps, props.chatMessages]);
 
     // getAllChatMessages()
@@ -69,33 +77,42 @@ const ChatPage = props => {
     //   });
   }, []);
 
+  // ComponentWillReceiveProps: set state.ui.errors to the local errors state
+  // useEffect(() => {
+  //   console.log('setMessages to props.data.chatMessages');
+  //   setMessages(props.data.chatMessages);
+  // }, []);
+
   //   ComponentDidUpdate
   useEffect(() => {
     // For accessing the socket from outside this useEffect hook
     // setCurrentSocket(socket);
-
     // Listen for chat messages sent back from the server
     // socket.on('Output Chat Message', messageFromBackend => {
     //   console.log(messageFromBackend);
     //   // https://www.youtube.com/watch?v=d0plTCQgsXs PREV PROPS
     //   setMessages(prevProps => [...prevProps, messageFromBackend]);
     // });
-
-    // Listen for chat messages sent back from server, after the message is inserted into the db
-    socket.on('INSERT change stream message', messageFromBackend => {
-      console.log(messageFromBackend);
-      // setMessages(prevProps => [...prevProps, messageFromBackend]);
-    });
-
-    socket.on('DELETE change stream message', messageFromBackend => {
-      console.log(messageFromBackend);
-      // setMessages(prevProps => prevProps.filter(message => message._id !== messageFromBackend));
-    });
-
-    socket.on('DROP change stream collection', messageFromBackend => {
-      console.log(messageFromBackend);
-      // setMessages([]);
-    });
+    // currentSocket.on('REDUX OUTPUT CHAT MESSAGE', messageFromBackend => {
+    //   console.log('code runs on client!');
+    //   console.log(messageFromBackend);
+    //   props.createChatMessage(messageFromBackend);
+    // });
+    // // Listen for chat messages sent back from server, after the message is inserted into the db
+    // socket.on('INSERT change stream message', messageFromBackend => {
+    //   console.log(messageFromBackend);
+    //   console.log(props);
+    //   // setMessages(prevProps => [...prevProps, messageFromBackend]);
+    //   // props.createChatMessage(messageFromBackEnd);
+    // });
+    // socket.on('DELETE change stream message', messageFromBackend => {
+    //   console.log(messageFromBackend);
+    //   setMessages(prevProps => prevProps.filter(message => message._id !== messageFromBackend));
+    // });
+    // socket.on('DROP change stream collection', messageFromBackend => {
+    //   console.log(messageFromBackend);
+    //   setMessages([]);
+    // });
     // return () => {
     //   console.log('ComponentWillUnmount');
     //   socket.disconnect();
@@ -103,13 +120,6 @@ const ChatPage = props => {
   }, []);
 
   //   Local funcions
-  // const deleteChatMessage = id => {
-  //   console.log(messages);
-  //   axios.delete(`${server}/api/v1/chatMessages/${id}`);
-  //   // socket.emit('❌ DELETE chat message', id);
-  //   // setMessages(messages.filter(message => message._id !== id));
-  // };
-
   const handleChange = e => {
     setChatMessage(e.target.value);
   };
@@ -123,7 +133,15 @@ const ChatPage = props => {
     // let timestamp = moment();
     let sender = true;
 
-    props.createChatMessage({
+    // props.createChatMessage({
+    //   body: chatMessage,
+    //   username,
+    //   sender,
+    //   userId,
+    // });
+
+    socket.emit('REDUX INSERT CHAT MESSAGE', {
+      // _id: Math.floor(Math.random() * 1000),
       body: chatMessage,
       username,
       sender,
@@ -177,3 +195,5 @@ export default connect(mapStateToProps, {
   createChatMessage,
   deleteChatMessage,
 })(ChatPage);
+
+// export default ChatPage;

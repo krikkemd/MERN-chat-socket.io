@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 const cors = require('cors');
+const axios = require('axios');
 
 // let bodyParser = require('body-parser');
 const dotenv = require('dotenv');
@@ -38,6 +39,7 @@ mongoose.connect(process.env.CONNECTION_URL, {
 });
 
 const db = mongoose.connection;
+const endpoint = 'http://localhost:1337/api/v1/chatMessages';
 
 // Once the db is connected
 db.once('open', () => {
@@ -46,6 +48,20 @@ db.once('open', () => {
   // Listen for users connecting
   io.on('connection', socket => {
     console.log('🧙‍♂️ a user connected');
+
+    socket.on('REDUX INSERT CHAT MESSAGE', message => {
+      return axios
+        .post(`${endpoint}`, message)
+        .then(res => {
+          console.log(
+            '✅ message from socket.io-client stored in DB, emit message back to client from changeStream',
+          );
+          return res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
 
     // On user disconnecting
     socket.on('disconnect', () => {
@@ -60,29 +76,31 @@ db.once('open', () => {
   const changeStream = messageCollection.watch();
 
   changeStream.on('change', change => {
-    console.log(change);
+    // console.log(change);
 
     // INSERT MESSAGE ON CHANGE
     // When a chat message is inserted into the db
     if (change.operationType === 'insert') {
       const message = change.fullDocument;
+      console.log(message);
+      return io.emit('REDUX OUTPUT CHAT MESSAGE', message);
 
       // Send the inserted document back to the client
-      return io.emit('INSERT change stream message', message);
+      //   return io.emit('INSERT change stream message', message);
 
-      // DELETE MESSAGE ON CHANGE
-      // TODO: CHECK IF DOCUMENT EXISTS BEFORE DELETING
-    } else if (change.operationType === 'delete') {
-      const messageId = change.documentKey._id;
-      console.log(messageId);
-      return io.emit('DELETE change stream message', messageId);
-    }
+      //   // DELETE MESSAGE ON CHANGE
+      //   // TODO: CHECK IF DOCUMENT EXISTS BEFORE DELETING
+      // } else if (change.operationType === 'delete') {
+      //   const messageId = change.documentKey._id;
+      //   console.log(messageId);
+      //   return io.emit('DELETE change stream message', messageId);
+      // }
 
-    // DROP COLLECTION CHANGE
-    else if (change.operationType === 'drop') {
-      return io.emit('DROP change stream collection', '💣 BOOM Collection DROPPED!');
-    } else {
-      console.log('NO CHECK FOR THIS, CHECK CHANGESTREAM 🌊');
+      // // DROP COLLECTION CHANGE
+      // else if (change.operationType === 'drop') {
+      //   return io.emit('DROP change stream collection', '💣 BOOM Collection DROPPED!');
+      // } else {
+      //   console.log('NO CHECK FOR THIS, CHECK CHANGESTREAM 🌊');
     }
   });
 });
