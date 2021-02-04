@@ -1,0 +1,7 @@
+// Received from client types:
+exports.CREATE_CHAT_MESSAGE = 'CREATE_CHAT_MESSAGE';
+exports.DELETE_CHAT_MESSAGE = 'DELETE_CHAT_MESSAGE';
+
+// Return to client types:
+exports.OUTPUT_CHAT_MESSAGE = 'OUTPUT_CHAT_MESSAGE';
+exports.DELETED_CHAT_MESSAGE = 'DELETED_CHAT_MESSAGE';
