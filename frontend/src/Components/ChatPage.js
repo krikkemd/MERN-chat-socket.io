@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 // import moment from 'moment';
 
 // CSS
@@ -22,10 +22,10 @@ import { CREATE_CHAT_MESSAGE, DELETE_CHAT_MESSAGE } from '../redux/types';
 import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
 
 // Backend url
-let server = 'http://localhost:1337';
+// let server = 'http://localhost:1337';
 
 // Connect client to the backend with socket
-const socket = io(server);
+// const socket = io(server);
 
 const ChatPage = props => {
   // Props
@@ -41,14 +41,14 @@ const ChatPage = props => {
 
   useEffect(() => {
     // Listen to incoming chatMessages from the backend
-    socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
+    props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       console.log(messageFromBackend);
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
       props.createChatMessage(messageFromBackend);
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
-    socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
+    props.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
       // console.log(messageFromBackend);
       props.deleteChatMessage(messageIdFromBackEnd);
     });
@@ -75,7 +75,7 @@ const ChatPage = props => {
     let sender = true;
 
     // Emit the chatMessage to the backend
-    socket.emit(CREATE_CHAT_MESSAGE, {
+    props.socket.emit(CREATE_CHAT_MESSAGE, {
       // _id: Math.floor(Math.random() * 1000),
       body: chatMessage,
       username,
@@ -97,7 +97,7 @@ const ChatPage = props => {
             <div key={message._id}>
               <button
                 onClick={() => {
-                  socket.emit(DELETE_CHAT_MESSAGE, message._id);
+                  props.socket.emit(DELETE_CHAT_MESSAGE, message._id);
                 }}>
                 X
               </button>
@@ -125,6 +125,7 @@ const ChatPage = props => {
 
 const mapStateToProps = state => {
   return {
+    socket: state.socket.socket,
     data: state.data,
   };
 };

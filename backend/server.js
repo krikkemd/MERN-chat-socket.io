@@ -22,6 +22,7 @@ const { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } = require('./types/types');
 
 // Routers
 const chatMessageRouter = require('./routes/chatMessageRouter');
+const userRouter = require('./routes/userRouter');
 
 // Mongoose
 const mongoose = require('mongoose');
@@ -30,6 +31,7 @@ const mongoose = require('mongoose');
 app.use(cors());
 app.use(express.json());
 app.use('/api/v1/chatMessages', chatMessageRouter);
+app.use('/api/v1/users', userRouter);
 
 // App Config
 dotenv.config();

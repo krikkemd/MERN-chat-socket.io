@@ -1,6 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
+const { protectRoute } = require('../controllers/authController');
 
 // Chat Message Endpoint: /api/v1/chatMessages
 
@@ -11,7 +12,7 @@ const {
   deleteChatMessage,
 } = require('../controllers/chatMessageController');
 
-router.route('/').get(getAllChatMessages).post(createChatMessage);
+router.route('/').get(protectRoute, getAllChatMessages).post(createChatMessage);
 router.route('/:id').delete(deleteChatMessage);
 
 module.exports = router;

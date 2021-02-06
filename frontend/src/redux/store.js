@@ -2,6 +2,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 
 import chatMessageReducer from './reducers/chatMessageReducer';
+import socketReducer from './reducers/socketReducer';
 
 const initialState = {};
 
@@ -9,6 +10,7 @@ const middleware = [thunk];
 
 const reducers = combineReducers({
   data: chatMessageReducer,
+  socket: socketReducer,
   //   data: dataReducer,
   //   ui: uiReducer,
 });
