@@ -41,14 +41,14 @@ const ChatPage = props => {
 
   useEffect(() => {
     // Listen to incoming chatMessages from the backend
-    props.socket.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
+    props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       console.log(messageFromBackend);
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
       props.createChatMessage(messageFromBackend);
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
-    props.socket.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
+    props.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
       // console.log(messageFromBackend);
       props.deleteChatMessage(messageIdFromBackEnd);
     });
@@ -75,7 +75,7 @@ const ChatPage = props => {
     let sender = true;
 
     // Emit the chatMessage to the backend
-    props.socket.socket.emit(CREATE_CHAT_MESSAGE, {
+    props.socket.emit(CREATE_CHAT_MESSAGE, {
       // _id: Math.floor(Math.random() * 1000),
       body: chatMessage,
       username,
@@ -97,7 +97,7 @@ const ChatPage = props => {
             <div key={message._id}>
               <button
                 onClick={() => {
-                  props.socket.socket.emit(DELETE_CHAT_MESSAGE, message._id);
+                  props.socket.emit(DELETE_CHAT_MESSAGE, message._id);
                 }}>
                 X
               </button>
@@ -125,7 +125,7 @@ const ChatPage = props => {
 
 const mapStateToProps = state => {
   return {
-    socket: state.socket,
+    socket: state.socket.socket,
     data: state.data,
   };
 };

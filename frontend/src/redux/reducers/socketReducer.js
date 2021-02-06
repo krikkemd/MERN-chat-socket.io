@@ -5,6 +5,7 @@ const socket = io(server);
 const initialState = {
   socket: socket,
 };
+
 export default function (state = initialState, action) {
   switch (action.type) {
     case 'EMIT_CHAT_MESSAGE':
