@@ -14,6 +14,12 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Set _id to messageId
+// messageSchema.pre('save', function (next) {
+//   this.messageId = this._id;
+//   next();
+// });
+
 const ChatMessage = mongoose.model('ChatMessage', messageSchema);
 
 module.exports = { ChatMessage };

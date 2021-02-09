@@ -12,7 +12,7 @@ const {
   deleteChatMessage,
 } = require('../controllers/chatMessageController');
 
-router.route('/').get(protectRoute, getAllChatMessages).post(createChatMessage);
-router.route('/:id').delete(protectRoute, restrictTo('admin'), deleteChatMessage);
+router.route('/').get(protectRoute, getAllChatMessages).post(protectRoute, createChatMessage);
+router.route('/:id').delete(protectRoute, deleteChatMessage);
 
 module.exports = router;

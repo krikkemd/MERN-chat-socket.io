@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'please provide a valid email'],
   },
   avatar: String,
-  // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG
+  // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG IN DB
   role: {
     type: String,
     enum: ['user', 'admin'],
