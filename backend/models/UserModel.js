@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'username is required'],
+    minlength: [2, 'username should have a minimum length of 2 characters.'],
+    maxlength: [50, 'username max length is 50 characters.'],
   },
   email: {
     type: String,
@@ -15,10 +18,17 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'please provide a valid email'],
   },
   avatar: String,
+  // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'please provide a password'],
     minlength: 10,
+    maxlength: [50, 'password max length is 50 characters.'],
     select: false, // select false: never send this back in responses, when reading from db
   },
 
@@ -36,7 +46,16 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
+
+// PRE SAVE MIDDLEWARE WONT WORK WITH FINDONEANDUPDATE, JUST USE SAVE OR CREATE
 
 // Encrypt users password before saving user to the DB
 userSchema.pre('save', async function (next) {
@@ -91,6 +110,41 @@ userSchema.methods.changedPasswordAfterJWT = function (JWTTimestamp) {
   // False means the password has NOT been changed after the JWT was issued
   return false;
 };
+
+userSchema.methods.createPasswordResetToken = function () {
+  // create reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // store encrypted version of the reset token on the current user document inside the db
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // store an expirydate on the current user document inside the db
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  // resetToken = unencrypted
+  // this.passwordResetToken = encrypted, saved in db
+  console.log({ resetToken }, this.passwordResetToken);
+
+  // email unencrypted token
+  return resetToken;
+};
+
+// Set passwordChangedAt timestamp if password has been changed.
+userSchema.pre('save', function (next) {
+  // if password is NOT changed, or the user document is new. return from function,
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000; // minus one second in case the JWT gets issued faster
+  next();
+});
+
+// query middleware that filters out users with active set to false.
+userSchema.pre(/^find/, function (next) {
+  console.log('running pre find queryMiddleware from userModel.js');
+  // $ne will return all users even with the active property not set
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 

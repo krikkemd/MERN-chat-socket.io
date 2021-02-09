@@ -3,8 +3,14 @@ const app = express();
 const server = require('http').createServer(app);
 const cors = require('cors');
 const axios = require('axios');
-
 const dotenv = require('dotenv');
+const AppError = require('./util/appError');
+const errorController = require('./controllers/errorController');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
+// const hpp = require('hpp');
 
 // Connect server to socket.io
 const io = require('socket.io')(server, {
@@ -28,8 +34,31 @@ const userRouter = require('./routes/userRouter');
 const mongoose = require('mongoose');
 
 // Middleware
+const limiter = rateLimit({
+  max: 3600,
+  windowMs: 1000 * 60 * 60,
+  message: 'Too many requests from this IP, please try again in an hour',
+});
+
+// Set HTTP security headers
+app.use(helmet());
+
+// Limit the use of API with 3600 requests per IP per hour (1 message per second)
+app.use('/api', limiter);
 app.use(cors());
-app.use(express.json());
+
+// Body Parser - Reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+
+// Data Sanitization against NoSQL query injection by removing mongoDB operators ($, .)
+app.use(mongoSanitize());
+
+// Data Sanitization against XSS attacks (removes things like html tags <script></script>)
+app.use(xssClean());
+
+// Prevent Parameter Pollution (http parameter pollution)
+// app.use(hpp());
+
 app.use('/api/v1/chatMessages', chatMessageRouter);
 app.use('/api/v1/users', userRouter);
 
@@ -42,6 +71,7 @@ mongoose.connect(process.env.CONNECTION_URL, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 const db = mongoose.connection;
@@ -137,6 +167,14 @@ db.once('open', () => {
 // app.get('*', (req, res) => {
 //   res.send(path.resolve(__dirname, 'client', 'build', 'index.html'));
 // });
+
+// If route is not found on the server. When you put a parameter in next it is automatically and error.
+app.all('*', (req, res, next) => {
+  return next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+// Error Handling
+app.use(errorController);
 
 // Listen
 server.listen(port, () => console.log(`hello, listening on port: ${port}`));
