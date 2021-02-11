@@ -1,3 +1,10 @@
+process.on('uncaughtException', err => {
+  console.log('UNCAUGHT EXCEOPTION ❌ Shutting down...');
+  console.log(err.name, err.message);
+  console.log(err);
+  process.exit(1);
+});
+
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -129,7 +136,7 @@ db.once('open', () => {
   const changeStream = messageCollection.watch();
 
   changeStream.on('change', change => {
-    // console.log(change);
+    console.log(change);
 
     // INSERT MESSAGE ON CHANGE
     // When a chat message is inserted into the db
@@ -175,6 +182,17 @@ app.all('*', (req, res, next) => {
 
 // Error Handling
 app.use(errorController);
+
+process.on('unhandledRejection', err => {
+  console.log('UNHANDLED REJECTION ❌ Shutting down...');
+  console.log(err);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+// console.log(app.get('env'));
+console.log(process.env.NODE_ENV);
 
 // Listen
 server.listen(port, () => console.log(`hello, listening on port: ${port}`));

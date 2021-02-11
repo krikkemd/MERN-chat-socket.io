@@ -7,8 +7,9 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'username is required'],
-    minlength: [2, 'username should have a minimum length of 2 characters.'],
-    maxlength: [50, 'username max length is 50 characters.'],
+    unique: true,
+    minlength: [2, 'username should have a minimum length of 2 characters'],
+    maxlength: [50, 'username max length is 50 characters'],
   },
   email: {
     type: String,
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'please provide a valid email'],
   },
   avatar: String,
-  // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG
+  // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG IN DB
   role: {
     type: String,
     enum: ['user', 'admin'],
@@ -52,6 +53,11 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
     select: false,
+  },
+  expireAt: {
+    type: Date,
+    // default: Date.now,
+    index: { expires: null },
   },
 });
 
