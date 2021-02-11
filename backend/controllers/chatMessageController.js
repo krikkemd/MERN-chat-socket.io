@@ -2,10 +2,13 @@ const { ChatMessage } = require('../models/ChatMessageModel');
 const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
 
+// TODO: SET USER DATA IN CREATE FROM REQ.USER
+
 exports.getAllChatMessages = catchAsync(async (req, res, next) => {
   console.log('running getAllChatMessages');
   const chatMessages = await ChatMessage.find();
   // return res.json(chatMessages);
+
   return res.status(200).json({
     status: 'success',
     results: chatMessages.length,
@@ -14,6 +17,20 @@ exports.getAllChatMessages = catchAsync(async (req, res, next) => {
     // data: {
     //   chatMessages,
     // },
+  });
+});
+
+exports.getSingleChatMessage = catchAsync(async (req, res, next) => {
+  console.log('running getSingleChatMessage');
+  const chatMessageId = req.params.id;
+
+  const chatMessage = await ChatMessage.findById({ _id: chatMessageId });
+
+  if (!chatMessage) return next(new AppError('No document found with that ID', 404));
+
+  return res.status(200).json({
+    status: 'success',
+    chatMessage,
   });
 });
 
@@ -29,7 +46,6 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
 
   console.log('✅ chat message created');
 
-  // return newMessage;
   return res.status(201).json({
     status: 'success',
     chatMessage: newMessage,
@@ -38,34 +54,13 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
 
 exports.deleteChatMessage = catchAsync(async (req, res, next) => {
   console.log('running deleteChatMessage');
+  console.log(process.env);
   const chatMessageId = req.params.id;
+  const chatMessage = await ChatMessage.findByIdAndDelete({ _id: chatMessageId });
 
-  // Check if the document exists in the db collection
-  await ChatMessage.exists({ _id: chatMessageId }, async (err, result) => {
-    if (err) {
-      // console.log(err);
-      return next(new AppError('Error deleting message', 500));
-    } else {
-      // if doc doesnt exist
-      if (!result) {
-        console.log(`❌ document exists: ${result}`);
-        return next(new AppError('chat message not found.', 404));
+  if (!chatMessage) return next(new AppError('No document found with that ID', 404));
 
-        // if doc exists
-      } else if (result) {
-        console.log(`✅ document exists: ${result}`);
+  console.log('❌ chat message deleted');
 
-        // try to delete the document
-        await ChatMessage.deleteOne({ _id: chatMessageId }, err => {
-          if (err) return next(new AppError('Error! Could not delete the chat message.', 500));
-
-          console.log('❌ chat message deleted');
-
-          return res.status(204).json({
-            status: 'success',
-          });
-        });
-      }
-    }
-  });
+  return res.status(204).json({ status: 'succces', data: null });
 });

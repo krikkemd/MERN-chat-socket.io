@@ -10,9 +10,10 @@ const {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
+  getSingleChatMessage,
 } = require('../controllers/chatMessageController');
 
 router.route('/').get(protectRoute, getAllChatMessages).post(protectRoute, createChatMessage);
-router.route('/:id').delete(protectRoute, deleteChatMessage);
+router.route('/:id').get(getSingleChatMessage).delete(protectRoute, deleteChatMessage);
 
 module.exports = router;

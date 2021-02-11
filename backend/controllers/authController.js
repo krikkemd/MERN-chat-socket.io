@@ -7,7 +7,7 @@ const AppError = require('../util/appError');
 
 // req.user is set in the protectRoute function. it actually is the userId which is added when signing the JWT
 
-// AFTER DELETE ME FIX SIGNUP. ALSO SET ACTIVE:FALSE WITH EXPIRY TOT REALLY DELETE AFTER EXPIRED TIME
+// AFTER DELETEME FIX SIGNUP WITH "DELETED EMAIL". ALSO SET ACTIVE:FALSE WITH EXPIRY TO REALLY DELETE AFTER EXPIRED TIME
 // TODO: REMOVE JWT SIGN FROM SIGNUP. SEND VALIDATION EMAIL AFTER SIGNING UP.
 
 const signJWT = userId => {
@@ -39,7 +39,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
   res.cookie('jwt', token, {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
-    secure: false,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
   });
 
@@ -75,7 +75,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const token = signJWT(user._id);
   res.cookie('jwt', token, {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
-    secure: false,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
   });
 
@@ -238,7 +238,7 @@ exports.updateMyPassword = catchAsync(async (req, res, next) => {
   const token = signJWT(user._id);
   res.cookie('jwt', token, {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
-    secure: false,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
   });
 

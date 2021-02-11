@@ -2,6 +2,8 @@ const { User } = require('../models/UserModel');
 const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
 
+// TODO: set ExpiresAt when user deleteMe. create functionality when user re-activates account. signup function active false is not good.
+
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   console.log('running getAllUsers');
   const users = await User.find();
@@ -21,6 +23,7 @@ exports.UpdateMe = catchAsync(async (req, res, next) => {
     );
   }
 
+  // Only Username and Email are allowed here. can add more if needed.
   const cleanedReqBody = cleanReqBody(req.body, 'username', 'email');
 
   // 2) update user data with the cleaned req.body object
@@ -28,6 +31,8 @@ exports.UpdateMe = catchAsync(async (req, res, next) => {
     new: true, // returns the updates doc
     runValidators: true,
   });
+
+  if (!user) return next(new AppError('No document found with that ID', 404));
 
   console.log('updateMe User:');
   console.log(user);
@@ -37,7 +42,12 @@ exports.UpdateMe = catchAsync(async (req, res, next) => {
 // Set users active state to false
 exports.deleteMe = catchAsync(async (req, res, next) => {
   console.log('running deleteMe');
-  const user = await User.findByIdAndUpdate(req.user.id, { active: false });
+  const user = await User.findByIdAndUpdate(req.user.id, {
+    active: false,
+    expireAt: Date.now() + 1000 * 60 * 10, // 10 minutes
+  });
+
+  if (!user) return next(new AppError('No document found with that ID', 404));
 
   console.log(user);
   res.status(204).json({ status: 'success' });
