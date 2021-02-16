@@ -13,7 +13,7 @@ From browser:
   
 3) All clients receive the chatMessage back from the server
   - clients listen to incoming chatMessages with socket.io-client, sent back from the server 
-  - clients dispatch an action from useEffect to update the Redux state for ALL clients // important to dispatch from the useEffect, so that the redux state is updated for ALL connected clients!
+  - clients dispatch an action from useEffect to update the Redux state for ALL clients // important to dispatch from the useEffect, so that the redux state is updated for ALL connected clients! If we dispatch after the axios.post() promise is resolved. The Redux state only updates the state of that 1 client. We dispatch/update the Redux state AFTER the server emits the message back to us.
   - Reducer updates the state / props
   - All clients rerender with the new chatMessage
   
