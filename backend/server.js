@@ -1,5 +1,5 @@
 process.on('uncaughtException', err => {
-  console.log('UNCAUGHT EXCEOPTION ❌ Shutting down...');
+  console.log('UNCAUGHT EXCEPTION ❌ Shutting down...');
   console.log(err.name, err.message);
   console.log(err);
   process.exit(1);
@@ -8,6 +8,7 @@ process.on('uncaughtException', err => {
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const axios = require('axios');
 const dotenv = require('dotenv');
@@ -22,7 +23,7 @@ const xssClean = require('xss-clean');
 // Connect server to socket.io
 const io = require('socket.io')(server, {
   cors: {
-    origin: '*',
+    origin: true,
     credentials: true,
   },
 });
@@ -36,6 +37,7 @@ const { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } = require('./types/types');
 // Routers
 const chatMessageRouter = require('./routes/chatMessageRouter');
 const userRouter = require('./routes/userRouter');
+const groupRouter = require('./routes/groupRouter');
 
 // Mongoose
 const mongoose = require('mongoose');
@@ -52,7 +54,25 @@ app.use(helmet());
 
 // Limit the use of API with 3600 requests per IP per hour (1 message per second)
 app.use('/api', limiter);
-app.use(cors());
+
+// CORS
+// app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
+// app.options('*', cors());
+
+// Cookie Parser
+app.use(cookieParser());
+
+app.use((req, res, next) => {
+  console.log('Cookie:');
+  console.log(req.cookies);
+  next();
+});
 
 // Body Parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
@@ -66,8 +86,10 @@ app.use(xssClean());
 // Prevent Parameter Pollution (http parameter pollution)
 // app.use(hpp());
 
+// Routers
 app.use('/api/v1/chatMessages', chatMessageRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/groups', groupRouter);
 
 // App Config
 dotenv.config();
@@ -93,6 +115,8 @@ db.once('open', () => {
     console.log('🧙‍♂️ a user connected');
 
     // Listen to incoming chatMessages emits from clients connected with socket.io
+    axios.defaults.withCredentials = true;
+
     socket.on(CREATE_CHAT_MESSAGE, message => {
       return axios
         .post(`${endpoint}`, message)
@@ -100,7 +124,7 @@ db.once('open', () => {
           console.log(
             '✅ message from socket.io-client successfully stored in DB, emit message back to all clients from changeStream',
           );
-          return res.data;
+          // return res.data;
         })
         .catch(err => {
           console.log(err);

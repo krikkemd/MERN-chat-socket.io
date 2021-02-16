@@ -69,17 +69,25 @@ const ChatPage = props => {
     e.preventDefault();
 
     // Mock user data from redux for example
-    let userId = '123';
-    let username = 'props.user.username';
+    let userId = '6024eb027e691904f4b006e4';
     // let timestamp = moment();
-    let sender = true;
+    // let sender = true;
+
+    // VOOR PROTECTROUTE
+    // props.createChatMessage({
+    //   // _id: Math.floor(Math.random() * 1000),
+    //   body: chatMessage,
+    //   // username,
+    //   // sender,
+    //   userId,
+    // });
 
     // Emit the chatMessage to the backend
     props.socket.emit(CREATE_CHAT_MESSAGE, {
       // _id: Math.floor(Math.random() * 1000),
       body: chatMessage,
-      username,
-      sender,
+      // username,
+      // sender,
       userId,
     });
 

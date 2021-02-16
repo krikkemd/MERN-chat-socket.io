@@ -21,6 +21,7 @@ const signJWT = userId => {
 //   expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
 //   secure: false,
 //   httpOnly: true,
+// sameSite: 'none',
 // };
 
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -41,6 +42,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
     secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
+    // sameSite: 'none',
   });
 
   return res.status(201).json({
@@ -77,12 +79,14 @@ exports.login = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
     secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
+    // sameSite: 'none',
   });
 
   // Send token back to the client
   return res.status(200).json({
     status: 'success',
     token,
+    user,
   });
 });
 
@@ -93,6 +97,10 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    console.log('token set to jwt cookie from browser');
+    token = req.cookies.jwt;
+    console.log(token);
   }
 
   // if there is no token return error
@@ -240,6 +248,7 @@ exports.updateMyPassword = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
     secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
+    // sameSite: 'none',
   });
 
   return res.status(200).json({

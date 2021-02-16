@@ -1,14 +1,18 @@
 const { User } = require('../models/UserModel');
 const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
+const factoryController = require('./factoryController');
 
 // TODO: set ExpiresAt when user deleteMe. create functionality when user re-activates account. signup function active false is not good.
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  console.log('running getAllUsers');
-  const users = await User.find();
-  res.status(200).json({ status: 'success', results: users.length, users });
-});
+exports.getAllUsers = factoryController.getAllDocuments(User);
+exports.getSingleUser = factoryController.getSingleDoc(User);
+
+// exports.getAllUsers = catchAsync(async (req, res, next) => {
+//   console.log('running getAllUsers');
+//   const users = await User.find();
+//   res.status(200).json({ status: 'success', results: users.length, users });
+// });
 
 exports.UpdateMe = catchAsync(async (req, res, next) => {
   console.log('running updateMe');

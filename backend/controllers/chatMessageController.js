@@ -7,16 +7,11 @@ const catchAsync = require('../util/catchAsync');
 exports.getAllChatMessages = catchAsync(async (req, res, next) => {
   console.log('running getAllChatMessages');
   const chatMessages = await ChatMessage.find();
-  // return res.json(chatMessages);
 
   return res.status(200).json({
     status: 'success',
     results: chatMessages.length,
     chatMessages,
-    // JSEND
-    // data: {
-    //   chatMessages,
-    // },
   });
 });
 
@@ -54,7 +49,6 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
 
 exports.deleteChatMessage = catchAsync(async (req, res, next) => {
   console.log('running deleteChatMessage');
-  console.log(process.env);
   const chatMessageId = req.params.id;
   const chatMessage = await ChatMessage.findByIdAndDelete({ _id: chatMessageId });
 

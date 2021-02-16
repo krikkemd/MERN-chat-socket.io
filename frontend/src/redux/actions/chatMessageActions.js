@@ -2,13 +2,13 @@
 import { GET_ALL_CHAT_MESSAGES, CREATE_CHAT_MESSAGE, DELETE_CHAT_MESSAGE } from '../types';
 import axios from '../../config/axios';
 
-const endpoint = 'http://localhost:1337/api/v1/chatMessages';
+const baseUrl = 'http://localhost:1337/api/v1/chatMessages';
 
 // REDUX
 export const getAllChatMessages = () => dispatch => {
   // dispatch({ type: LOADING_DATA });
   axios
-    .get(`${endpoint}`)
+    .get(`${baseUrl}`)
     .then(res => {
       // console.log(res);
       dispatch({
@@ -33,6 +33,19 @@ export const createChatMessage = chatMessage => dispatch => {
     payload: chatMessage,
   });
 };
+
+// Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE
+// export const createChatMessage = chatMessage => dispatch => {
+//   console.log(chatMessage);
+//   // dispatch({ type: LOADING_DATA });
+//   axios.post(`${baseUrl}`, chatMessage).then(res => {
+//     console.log(res);
+//     dispatch({
+//       type: CREATE_CHAT_MESSAGE,
+//       payload: chatMessage,
+//     });
+//   });
+// };
 
 // Delete Single Chat Message REDUX
 export const deleteChatMessage = chatMessageId => dispatch => {

@@ -14,20 +14,25 @@ const {
   protectRoute,
 } = require('../controllers/authController');
 
-const { getAllUsers, UpdateMe, deleteMe } = require('../controllers/userController');
+const { getAllUsers, UpdateMe, deleteMe, getSingleUser } = require('../controllers/userController');
 
 // Auth
 router.post('/signup', signUp);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:resetToken', resetPassword);
-router.patch('/updateMyPassword', protectRoute, updateMyPassword);
+
+// Protect routes from this point forward
+router.use(protectRoute);
+
+router.patch('/updateMyPassword', updateMyPassword);
 
 // User crud
-router.route('/').get(protectRoute, getAllUsers);
+router.route('/').get(getAllUsers);
+router.route('/:id').get(getSingleUser);
 
 // Logged in user change own data
-router.patch('/updateMe', protectRoute, UpdateMe);
-router.delete('/deleteMe', protectRoute, deleteMe);
+router.patch('/updateMe', UpdateMe);
+router.delete('/deleteMe', deleteMe);
 
 module.exports = router;
