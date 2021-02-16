@@ -13,6 +13,7 @@ import {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
+  emitChatMessageFromServerToAllClients,
 } from '../redux/actions/chatMessageActions';
 
 // Emit to server types
@@ -44,7 +45,12 @@ const ChatPage = props => {
     props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       console.log(messageFromBackend);
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
-      props.createChatMessage(messageFromBackend);
+      // props.createChatMessage(messageFromBackend);
+      console.log('message from backend:');
+      console.log(messageFromBackend);
+
+      // Dispatch from here, so that the redux state is updated for all clients.
+      props.emitChatMessageFromServerToAllClients(messageFromBackend);
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
@@ -73,23 +79,23 @@ const ChatPage = props => {
     // let timestamp = moment();
     // let sender = true;
 
-    // VOOR PROTECTROUTE
-    // props.createChatMessage({
-    //   // _id: Math.floor(Math.random() * 1000),
-    //   body: chatMessage,
-    //   // username,
-    //   // sender,
-    //   userId,
-    // });
-
-    // Emit the chatMessage to the backend
-    props.socket.emit(CREATE_CHAT_MESSAGE, {
+    // Create chat message action
+    props.createChatMessage({
       // _id: Math.floor(Math.random() * 1000),
       body: chatMessage,
       // username,
       // sender,
       userId,
     });
+
+    // Emit the chatMessage to the backend
+    // props.socket.emit(CREATE_CHAT_MESSAGE, {
+    //   // _id: Math.floor(Math.random() * 1000),
+    //   body: chatMessage,
+    //   // username,
+    //   // sender,
+    //   userId,
+    // });
 
     setChatMessage('');
   };
@@ -142,4 +148,5 @@ export default connect(mapStateToProps, {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
+  emitChatMessageFromServerToAllClients,
 })(ChatPage);

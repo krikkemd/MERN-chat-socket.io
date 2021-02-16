@@ -115,21 +115,21 @@ db.once('open', () => {
     console.log('🧙‍♂️ a user connected');
 
     // Listen to incoming chatMessages emits from clients connected with socket.io
-    axios.defaults.withCredentials = true;
+    // axios.defaults.withCredentials = true;
 
-    socket.on(CREATE_CHAT_MESSAGE, message => {
-      return axios
-        .post(`${endpoint}`, message)
-        .then(res => {
-          console.log(
-            '✅ message from socket.io-client successfully stored in DB, emit message back to all clients from changeStream',
-          );
-          // return res.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    });
+    // socket.on(CREATE_CHAT_MESSAGE, message => {
+    //   return axios
+    //     .post(`${endpoint}`, message)
+    //     .then(res => {
+    //       console.log(
+    //         '✅ message from socket.io-client successfully stored in DB, emit message back to all clients from changeStream',
+    //       );
+    //       // return res.data;
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // });
 
     // Listen to incoming DELETE emits from clients connected with socket.io
     socket.on(DELETE_CHAT_MESSAGE, chatMessageId => {

@@ -26,26 +26,34 @@ export const getAllChatMessages = () => dispatch => {
 };
 
 // Create Single Chat Message REDUX
+// export const createChatMessage = chatMessage => dispatch => {
+//   // dispatch({ type: LOADING_DATA });
+//   dispatch({
+//     type: CREATE_CHAT_MESSAGE,
+//     payload: chatMessage,
+//   });
+// };
+
+// Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE
 export const createChatMessage = chatMessage => dispatch => {
+  console.log(chatMessage);
   // dispatch({ type: LOADING_DATA });
-  dispatch({
-    type: CREATE_CHAT_MESSAGE,
-    payload: chatMessage,
+  axios.post(`${baseUrl}`, chatMessage).then(res => {
+    console.log(res);
+    // dispatch({
+    //   type: CREATE_CHAT_MESSAGE,
+    //   payload: res.data.chatMessage,
+    // });
   });
 };
 
-// Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE
-// export const createChatMessage = chatMessage => dispatch => {
-//   console.log(chatMessage);
-//   // dispatch({ type: LOADING_DATA });
-//   axios.post(`${baseUrl}`, chatMessage).then(res => {
-//     console.log(res);
-//     dispatch({
-//       type: CREATE_CHAT_MESSAGE,
-//       payload: chatMessage,
-//     });
-//   });
-// };
+// Takes in the message from backend after change in db. emit to all connected clients.
+export const emitChatMessageFromServerToAllClients = messageFromBackend => dispatch => {
+  dispatch({
+    type: CREATE_CHAT_MESSAGE,
+    payload: messageFromBackend,
+  });
+};
 
 // Delete Single Chat Message REDUX
 export const deleteChatMessage = chatMessageId => dispatch => {
