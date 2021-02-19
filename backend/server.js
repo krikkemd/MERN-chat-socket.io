@@ -28,9 +28,6 @@ const io = require('socket.io')(server, {
   },
 });
 
-// Socket.io RECEIVE from client types
-const { CREATE_CHAT_MESSAGE, DELETE_CHAT_MESSAGE } = require('./types/types');
-
 // Socket.io RETURN to clients types
 const { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } = require('./types/types');
 
@@ -38,6 +35,7 @@ const { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } = require('./types/types');
 const chatMessageRouter = require('./routes/chatMessageRouter');
 const userRouter = require('./routes/userRouter');
 const groupRouter = require('./routes/groupRouter');
+const currentUserRouter = require('./routes/currentUserRouter');
 
 // Mongoose
 const mongoose = require('mongoose');
@@ -90,6 +88,7 @@ app.use(xssClean());
 app.use('/api/v1/chatMessages', chatMessageRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/groups', groupRouter);
+app.use('/api/v1/getCurrentLoggedInUser', currentUserRouter);
 
 // App Config
 dotenv.config();
@@ -104,7 +103,6 @@ mongoose.connect(process.env.CONNECTION_URL, {
 });
 
 const db = mongoose.connection;
-const endpoint = 'http://localhost:1337/api/v1/chatMessages';
 
 // Once the db is connected
 db.once('open', () => {
@@ -114,6 +112,21 @@ db.once('open', () => {
   io.on('connection', socket => {
     console.log('🧙‍♂️ a user connected');
 
+    socket.join('✅✅✅✅ room1');
+
+    console.log(socket.rooms);
+
+    // PRIVATE MESSAGE, WE SHOULD DYNAMICALLY STORE ROOM NAMES ON CONNECT:
+    // https://stackoverflow.com/questions/30347923/socket-io-emit-to-array-of-socket-id/30369176
+    // on connect push socket id to array. and join all other connected users?
+    // https://socket.io/docs/v3/emit-cheatsheet/
+    // socket.user = req.user._id
+    // socket.user === props.user._id ? send message : return false
+    // map through connected users. for each connected user, create a 1 to 1 room?
+
+    socket.on('private message', (anotherSocketId, msg) => {
+      socket.to(anotherSocketId).emit('private message', socket.id, msg);
+    });
     // Listen to incoming chatMessages emits from clients connected with socket.io
     // axios.defaults.withCredentials = true;
 
@@ -130,22 +143,6 @@ db.once('open', () => {
     //       console.log(err);
     //     });
     // });
-
-    // Listen to incoming DELETE emits from clients connected with socket.io
-    socket.on(DELETE_CHAT_MESSAGE, chatMessageId => {
-      axios
-        .delete(`${endpoint}/${chatMessageId}`)
-        .then(res => {
-          console.log('deleted successfully');
-          console.log(
-            '❌ message from socket.io-client successfully deleted from DB, emit back to all clients from changeStream',
-          );
-          return res.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    });
 
     // On user disconnecting
     socket.on('disconnect', () => {
@@ -171,21 +168,12 @@ db.once('open', () => {
       // Return chatMessage Back to client
       return io.emit(OUTPUT_CHAT_MESSAGE, message);
 
-      // Send the inserted document back to the client
-      //   return io.emit('INSERT change stream message', message);
-
       // DELETE MESSAGE ON CHANGE
     } else if (change.operationType === 'delete') {
       const messageId = change.documentKey._id;
       console.log(messageId);
       return io.emit(DELETED_CHAT_MESSAGE, messageId);
     }
-
-    // // DROP COLLECTION CHANGE
-    // else if (change.operationType === 'drop') {
-    //   return io.emit('DROP change stream collection', '💣 BOOM Collection DROPPED!');
-    // } else {
-    //   console.log('NO CHECK FOR THIS, CHECK CHANGESTREAM 🌊');
   });
 });
 

@@ -78,7 +78,8 @@ const SignIn = props => {
   const handleSubmit = e => {
     e.preventDefault();
     console.log(fields);
-    props.login(email, password);
+    props.login(email, password, props.history);
+    setFields({ ...fields, password: '' });
   };
 
   return (

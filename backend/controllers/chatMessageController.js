@@ -33,10 +33,10 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
   console.log('running createChatMessage');
   const newMessage = await ChatMessage.create({
     body: req.body.body,
-    username: req.body.username,
-    userId: req.body.userId,
-    sender: req.body.sender,
-    type: req.body.type,
+    username: req.user.username,
+    userId: req.user._id,
+    // sender: req.body.sender,
+    // type: req.body.type,
   });
 
   console.log('✅ chat message created');

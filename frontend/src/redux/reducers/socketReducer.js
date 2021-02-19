@@ -6,7 +6,7 @@ const initialState = {
   socket: socket,
 };
 
-export default function (state = initialState, action) {
+export default function socketReducer(state = initialState, action) {
   switch (action.type) {
     case 'EMIT_CHAT_MESSAGE':
       //   console.log(action.payload);

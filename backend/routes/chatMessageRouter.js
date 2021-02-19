@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const { protectRoute, restrictTo } = require('../controllers/authController');
+const { protectRoute, restrictTo, isLoggedIn } = require('../controllers/authController');
 
 // Chat Message Endpoint: /api/v1/chatMessages
 
@@ -12,6 +12,9 @@ const {
   deleteChatMessage,
   getSingleChatMessage,
 } = require('../controllers/chatMessageController');
+
+// res.locals.user
+// router.use(isLoggedIn);
 
 router.route('/').get(protectRoute, getAllChatMessages).post(protectRoute, createChatMessage);
 router

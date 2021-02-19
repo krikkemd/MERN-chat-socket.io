@@ -1,12 +1,10 @@
-import { LOGIN_USER, SIGNUP_USER } from '../types';
+import { LOGIN_USER } from '../types';
 import axios from '../../config/axios';
 
 const baseUrl = 'http://localhost:1337/api/v1/users';
 
-// TODO: WHERE IS MY FOOKING COOKIE
-// SEND BACK USERNAME AND ID WITH TOKEN FROM SERVER?
-
-export const login = (email, password) => dispatch => {
+export const login = (email, password, history) => dispatch => {
+  console.log(history);
   return axios
     .post(
       `${baseUrl}/login`,
@@ -19,6 +17,7 @@ export const login = (email, password) => dispatch => {
         type: LOGIN_USER,
         payload: res.data,
       });
+      history.push('/');
     })
     .catch(err => {
       console.log(err);

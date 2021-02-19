@@ -1,6 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-// import io from 'socket.io-client';
-// import moment from 'moment';
 
 // CSS
 import '../css/Chat.scss';
@@ -13,20 +11,12 @@ import {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
-  emitChatMessageFromServerToAllClients,
+  emitCreateChatMessageFromServerToAllClients,
+  emitDeleteChatMessageFromServerToAllClients,
 } from '../redux/actions/chatMessageActions';
-
-// Emit to server types
-import { CREATE_CHAT_MESSAGE, DELETE_CHAT_MESSAGE } from '../redux/types';
 
 // Receive from server types:
 import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
-
-// Backend url
-// let server = 'http://localhost:1337';
-
-// Connect client to the backend with socket
-// const socket = io(server);
 
 const ChatPage = props => {
   // Props
@@ -40,23 +30,26 @@ const ChatPage = props => {
     props.getAllChatMessages();
   }, []);
 
+  // PRIVATE MESSAGE
   useEffect(() => {
+    props.socket.on('private message', privateMessageFromBackend => {
+      console.log('PRIVATEMESSAGEEEE!!!');
+    });
+
     // Listen to incoming chatMessages from the backend
     props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
-      console.log(messageFromBackend);
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
       // props.createChatMessage(messageFromBackend);
       console.log('message from backend:');
       console.log(messageFromBackend);
 
       // Dispatch from here, so that the redux state is updated for all clients.
-      props.emitChatMessageFromServerToAllClients(messageFromBackend);
+      props.emitCreateChatMessageFromServerToAllClients(messageFromBackend);
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
     props.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
-      // console.log(messageFromBackend);
-      props.deleteChatMessage(messageIdFromBackEnd);
+      props.emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
     });
   }, []);
 
@@ -74,28 +67,15 @@ const ChatPage = props => {
   const submitChatMessage = e => {
     e.preventDefault();
 
-    // Mock user data from redux for example
-    let userId = '6024eb027e691904f4b006e4';
-    // let timestamp = moment();
-    // let sender = true;
+    // PRIVATE MESSSAGE
+    props.socket.emit('private message', 'V5cb8K9FGA8P6haCAAAb', {
+      body: chatMessage,
+    });
 
     // Create chat message action
     props.createChatMessage({
-      // _id: Math.floor(Math.random() * 1000),
       body: chatMessage,
-      // username,
-      // sender,
-      userId,
     });
-
-    // Emit the chatMessage to the backend
-    // props.socket.emit(CREATE_CHAT_MESSAGE, {
-    //   // _id: Math.floor(Math.random() * 1000),
-    //   body: chatMessage,
-    //   // username,
-    //   // sender,
-    //   userId,
-    // });
 
     setChatMessage('');
   };
@@ -108,13 +88,20 @@ const ChatPage = props => {
         {/* map through redux state, and output chatMessages on the page */}
         {props.data.chatMessages?.map(message => {
           return (
-            <div key={message._id}>
+            <div
+              key={message._id}
+              style={
+                message.userId === props.user.user._id ? { color: 'green' } : { color: 'red' }
+              }>
               <button
                 onClick={() => {
-                  props.socket.emit(DELETE_CHAT_MESSAGE, message._id);
+                  props.deleteChatMessage(message._id);
                 }}>
                 X
               </button>
+              <p>
+                <strong>{message.username}</strong>
+              </p>
               <p>{message.body}</p>
             </div>
           );
@@ -141,6 +128,7 @@ const mapStateToProps = state => {
   return {
     socket: state.socket.socket,
     data: state.data,
+    user: state.user,
   };
 };
 
@@ -148,5 +136,6 @@ export default connect(mapStateToProps, {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
-  emitChatMessageFromServerToAllClients,
+  emitCreateChatMessageFromServerToAllClients,
+  emitDeleteChatMessageFromServerToAllClients,
 })(ChatPage);

@@ -134,10 +134,16 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
     }
 
     // 5) Grant access to protected route
+
     req.user = user;
 
     console.log('set req.user:');
     console.log(req.user);
+    // return res.status(200).json({
+    //   status: 'success',
+    //   token,
+    //   user,
+    // });
   }
   next();
 });
@@ -257,3 +263,34 @@ exports.updateMyPassword = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+// check if user is logged in, similar to protect route. No errors
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    console.log('Running isLoggedIn:');
+    try {
+      // 1) verify token
+      // const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+      const decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET, (err, decoded) => {
+        return decoded;
+      });
+
+      // 2) Check if user still exists
+      const currentUser = await User.findById(decodedToken.userId);
+      if (!currentUser) {
+        return next();
+      }
+
+      // 3) Check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfterJWT(decodedToken.iat)) {
+        return next();
+      }
+
+      req.user = currentUser;
+    } catch (err) {
+      // console.log(err);
+      return next();
+    }
+  }
+  next();
+};

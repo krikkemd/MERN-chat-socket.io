@@ -6,7 +6,7 @@ const initialState = {
   chatMessage: {},
   loading: false,
 };
-export default function (state = initialState, action) {
+export default function chatMessageReducer(state = initialState, action) {
   switch (action.type) {
     case GET_ALL_CHAT_MESSAGES:
       //   console.log(action.payload);
