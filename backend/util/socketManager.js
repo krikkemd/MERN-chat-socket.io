@@ -17,7 +17,14 @@ mongoose.connect(process.env.CONNECTION_URL, {
 const db = mongoose.connection;
 
 // Socket.io RETURN to clients types
-const { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } = require('../types/types');
+const {
+  USER_CONNECTED,
+  USER_DISCONNECTED,
+  OUTPUT_CHAT_MESSAGE,
+  DELETED_CHAT_MESSAGE,
+} = require('../types/types');
+
+let connectedUsers = {};
 
 // Once the db is connected
 db.once('open', () => {
@@ -53,9 +60,18 @@ db.once('open', () => {
 module.exports = socket => {
   console.log('🧙‍♂️ a user connected');
 
-  socket.join('✅✅✅✅ room1');
+  //userconnects 2
+  socket.on(USER_CONNECTED, user => {
+    user.socketId = socket.id;
+    console.log(user);
+    connectedUsers = addUser(connectedUsers, user);
+    socket.user = user.username;
+    // sendMessageToChatFromUser = sendMessageToChat(user.name);
+    // sendTypingFromUser = sendTypingToChat(user.name);
 
-  console.log(socket.rooms);
+    console.log(connectedUsers);
+    io.emit(USER_CONNECTED, connectedUsers);
+  });
 
   // PRIVATE MESSAGE, WE SHOULD DYNAMICALLY STORE ROOM NAMES ON CONNECT:
   // https://stackoverflow.com/questions/30347923/socket-io-emit-to-array-of-socket-id/30369176
@@ -65,12 +81,44 @@ module.exports = socket => {
   // socket.user === props.user._id ? send message : return false
   // map through connected users. for each connected user, create a 1 to 1 room?
 
-  socket.on('private message', (anotherSocketId, msg) => {
-    socket.to(anotherSocketId).emit('private message', socket.id, msg);
-  });
+  // socket.on('private message', (anotherSocketId, msg) => {
+  //   socket.to(anotherSocketId).emit('private message', socket.id, msg);
+  // });
 
   // On user disconnecting
   socket.on('disconnect', () => {
     console.log('👋 user disconnected');
+    console.log(socket.user);
+    if (!!socket.user) {
+      connectedUsers = removeUser(connectedUsers, socket.user);
+
+      console.log(connectedUsers);
+
+      io.emit(USER_DISCONNECTED, connectedUsers);
+    }
   });
 };
+
+/*
+ * Adds user to list passed in.
+ * @param userList {Object} Object with key value pairs of users
+ * @param user {User} the user to added to the list.
+ * @return userList {Object} Object with key value pairs of Users
+ */
+function addUser(userList, user) {
+  let newList = Object.assign({}, userList);
+  newList[user.username] = user.socketId;
+  return newList;
+}
+
+/*
+ * Removes user from the list passed in.
+ * @param userList {Object} Object with key value pairs of Users
+ * @param username {string} name of user to be removed
+ * @return userList {Object} Object with key value pairs of Users
+ */
+function removeUser(userList, username) {
+  let newList = Object.assign({}, userList);
+  delete newList[username];
+  return newList;
+}

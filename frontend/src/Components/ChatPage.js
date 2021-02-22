@@ -20,7 +20,7 @@ import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
 
 const ChatPage = props => {
   // Props
-  console.log(props);
+  // console.log(props);
 
   // Local State
   const [chatMessage, setChatMessage] = useState('');
@@ -32,9 +32,9 @@ const ChatPage = props => {
 
   // PRIVATE MESSAGE
   useEffect(() => {
-    props.socket.on('private message', privateMessageFromBackend => {
-      console.log('PRIVATEMESSAGEEEE!!!');
-    });
+    // props.socket.on('private message', privateMessageFromBackend => {
+    //   console.log('PRIVATEMESSAGEEEE!!!');
+    // });
 
     // Listen to incoming chatMessages from the backend
     props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {

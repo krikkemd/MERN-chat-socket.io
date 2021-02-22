@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 // Actions
 import { getCurrentLoggedInUser } from '../redux/actions/authActions';
+import { updateConnectedUserList } from '../redux/actions/userActions';
 
 // React Router DOM
 import { Redirect, Route } from 'react-router-dom';
@@ -12,11 +13,15 @@ import Spinner from './Spinner';
 
 import { useEffect } from 'react';
 
+// Socket io
+import { USER_CONNECTED, USER_DISCONNECTED } from '../redux/types';
+
 // When we specify an Authroute:
 //  - getCurrentLoggedInUser checks if the user is logged in. (componentDidMount)
 //  - When the user is loading, show a spinner
-//  - When props.authenticated._id === true, it means the user is logged in. Render the passed in component (props.component)
-//  - When props.authenticated._id === false, it means the user is not logged in. redirect to /login
+//  - When the user is loaded, socket.emit USER_CONNECTED to the server.
+//  - When props.user._id === true, it means the user is logged in. Render the passed in component (props.component)
+//  - When props.user._id === false, it means the user is not logged in. redirect to /login
 
 const AuthRoute = props => {
   // componentDidMount
@@ -24,13 +29,36 @@ const AuthRoute = props => {
     props.getCurrentLoggedInUser();
   }, []);
 
+  // Connected user list
+  useEffect(() => {
+    // When the user is set, emit the user to the backend, where the user is added to the connected userList.
+    if (props.user._id) {
+      props.socket.emit(USER_CONNECTED, props.user);
+      console.log('user is set');
+
+      // Receive the connected users userList from the backend
+      props.socket.on(USER_CONNECTED, userListFromBackend => {
+        console.log(userListFromBackend);
+        // TODO dispatch action to update props.connectedUsers
+        props.updateConnectedUserList(userListFromBackend);
+      });
+
+      // Receive the updated connected users userList from the backend
+      props.socket.on(USER_DISCONNECTED, userListFromBackend => {
+        console.log(userListFromBackend);
+        // TODO dispatch action to update props.connectedUsers
+        props.updateConnectedUserList(userListFromBackend);
+      });
+    }
+  }, [props.user._id]);
+
   // Render
   return (
     <Route
       render={() =>
         props.loading ? (
           <Spinner />
-        ) : props.authenticated._id ? (
+        ) : props.user._id ? (
           <props.component />
         ) : (
           <Redirect to='/login' />
@@ -42,9 +70,12 @@ const AuthRoute = props => {
 
 const mapStateToProps = state => {
   return {
-    authenticated: state.user.user,
+    socket: state.socket.socket,
+    user: state.user.user,
     loading: state.user.loading,
   };
 };
 
-export default connect(mapStateToProps, { getCurrentLoggedInUser })(AuthRoute);
+export default connect(mapStateToProps, { getCurrentLoggedInUser, updateConnectedUserList })(
+  AuthRoute,
+);

@@ -61,11 +61,11 @@ app.use(
 // Cookie Parser
 app.use(cookieParser());
 
-app.use((req, res, next) => {
-  console.log('Cookie:');
-  console.log(req.cookies);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('Cookie:');
+//   console.log(req.cookies);
+//   next();
+// });
 
 // Body Parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));

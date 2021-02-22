@@ -1,7 +1,7 @@
-import { SET_ERRORS, LOGIN_USER, SET_CURRENT_USER } from '../types';
+import { SET_ERRORS, LOGIN_USER, SET_CURRENT_USER, UPDATE_CONNECTED_USERLIST } from '../types';
 
 const initialState = {
-  users: [],
+  connectedUsers: {},
   user: {},
   loading: true,
   errors: [],
@@ -20,6 +20,11 @@ export default function userReducer(state = initialState, action) {
         ...state,
         loading: false,
         user: action.payload.currentUser,
+      };
+    case UPDATE_CONNECTED_USERLIST:
+      return {
+        ...state,
+        connectedUsers: action.payload,
       };
     case SET_ERRORS:
       return {

@@ -8,10 +8,17 @@ export const DELETE_CHAT_MESSAGE = 'DELETE_CHAT_MESSAGE';
 export const OUTPUT_CHAT_MESSAGE = 'OUTPUT_CHAT_MESSAGE';
 export const DELETED_CHAT_MESSAGE = 'DELETED_CHAT_MESSAGE';
 
-// USER TYPES
+// USER TYPES - client side
 export const SIGNUP_USER = 'SIGNUP_USER';
 export const LOGIN_USER = 'LOGIN_USER';
 export const SET_CURRENT_USER = 'SET_CURRENT_USER';
+
+// USER TYPES - sent to backend
+export const USER_CONNECTED = 'USER_CONNECTED';
+export const USER_DISCONNECTED = 'USER_DISCONNECTED';
+
+// Update the connected userlist in the redux state. (Authroute)
+export const UPDATE_CONNECTED_USERLIST = 'UPDATE_CONNECTED_USERLIST';
 
 // ERROR TYPES
 export const SET_ERRORS = 'SET_ERRORS';

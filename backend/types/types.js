@@ -1,5 +1,6 @@
 // Received from client types:
-// exports.CREATE_CHAT_MESSAGE = 'CREATE_CHAT_MESSAGE';
+exports.USER_CONNECTED = 'USER_CONNECTED';
+exports.USER_DISCONNECTED = 'USER_DISCONNECTED';
 // exports.DELETE_CHAT_MESSAGE = 'DELETE_CHAT_MESSAGE';
 
 // Return to client types:

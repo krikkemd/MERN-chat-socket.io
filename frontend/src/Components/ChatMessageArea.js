@@ -51,8 +51,8 @@ const theme = createMuiTheme({
 
 const ChatMessageArea = props => {
   // Props
-  console.log(props);
-  console.log(theme);
+  // console.log(props);
+  // console.log(theme);
 
   const { primary } = theme.palette;
 

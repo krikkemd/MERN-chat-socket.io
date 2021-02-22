@@ -9,7 +9,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 
-const ChatFriendsList = () => {
+const ChatFriendsList = props => {
+  console.log(props);
   return (
     <List>
       <ListItem button key='RemySharp'>
@@ -31,6 +32,7 @@ const ChatFriendsList = () => {
 
 const mapStateToProps = state => {
   return {
+    connectedUsers: state.user.connectedUsers,
     socket: state.socket.socket,
     data: state.data,
     user: state.user.user,
