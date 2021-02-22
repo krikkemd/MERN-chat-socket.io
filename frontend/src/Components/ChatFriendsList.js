@@ -11,21 +11,23 @@ import Avatar from '@material-ui/core/Avatar';
 
 const ChatFriendsList = props => {
   console.log(props);
+  console.log(Object.keys(props.connectedUsers));
   return (
     <List>
-      <ListItem button key='RemySharp'>
-        <ListItemIcon>
-          <Avatar alt='Remy Sharp' src='https://material-ui.com/static/images/avatar/1.jpg' />
-        </ListItemIcon>
-        <ListItemText primary='Remy Sharp'>Remy Sharp</ListItemText>
-        <ListItemText secondary='online' align='right'></ListItemText>
-      </ListItem>
-      <ListItem button key='Alice'>
-        <ListItemIcon>
-          <Avatar alt='Alice' src='https://material-ui.com/static/images/avatar/3.jpg' />
-        </ListItemIcon>
-        <ListItemText primary='Alice'>Alice</ListItemText>
-      </ListItem>
+      {props.connectedUsers &&
+        Object.keys(props.connectedUsers).map(user => {
+          if (user !== props.user.username) {
+            return (
+              <ListItem button key={user}>
+                <ListItemIcon>
+                  <Avatar alt={user} src='https://material-ui.com/static/images/avatar/1.jpg' />
+                </ListItemIcon>
+                <ListItemText primary={user}>{user}</ListItemText>
+                <ListItemText secondary='online' align='right'></ListItemText>
+              </ListItem>
+            );
+          }
+        })}
     </List>
   );
 };
