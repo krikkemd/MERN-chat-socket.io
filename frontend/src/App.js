@@ -17,7 +17,7 @@ function App() {
       <div className='app'>
         <Switch>
           <AuthRoute exact path='/' component={Chat} />
-          <AuthRoute exact path='/chat' component={Chat} />
+          <AuthRoute exact path='/chat' component={ChatPage} />
           <Route exact path='/login' component={Login} />
           <Route exact path='/spin' component={Spinner} />
         </Switch>

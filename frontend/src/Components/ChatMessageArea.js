@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 
 // Redux Actions
 import {
-  getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
   emitCreateChatMessageFromServerToAllClients,
@@ -50,19 +49,10 @@ const theme = createMuiTheme({
 });
 
 const ChatMessageArea = props => {
-  // Props
-  // console.log(props);
-  // console.log(theme);
-
   const { primary } = theme.palette;
 
   // Local State
   const [chatMessage, setChatMessage] = useState('');
-
-  // ComponentDidMount: fetch all chats messages once
-  useEffect(() => {
-    props.getAllChatMessages();
-  }, []);
 
   //   On changes to the chatMessages in the state
   useEffect(() => {
@@ -97,10 +87,9 @@ const ChatMessageArea = props => {
   const submitChatMessage = e => {
     e.preventDefault();
 
-    // Mock user data from redux for example
-
     // Create chat message action
     props.createChatMessage({
+      chatRoomId: props.activeChatRoom._id,
       body: chatMessage,
     });
 
@@ -110,8 +99,8 @@ const ChatMessageArea = props => {
   return (
     <>
       <List className={props.classes.messageArea}>
-        {props.data.chatMessages ? (
-          props.data.chatMessages.map(message => (
+        {props.activeChatRoom.chatMessages ? (
+          props.chatMessages.map(message => (
             <ListItem key={message._id}>
               <Grid container>
                 <Grid item xs={12}></Grid>
@@ -142,11 +131,12 @@ const ChatMessageArea = props => {
             </ListItem>
           ))
         ) : (
-          <div>No Messages</div>
+          <div>No Messages yet</div>
         )}
 
         <div ref={chatEnd} />
       </List>
+
       <Divider />
       <Grid container style={{ padding: '20px' }}>
         <Grid item xs={11}>
@@ -161,7 +151,7 @@ const ChatMessageArea = props => {
             />
           </form>
         </Grid>
-        <Grid xs={1} align='right'>
+        <Grid align='right'>
           <Fab color='primary' aria-label='add'>
             <SendIcon />
           </Fab>
@@ -174,13 +164,13 @@ const ChatMessageArea = props => {
 const mapStateToProps = state => {
   return {
     socket: state.socket.socket,
-    data: state.data,
+    chatMessages: state.chat.chatMessages,
     user: state.user.user,
+    activeChatRoom: state.chat.activeChatRoom,
   };
 };
 
 export default connect(mapStateToProps, {
-  getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
   emitCreateChatMessageFromServerToAllClients,

@@ -1,20 +1,8 @@
 // Redux
 import { connect } from 'react-redux';
 
-// Redux Actions
-import {
-  getAllChatMessages,
-  createChatMessage,
-  deleteChatMessage,
-  emitCreateChatMessageFromServerToAllClients,
-  emitDeleteChatMessageFromServerToAllClients,
-} from '../redux/actions/chatMessageActions';
-
 // Components
 import ChatFriendsList from './ChatFriendsList';
-
-// Receive from server types:
-import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
 
 // MUI
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,8 +16,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
-import Fab from '@material-ui/core/Fab';
-import SendIcon from '@material-ui/icons/Send';
 
 import noImg from '../images/no-img.png';
 import ChatMessageArea from './ChatMessageArea';
@@ -55,7 +41,6 @@ const useStyles = makeStyles({
 });
 
 const Chat = props => {
-  console.log(props.user.username);
   const classes = useStyles();
 
   return (
@@ -101,16 +86,8 @@ const Chat = props => {
 
 const mapStateToProps = state => {
   return {
-    socket: state.socket.socket,
-    data: state.data,
     user: state.user.user,
   };
 };
 
-export default connect(mapStateToProps, {
-  getAllChatMessages,
-  createChatMessage,
-  deleteChatMessage,
-  emitCreateChatMessageFromServerToAllClients,
-  emitDeleteChatMessageFromServerToAllClients,
-})(Chat);
+export default connect(mapStateToProps)(Chat);

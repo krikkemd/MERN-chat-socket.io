@@ -19,6 +19,11 @@ export const USER_DISCONNECTED = 'USER_DISCONNECTED';
 
 // Update the connected userlist in the redux state. (Authroute)
 export const UPDATE_CONNECTED_USERLIST = 'UPDATE_CONNECTED_USERLIST';
+export const GET_ALL_USERS = 'GET_ALL_USERS';
+
+// CHAT ROOM TYPES
+export const SET_ACTIVE_CHATROOM = 'SET_ACTIVE_CHATROOM';
+export const SET_USER_CHATROOMS = 'SET_USER_CHATROOMS';
 
 // ERROR TYPES
 export const SET_ERRORS = 'SET_ERRORS';

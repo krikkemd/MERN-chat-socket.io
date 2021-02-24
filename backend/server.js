@@ -32,7 +32,7 @@ io.on('connection', socketManager);
 // Routers
 const chatMessageRouter = require('./routes/chatMessageRouter');
 const userRouter = require('./routes/userRouter');
-const groupRouter = require('./routes/groupRouter');
+const chatRoomRouter = require('./routes/chatRoomRouter');
 const currentUserRouter = require('./routes/currentUserRouter');
 
 // Middleware
@@ -82,7 +82,7 @@ app.use(xssClean());
 // Routers
 app.use('/api/v1/chatMessages', chatMessageRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/groups', groupRouter);
+app.use('/api/v1/rooms', chatRoomRouter);
 app.use('/api/v1/getCurrentLoggedInUser', currentUserRouter);
 
 // App Config

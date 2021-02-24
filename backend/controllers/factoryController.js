@@ -14,12 +14,13 @@ exports.getAllDocuments = Model => {
   });
 };
 
-exports.getSingleDoc = Model => {
+// you should call populate for each passed in parameter
+exports.getSingleDoc = (Model, ...fieldsToPopulate) => {
   return catchAsync(async (req, res, next) => {
     console.log('running getSingleDoc');
     const docId = req.params.id;
 
-    const doc = await Model.findById({ _id: docId });
+    const doc = await Model.findById({ _id: docId }).populate(...fieldsToPopulate);
 
     if (!doc) return next(new AppError('No document found with that ID', 404));
 

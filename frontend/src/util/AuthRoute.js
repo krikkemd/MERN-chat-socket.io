@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 
 // Actions
 import { getCurrentLoggedInUser } from '../redux/actions/authActions';
-import { updateConnectedUserList } from '../redux/actions/userActions';
+import { updateConnectedUserList, getAllUsers } from '../redux/actions/userActions';
+import { getAllUserChatRooms } from '../redux/actions/chatMessageActions';
 
 // React Router DOM
 import { Redirect, Route } from 'react-router-dom';
@@ -27,6 +28,7 @@ const AuthRoute = props => {
   // componentDidMount
   useEffect(() => {
     props.getCurrentLoggedInUser();
+    props.getAllUserChatRooms();
   }, []);
 
   // Connected user list
@@ -76,6 +78,8 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { getCurrentLoggedInUser, updateConnectedUserList })(
-  AuthRoute,
-);
+export default connect(mapStateToProps, {
+  getCurrentLoggedInUser,
+  updateConnectedUserList,
+  getAllUserChatRooms,
+})(AuthRoute);

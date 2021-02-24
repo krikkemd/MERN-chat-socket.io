@@ -32,6 +32,7 @@ exports.getSingleChatMessage = catchAsync(async (req, res, next) => {
 exports.createChatMessage = catchAsync(async (req, res, next) => {
   console.log('running createChatMessage');
   const newMessage = await ChatMessage.create({
+    chatRoomId: req.body.chatRoomId,
     body: req.body.body,
     username: req.user.username,
     userId: req.user._id,

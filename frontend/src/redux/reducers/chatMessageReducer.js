@@ -1,22 +1,26 @@
-import { GET_ALL_CHAT_MESSAGES, CREATE_CHAT_MESSAGE, DELETE_CHAT_MESSAGE } from '../types';
+import {
+  GET_ALL_CHAT_MESSAGES,
+  CREATE_CHAT_MESSAGE,
+  DELETE_CHAT_MESSAGE,
+  SET_ACTIVE_CHATROOM,
+  SET_USER_CHATROOMS,
+} from '../types';
 
 const initialState = {
-  //   payload: {},
   chatMessages: [],
-  chatMessage: {},
+  chatRooms: [],
+  activeChatRoom: [],
   loading: false,
 };
 export default function chatMessageReducer(state = initialState, action) {
   switch (action.type) {
     case GET_ALL_CHAT_MESSAGES:
-      //   console.log(action.payload);
       return {
         ...state,
         chatMessages: action.payload,
       };
 
     case CREATE_CHAT_MESSAGE:
-      console.log(state);
       return {
         ...state,
         chatMessages: [...state.chatMessages, action.payload],
@@ -42,6 +46,17 @@ export default function chatMessageReducer(state = initialState, action) {
         chatMessages: filteredChatMessages,
       };
     }
+    case SET_USER_CHATROOMS:
+      return {
+        ...state,
+        chatRooms: action.payload,
+      };
+    case SET_ACTIVE_CHATROOM:
+      return {
+        ...state,
+        activeChatRoom: action.payload,
+        chatMessages: action.payload.chatMessages,
+      };
     default:
       return state;
   }

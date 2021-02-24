@@ -86,7 +86,7 @@ const ChatPage = props => {
       <h1>Chat</h1>
       <div>
         {/* map through redux state, and output chatMessages on the page */}
-        {props.data.chatMessages?.map(message => {
+        {props.chat.chatMessages?.map(message => {
           return (
             <div
               key={message._id}
@@ -127,7 +127,7 @@ const ChatPage = props => {
 const mapStateToProps = state => {
   return {
     socket: state.socket.socket,
-    data: state.data,
+    chat: state.chat,
     user: state.user,
   };
 };

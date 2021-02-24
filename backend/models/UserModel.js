@@ -3,63 +3,66 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, 'username is required'],
-    unique: true,
-    minlength: [2, 'username should have a minimum length of 2 characters'],
-    maxlength: [50, 'username max length is 50 characters'],
-  },
-  email: {
-    type: String,
-    required: [true, 'email is required'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'please provide a valid email'],
-  },
-  avatar: String,
-  // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG IN DB
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user',
-  },
-  password: {
-    type: String,
-    required: [true, 'please provide a password'],
-    minlength: 10,
-    maxlength: [50, 'password max length is 50 characters.'],
-    select: false, // select false: never send this back in responses, when reading from db
-  },
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: [true, 'username is required'],
+      unique: true,
+      minlength: [2, 'username should have a minimum length of 2 characters'],
+      maxlength: [50, 'username max length is 50 characters'],
+    },
+    email: {
+      type: String,
+      required: [true, 'email is required'],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'please provide a valid email'],
+    },
+    avatar: String,
+    // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG IN DB
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
+    password: {
+      type: String,
+      required: [true, 'please provide a password'],
+      minlength: 10,
+      maxlength: [50, 'password max length is 50 characters.'],
+      select: false, // select false: never send this back in responses, when reading from db
+    },
 
-  passwordConfirm: {
-    type: String,
-    required: [true, 'please confirm your password'],
-    select: false,
+    passwordConfirm: {
+      type: String,
+      required: [true, 'please confirm your password'],
+      select: false,
 
-    validate: {
-      // returns true or false. This validator only works on CREATE and SAVE!
-      validator: function (el) {
-        return el === this.password;
+      validate: {
+        // returns true or false. This validator only works on CREATE and SAVE!
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: "Passwords don't match",
       },
-      message: "Passwords don't match",
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
+    expireAt: {
+      type: Date,
+      // default: Date.now,
+      index: { expires: null },
     },
   },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
-  },
-  expireAt: {
-    type: Date,
-    // default: Date.now,
-    index: { expires: null },
-  },
-});
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+);
 
 // PRE SAVE MIDDLEWARE WONT WORK WITH FINDONEANDUPDATE, JUST USE SAVE OR CREATE
 

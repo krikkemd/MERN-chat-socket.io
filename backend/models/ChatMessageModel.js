@@ -7,7 +7,12 @@ const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema(
   {
-    messageId: mongoose.Types.ObjectId,
+    // Parent reference to the chatRoom
+    chatRoomId: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'ChatRoom',
+      required: [true, 'Message should belong to a chat room.'],
+    }, // mongoose.ObjectId
     body: {
       type: String,
       required: [true, 'chat message cannot be empty'],
