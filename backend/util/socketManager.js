@@ -1,5 +1,6 @@
 const io = require('../server').io;
 const dotenv = require('dotenv');
+const { ChatRoom } = require('../models/ChatRoomModel');
 
 dotenv.config();
 
@@ -46,7 +47,12 @@ db.once('open', () => {
       console.log(message);
 
       // Return chatMessage Back to client
-      return io.emit(OUTPUT_CHAT_MESSAGE, message);
+      // return io.emit(OUTPUT_CHAT_MESSAGE, message);
+      return io.in(message.chatRoomId.toString()).emit(OUTPUT_CHAT_MESSAGE, message);
+
+      // socket.on('private message', (anotherSocketId, msg) => {
+      //   socket.to(anotherSocketId).emit('private message', socket.id, msg);
+      // });
 
       // DELETE MESSAGE ON CHANGE
     } else if (change.operationType === 'delete') {
@@ -60,30 +66,54 @@ db.once('open', () => {
 module.exports = socket => {
   console.log('🧙‍♂️ a user connected');
 
-  //userconnects 2
-  socket.on(USER_CONNECTED, user => {
+  // user connects
+  socket.on(USER_CONNECTED, async user => {
     user.socketId = socket.id;
     console.log(user);
     connectedUsers = addUser(connectedUsers, user);
     socket.user = user.username;
-    // sendMessageToChatFromUser = sendMessageToChat(user.name);
-    // sendTypingFromUser = sendTypingToChat(user.name);
+
+    // Get all the chatRooms where the user is a member
+    const chatRooms = await ChatRoom.find({ members: user._id }); // returns rooms where the currentUser is a member
+
+    // create a socket.io Room for each ChatRoom the user is a member of
+    // chatRooms.forEach(room => socket.join(room._id.toString()));
 
     console.log(connectedUsers);
     io.emit(USER_CONNECTED, connectedUsers);
   });
 
-  // PRIVATE MESSAGE, WE SHOULD DYNAMICALLY STORE ROOM NAMES ON CONNECT:
-  // https://stackoverflow.com/questions/30347923/socket-io-emit-to-array-of-socket-id/30369176
-  // on connect push socket id to array. and join all other connected users?
-  // https://socket.io/docs/v3/emit-cheatsheet/
-  // socket.user = req.user._id
-  // socket.user === props.user._id ? send message : return false
-  // map through connected users. for each connected user, create a 1 to 1 room?
+  let roomArray = [];
 
-  // socket.on('private message', (anotherSocketId, msg) => {
-  //   socket.to(anotherSocketId).emit('private message', socket.id, msg);
-  // });
+  // JOIN THE ROOM THAT IS CLICKED ON. ADD IT TO THE ROOMARRAY. LEAVE ALL OTHER ROOMS THAT ARE NOT EQUAL TO PASSED IN ROOMID
+  socket.on('roomId', roomId => {
+    console.log('oi');
+
+    socket.join(roomId.toString());
+
+    if (roomArray.includes(roomId)) {
+      console.log('✅');
+    } else {
+      roomArray.push(roomId);
+      console.log('❌');
+    }
+
+    // room id that is clicked
+    console.log(roomArray);
+    roomArray.map(room => {
+      if (room !== roomId) {
+        socket.leave(room.toString());
+      }
+    });
+
+    // alle rooms
+    console.log(socket.rooms);
+
+    // current user id
+    console.log(socket.id);
+
+    // return io.in(message.chatRoomId.toString()).emit(OUTPUT_CHAT_MESSAGE, message);
+  });
 
   // On user disconnecting
   socket.on('disconnect', () => {

@@ -82,6 +82,8 @@ exports.login = catchAsync(async (req, res, next) => {
     // sameSite: 'none',
   });
 
+  user.password = undefined;
+
   // Send token back to the client
   return res.status(200).json({
     status: 'success',

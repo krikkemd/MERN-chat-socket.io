@@ -33,6 +33,7 @@ const ChatFriendsList = props => {
                     console.log('click');
                     console.log(`Room Id: ${room._id}`);
                     props.getSingleChatRoom(room._id);
+                    props.socket.emit('roomId', room._id);
                   }}>
                   <ListItemIcon>
                     <Avatar
@@ -41,7 +42,7 @@ const ChatFriendsList = props => {
                     />
                   </ListItemIcon>
                   <ListItemText primary={member.username}>{member.username}</ListItemText>
-                  <ListItemText secondary='online' align='bottom'></ListItemText>
+                  <ListItemText secondary='online' align='right'></ListItemText>
                 </ListItem>
               );
             }
@@ -58,6 +59,7 @@ const mapStateToProps = state => {
   return {
     user: state.user.user,
     chatRooms: state.chat.chatRooms,
+    socket: state.socket.socket,
   };
 };
 

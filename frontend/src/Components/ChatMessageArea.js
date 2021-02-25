@@ -29,49 +29,38 @@ import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import noImg from '../images/no-img.png';
 
-import { createMuiTheme } from '@material-ui/core/styles';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      light: '#33ab9f',
-      main: '#009688',
-      dark: '#00695f',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#ff7961',
-      main: '#f44336',
-      dark: '#ba000d',
-      contrastText: '#000',
-    },
-  },
-});
-
 const ChatMessageArea = props => {
-  const { primary } = theme.palette;
-
   // Local State
   const [chatMessage, setChatMessage] = useState('');
+
+  const {
+    socket,
+    emitCreateChatMessageFromServerToAllClients,
+    emitDeleteChatMessageFromServerToAllClients,
+  } = props;
 
   //   On changes to the chatMessages in the state
   useEffect(() => {
     // Listen to incoming chatMessages from the backend
-    props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
+    socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
       // props.createChatMessage(messageFromBackend);
       console.log('message from backend:');
       console.log(messageFromBackend);
 
       // Dispatch from here, so that the redux state is updated for all clients.
-      props.emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+      emitCreateChatMessageFromServerToAllClients(messageFromBackend);
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
-    props.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
-      props.emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
+    socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
+      emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
     });
-  }, []);
+  }, [
+    socket,
+    emitCreateChatMessageFromServerToAllClients,
+    emitDeleteChatMessageFromServerToAllClients,
+  ]);
 
   // Scroll to bottom on new chatMessage
   const chatEnd = useRef(null);

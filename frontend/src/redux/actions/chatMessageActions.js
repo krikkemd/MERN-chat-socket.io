@@ -42,7 +42,7 @@ export const getSingleChatRoom = roomId => dispatch => {
     });
 };
 
-// GetAllRooms({members: "req.user._id"})
+// GetAllRooms({members: "req.user._id"}) // gets all the chatrooms where the currentUser is a member
 export const getAllUserChatRooms = () => dispatch => {
   console.log('running getAllUserChatRooms');
   axios
@@ -53,48 +53,6 @@ export const getAllUserChatRooms = () => dispatch => {
     })
     .catch(err => console.log(err));
 };
-
-// Create a new chat room if it does not exist yet.
-// export const createChatRoom = (id, ...users) => dispatch => {
-//   // Get the chatroom, and dispatch an action that sets the chatroom to active to render
-//   console.log(users);
-//   axios.get(`/rooms/${chatRoomId}`).then(res => {
-//     dispatch({ type: SET_ACTIVE_CHAT_ROOM, payload: res.data.chatRoomId });
-
-//     if (!res.data.chatRoomId) {
-//       axios.post(`/room/${id}`).then(res => {
-//         dispatch({ type: SET_ACTIVE_CHAT_ROOM, payload: res.data.chatRoomId });
-//       });
-//     }
-//   });
-// };
-
-// FIND THE CORRECT ROOM: FINDONE({MEMBERS: {USERNAME: MARLIES}, {USERNAME: MICKEY}})
-
-// export const createChatRoom = (...members) => dispatch => {
-//   console.log(members);
-//   axios
-//     .post(`http://localhost:1337/api/v1/rooms/`, {
-//       members: members,
-//     })
-//     .then(res => {
-//       console.log(res.data);
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
-
-// export const getChatRoom = roomId => dispatch => {
-//   axios
-//     .get(`http://localhost:1337/api/v1/rooms/`)
-//     .then(res => {
-//       console.log(res.data);
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
 
 // Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE
 export const createChatMessage = chatMessage => dispatch => {
@@ -113,7 +71,7 @@ export const createChatMessage = chatMessage => dispatch => {
     .catch(err => {
       console.log(err.response.data);
       // Redirect to log in page when not logged in
-      // window.location.replace('/login');
+      window.location.replace('/login');
     });
 };
 

@@ -7,7 +7,7 @@ const AppError = require('../util/appError');
 
 exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   console.log('running getAllChatRooms');
-  const chatRooms = await ChatRoom.find({ members: req.user._id }); // returns rooms where the currentUser is a member
+  const chatRooms = await ChatRoom.find({ members: req.user._id }).populate('chatMessages'); // returns rooms where the currentUser is a member
   res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
 });
 

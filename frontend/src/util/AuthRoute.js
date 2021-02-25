@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 // Actions
 import { getCurrentLoggedInUser } from '../redux/actions/authActions';
-import { updateConnectedUserList, getAllUsers } from '../redux/actions/userActions';
+import { updateConnectedUserList } from '../redux/actions/userActions';
 import { getAllUserChatRooms } from '../redux/actions/chatMessageActions';
 
 // React Router DOM
@@ -25,34 +25,44 @@ import { USER_CONNECTED, USER_DISCONNECTED } from '../redux/types';
 //  - When props.user._id === false, it means the user is not logged in. redirect to /login
 
 const AuthRoute = props => {
+  const {
+    getCurrentLoggedInUser,
+    getAllUserChatRooms,
+    updateConnectedUserList,
+    socket,
+    user,
+  } = props;
+
   // componentDidMount
   useEffect(() => {
-    props.getCurrentLoggedInUser();
-    props.getAllUserChatRooms();
-  }, []);
+    getCurrentLoggedInUser();
+  }, [getCurrentLoggedInUser]);
 
   // Connected user list
   useEffect(() => {
     // When the user is set, emit the user to the backend, where the user is added to the connected userList.
-    if (props.user._id) {
-      props.socket.emit(USER_CONNECTED, props.user);
+    if (user._id) {
+      // Get all the chatRooms the user is a member of when the user is set
+      getAllUserChatRooms();
+
+      socket.emit(USER_CONNECTED, user);
       console.log('user is set');
 
       // Receive the connected users userList from the backend
-      props.socket.on(USER_CONNECTED, userListFromBackend => {
+      socket.on(USER_CONNECTED, userListFromBackend => {
         console.log(userListFromBackend);
         // TODO dispatch action to update props.connectedUsers
-        props.updateConnectedUserList(userListFromBackend);
+        updateConnectedUserList(userListFromBackend);
       });
 
       // Receive the updated connected users userList from the backend
-      props.socket.on(USER_DISCONNECTED, userListFromBackend => {
+      socket.on(USER_DISCONNECTED, userListFromBackend => {
         console.log(userListFromBackend);
         // TODO dispatch action to update props.connectedUsers
-        props.updateConnectedUserList(userListFromBackend);
+        updateConnectedUserList(userListFromBackend);
       });
     }
-  }, [props.user._id]);
+  }, [updateConnectedUserList, socket, user, getAllUserChatRooms]);
 
   // Render
   return (
