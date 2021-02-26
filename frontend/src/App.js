@@ -8,8 +8,14 @@ import Login from './Components/Login';
 import ChatPage from './Components/ChatPage';
 import Chat from './Components/Chat';
 
+// Util components
 import AuthRoute from './util/AuthRoute';
 import Spinner from './util/Spinner';
+
+// moment.js
+import moment from 'moment';
+import 'moment/locale/nl';
+moment.locale('nl');
 
 function App() {
   return (

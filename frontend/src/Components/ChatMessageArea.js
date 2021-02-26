@@ -15,6 +15,8 @@ import {
 // Receive from server types:
 import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
 
+import moment from 'moment';
+
 // MUI
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -114,7 +116,7 @@ const ChatMessageArea = props => {
                 <Grid item xs={12}>
                   <ListItemText
                     align={props.user._id === message.userId ? 'right' : 'left'}
-                    secondary='09:30'></ListItemText>
+                    secondary={moment(message.createdAt).fromNow()}></ListItemText>
                 </Grid>
               </Grid>
             </ListItem>
