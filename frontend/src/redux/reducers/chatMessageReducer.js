@@ -21,11 +21,12 @@ export default function chatMessageReducer(state = initialState, action) {
       };
 
     case CREATE_CHAT_MESSAGE:
-      console.log(action.payload);
-
       return {
         ...state,
-        chatMessages: [...state.chatMessages, action.payload],
+        chatMessages:
+          state.chatMessages.length > 10
+            ? [...state.chatMessages, action.payload].slice(1) // keep the max size of chatMessages at 10
+            : [...state.chatMessages, action.payload],
       };
     case DELETE_CHAT_MESSAGE: {
       // console.log('reducer', action.payload); // payload here ==- screamId
@@ -58,7 +59,7 @@ export default function chatMessageReducer(state = initialState, action) {
       return {
         ...state,
         activeChatRoom: action.payload,
-        chatMessages: action.payload.chatMessages,
+        chatMessages: action.payload.chatMessages.reverse(),
       };
     default:
       return state;

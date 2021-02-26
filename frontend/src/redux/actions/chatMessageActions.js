@@ -35,6 +35,7 @@ export const getSingleChatRoom = roomId => dispatch => {
   axios
     .get(`http://localhost:1337/api/v1/rooms/${roomId}`)
     .then(res => {
+      console.log(res.data.doc.chatMessages);
       dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
     })
     .catch(err => {

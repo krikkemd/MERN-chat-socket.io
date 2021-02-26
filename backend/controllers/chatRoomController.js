@@ -7,11 +7,14 @@ const AppError = require('../util/appError');
 
 exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   console.log('running getAllChatRooms');
-  const chatRooms = await ChatRoom.find({ members: req.user._id }).populate('chatMessages'); // returns rooms where the currentUser is a member
+  const chatRooms = await ChatRoom.find({ members: req.user._id }); // returns rooms where the currentUser is a member
   res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
 });
 
-exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, 'chatMessages'); // Populate chatMessages in the room
+exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, {
+  path: 'chatMessages',
+  options: { sort: { createdAt: 'desc' }, limit: 10 },
+}); // Populate chatMessages in the room
 exports.createChatRoom = factoryController.createOne(ChatRoom);
 exports.updateChatRoom = factoryController.updateOne(ChatRoom);
 exports.deleteChatRoom = factoryController.deleteOne(ChatRoom);
