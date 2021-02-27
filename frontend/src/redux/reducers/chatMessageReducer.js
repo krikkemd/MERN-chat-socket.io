@@ -55,7 +55,6 @@ export default function chatMessageReducer(state = initialState, action) {
         chatRooms: action.payload,
       };
     case SET_ACTIVE_CHATROOM:
-      console.log(action.payload);
       return {
         ...state,
         activeChatRoom: action.payload,

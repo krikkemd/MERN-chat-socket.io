@@ -1,7 +1,7 @@
 // Redux
 import { connect } from 'react-redux';
 
-// TESTFUNCTION
+// Redux actions
 import { getSingleChatRoom } from '../redux/actions/chatMessageActions';
 
 // MUI
@@ -18,7 +18,8 @@ const ChatFriendsList = props => {
   // authroute calls getsAllUserRooms, which queries the chatrooms with {req.user._id} where the current logged in user is a member of.
   // We add the chatrooms to the redux state
   // we render the chatrooms, with the name of the member that is not the currentUser
-  // onCLick => getChatMessages from that room with the room._id
+  // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms.
+
   return (
     <List>
       {props.chatRooms ? (
@@ -33,7 +34,7 @@ const ChatFriendsList = props => {
                     console.log('click');
                     console.log(`Room Id: ${room._id}`);
                     props.getSingleChatRoom(room._id);
-                    props.socket.emit('roomId', room._id);
+                    // props.socket.emit('roomId', room._id);
                   }}>
                   <ListItemIcon>
                     <Avatar

@@ -77,43 +77,43 @@ module.exports = socket => {
     const chatRooms = await ChatRoom.find({ members: user._id }); // returns rooms where the currentUser is a member
 
     // create a socket.io Room for each ChatRoom the user is a member of
-    // chatRooms.forEach(room => socket.join(room._id.toString()));
+    chatRooms.forEach(room => socket.join(room._id.toString()));
 
     console.log(connectedUsers);
     io.emit(USER_CONNECTED, connectedUsers);
   });
 
-  let roomArray = [];
+  // let roomArray = [];
 
   // JOIN THE ROOM THAT IS CLICKED ON. ADD IT TO THE ROOMARRAY. LEAVE ALL OTHER ROOMS THAT ARE NOT EQUAL TO PASSED IN ROOMID
-  socket.on('roomId', roomId => {
-    console.log('oi');
+  // TODO LOOK AT THE COMPONENT USEEFFECT ORDER AND AFFECTED COMPONENTS. WE SHOULD BE ABLE TO ACCESS PROPS FROM SOCKET.ON(OUTPUT_CHAT_MESSAGE) CLIENT SIDE IN CHATMESSAGEAREA
+  // socket.on('roomId', roomId => {
+  //   socket.join(roomId.toString());
 
-    socket.join(roomId.toString());
+  //   // TEMP: FIX ABOVE
+  //   if (roomArray.includes(roomId)) {
+  //     console.log('✅');
+  //   } else {
+  //     roomArray.push(roomId);
+  //     console.log('❌');
+  //   }
 
-    if (roomArray.includes(roomId)) {
-      console.log('✅');
-    } else {
-      roomArray.push(roomId);
-      console.log('❌');
-    }
+  //   // room id that is clicked
+  //   console.log(roomArray);
+  //   roomArray.map(room => {
+  //     if (room !== roomId) {
+  //       socket.leave(room.toString());
+  //     }
+  //   });
 
-    // room id that is clicked
-    console.log(roomArray);
-    roomArray.map(room => {
-      if (room !== roomId) {
-        socket.leave(room.toString());
-      }
-    });
+  //   // alle rooms
+  //   console.log(socket.rooms);
 
-    // alle rooms
-    console.log(socket.rooms);
+  //   // current user id
+  //   console.log(socket.id);
 
-    // current user id
-    console.log(socket.id);
-
-    // return io.in(message.chatRoomId.toString()).emit(OUTPUT_CHAT_MESSAGE, message);
-  });
+  //   // return io.in(message.chatRoomId.toString()).emit(OUTPUT_CHAT_MESSAGE, message);
+  // });
 
   // On user disconnecting
   socket.on('disconnect', () => {

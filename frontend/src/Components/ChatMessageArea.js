@@ -37,12 +37,21 @@ const ChatMessageArea = props => {
 
   const {
     socket,
+    activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
     emitDeleteChatMessageFromServerToAllClients,
   } = props;
 
   //   On changes to the chatMessages in the state
   useEffect(() => {
+    // Dont stack multiple callbacks, just execute once
+    if (socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
+      socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
+    }
+
+    console.log(props);
+    console.log(socket._callbacks);
+
     // Listen to incoming chatMessages from the backend
     socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
@@ -51,7 +60,10 @@ const ChatMessageArea = props => {
       console.log(messageFromBackend);
 
       // Dispatch from here, so that the redux state is updated for all clients.
-      emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+      if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
+        console.log('YESSSSSSSSSSSS');
+        emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+      }
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
@@ -60,6 +72,7 @@ const ChatMessageArea = props => {
     });
   }, [
     socket,
+    activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
     emitDeleteChatMessageFromServerToAllClients,
   ]);
