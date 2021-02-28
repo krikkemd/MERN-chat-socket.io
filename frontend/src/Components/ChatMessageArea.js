@@ -9,6 +9,7 @@ import {
   createChatMessage,
   deleteChatMessage,
   emitCreateChatMessageFromServerToAllClients,
+  emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
 } from '../redux/actions/chatMessageActions';
 
@@ -39,6 +40,7 @@ const ChatMessageArea = props => {
     socket,
     activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
+    emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
   } = props;
 
@@ -59,9 +61,12 @@ const ChatMessageArea = props => {
       console.log('message from backend:');
       console.log(messageFromBackend);
 
+      // updates the lastChatMessage at the friendsList for both the sender and the receiver of the message.
+      emitLastChatMessage(messageFromBackend);
+
       // Dispatch from here, so that the redux state is updated for all clients.
       if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
-        console.log('YESSSSSSSSSSSS');
+        console.log('only runs when activeChatRoom === messageFromBackend.chatRoomId');
         emitCreateChatMessageFromServerToAllClients(messageFromBackend);
       }
     });
@@ -74,6 +79,7 @@ const ChatMessageArea = props => {
     socket,
     activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
+    emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
   ]);
 
@@ -178,5 +184,6 @@ export default connect(mapStateToProps, {
   createChatMessage,
   deleteChatMessage,
   emitCreateChatMessageFromServerToAllClients,
+  emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
 })(ChatMessageArea);

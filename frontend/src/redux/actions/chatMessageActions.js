@@ -4,6 +4,7 @@ import {
   DELETE_CHAT_MESSAGE,
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
+  SET_LAST_CHAT_MESSAGE,
 } from '../types';
 import axios from '../../config/axios';
 
@@ -80,6 +81,14 @@ export const createChatMessage = chatMessage => dispatch => {
 export const emitCreateChatMessageFromServerToAllClients = messageFromBackend => dispatch => {
   dispatch({
     type: CREATE_CHAT_MESSAGE,
+    payload: messageFromBackend,
+  });
+};
+
+// Takes in the message from backend after change in db. to update the state for all connected clients, not just your own state.
+export const emitLastChatMessage = messageFromBackend => dispatch => {
+  dispatch({
+    type: SET_LAST_CHAT_MESSAGE,
     payload: messageFromBackend,
   });
 };
