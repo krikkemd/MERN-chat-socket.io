@@ -91,12 +91,20 @@ export default function chatMessageReducer(state = initialState, action) {
     }
     case SET_USER_CHATROOMS:
       let lastMessages = action.payload.map(room => room.chatMessages[0]);
+      console.log(action.payload);
+
+      let sortedChatRooms = [...action.payload];
+
+      sortedChatRooms.sort((a, b) => {
+        return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
+      });
 
       return {
         ...state,
         // loading: false,
         lastMessages: lastMessages,
-        chatRooms: action.payload,
+        // chatRooms: action.payload,
+        chatRooms: sortedChatRooms,
       };
     case SET_ACTIVE_CHATROOM:
       return {

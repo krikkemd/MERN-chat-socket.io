@@ -11,6 +11,7 @@ import {
   emitCreateChatMessageFromServerToAllClients,
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
+  getAllUserChatRooms,
 } from '../redux/actions/chatMessageActions';
 
 // Receive from server types:
@@ -42,6 +43,7 @@ const ChatMessageArea = props => {
     emitCreateChatMessageFromServerToAllClients,
     emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
+    getAllUserChatRooms,
   } = props;
 
   //   On changes to the chatMessages in the state
@@ -51,8 +53,8 @@ const ChatMessageArea = props => {
       socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
     }
 
-    console.log(props);
-    console.log(socket._callbacks);
+    // console.log(props);
+    // console.log(socket._callbacks);
 
     // Listen to incoming chatMessages from the backend
     socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
@@ -64,7 +66,10 @@ const ChatMessageArea = props => {
       // updates the lastChatMessage at the friendsList for both the sender and the receiver of the message.
       emitLastChatMessage(messageFromBackend);
 
-      // Dispatch from here, so that the redux state is updated for all clients.
+      // Reorder friendList to show latest conversation on top (SENDER)
+      getAllUserChatRooms();
+
+      // Dispatch from here, so that the redux state is updated for all client in the room.
       if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
         console.log('only runs when activeChatRoom === messageFromBackend.chatRoomId');
         emitCreateChatMessageFromServerToAllClients(messageFromBackend);
@@ -186,4 +191,5 @@ export default connect(mapStateToProps, {
   emitCreateChatMessageFromServerToAllClients,
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
+  getAllUserChatRooms,
 })(ChatMessageArea);
