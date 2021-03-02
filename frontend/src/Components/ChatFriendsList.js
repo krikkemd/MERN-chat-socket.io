@@ -162,9 +162,6 @@ const ChatFriendsList = props => {
                   key={user._id}
                   onClick={e => {
                     console.log('clicked in contacts');
-                    // console.log(`Room Id: ${room._id}`);
-                    // props.getSingleChatRoom(room._id);
-                    // props.socket.emit('roomId', room._id);
                   }}>
                   <ListItemIcon>
                     <Avatar alt={user.username} src={user.avatar} />
@@ -186,7 +183,6 @@ const mapStateToProps = state => {
     lastMessages: state.chat.lastMessages,
     connectedUsers: state.user.connectedUsers,
     users: state.user.users,
-    // socket: state.socket.socket,
   };
 };
 
