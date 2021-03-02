@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 
 // Redux
 import { connect } from 'react-redux';
@@ -19,8 +19,28 @@ const ChatFriendsList = props => {
   // we render the chatrooms, with the name of the member that is not the currentUser
   // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms.
 
+  console.log(Object.values(props.connectedUsers));
+
+  const [toggleChat, setToggleChat] = useState('chats');
+
   return (
     <List>
+      <ListItem
+        button
+        onClick={e => {
+          setToggleChat('users');
+          console.log(toggleChat);
+        }}>
+        <ListItemText primary='Contacts'>Contacts</ListItemText>
+      </ListItem>
+      <ListItem
+        button
+        onClick={e => {
+          setToggleChat('chats');
+          console.log(toggleChat);
+        }}>
+        <ListItemText primary='Chats'>Chats</ListItemText>
+      </ListItem>
       {props.chatRooms ? (
         props.chatRooms.map(room => {
           return room.members.map(member => {
@@ -36,10 +56,7 @@ const ChatFriendsList = props => {
                     // props.socket.emit('roomId', room._id);
                   }}>
                   <ListItemIcon>
-                    <Avatar
-                      alt={member.username}
-                      src='https://material-ui.com/static/images/avatar/1.jpg'
-                    />
+                    <Avatar alt={member.username} src={member.avatar} />
                   </ListItemIcon>
                   <ListItemText primary={member.username}>{member.username}</ListItemText>
                   <ListItemText
@@ -66,6 +83,7 @@ const mapStateToProps = state => {
     user: state.user.user,
     chatRooms: state.chat.chatRooms,
     lastMessages: state.chat.lastMessages,
+    connectedUsers: state.user.connectedUsers,
     // socket: state.socket.socket,
   };
 };

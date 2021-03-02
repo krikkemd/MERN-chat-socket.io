@@ -69,6 +69,7 @@ module.exports = socket => {
   // user connects
   socket.on(USER_CONNECTED, async user => {
     user.socketId = socket.id;
+    console.log('hier');
     console.log(user);
     connectedUsers = addUser(connectedUsers, user);
     socket.user = user.username;
@@ -137,7 +138,8 @@ module.exports = socket => {
  */
 function addUser(userList, user) {
   let newList = Object.assign({}, userList);
-  newList[user.username] = user.socketId;
+  // newList[user.username] = user.socketId;
+  newList[user.username] = user._id;
   return newList;
 }
 

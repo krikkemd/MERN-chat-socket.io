@@ -8,6 +8,7 @@ process.on('uncaughtException', err => {
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const AppError = require('./util/appError');
@@ -69,6 +70,7 @@ app.use(cookieParser());
 
 // Body Parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+// app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Data Sanitization against NoSQL query injection by removing mongoDB operators ($, .)
 app.use(mongoSanitize());
@@ -97,6 +99,10 @@ const port = process.env.PORT || 9000;
 // app.get('*', (req, res) => {
 //   res.send(path.resolve(__dirname, 'client', 'build', 'index.html'));
 // });
+
+// UDEMY JONAS:
+// app.set(express.static(path.join(__dirname, 'public')));
+// app.use(express.static('public'));
 
 // If route is not found on the server. When you put a parameter in next it is automatically and error.
 app.all('*', (req, res, next) => {

@@ -17,7 +17,7 @@ const chatRoomSchema = new mongoose.Schema(
 chatRoomSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'members',
-    select: 'username',
+    select: 'username avatar',
   });
   next();
 });

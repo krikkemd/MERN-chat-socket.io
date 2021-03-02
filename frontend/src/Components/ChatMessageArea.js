@@ -49,7 +49,7 @@ const ChatMessageArea = props => {
   //   On changes to the chatMessages in the state
   useEffect(() => {
     // Dont stack multiple callbacks, just execute once
-    if (socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
+    if (socket._callbacks !== undefined && socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
       socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
     }
 

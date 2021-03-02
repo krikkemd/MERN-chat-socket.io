@@ -2,8 +2,32 @@ const { User } = require('../models/UserModel');
 const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
 const factoryController = require('./factoryController');
-
+const multer = require('multer');
 // TODO: set ExpiresAt when user deleteMe. create functionality when user re-activates account. signup function active false is not good.
+
+// Location to store uploaded images (error first)
+const multerStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, '../frontend/public');
+  },
+  filename: (req, file, callback) => {
+    const extention = file.mimetype.split('/')[1];
+    callback(null, `user-${req.user._id}-${Date.now()}.${extention}`);
+  },
+});
+
+// Check if uploaded file is an image
+const multerFilter = (req, file, callback) => {
+  if (file.mimetype.startsWith('image')) {
+    callback(null, true);
+  } else {
+    callback(new AppError('Uploaded file is not an image.', 400), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadUserAvatar = upload.single('avatar');
 
 exports.getAllUsers = factoryController.getAllDocuments(User);
 exports.getSingleUser = factoryController.getSingleDoc(User);
@@ -14,8 +38,11 @@ exports.getSingleUser = factoryController.getSingleDoc(User);
 //   res.status(200).json({ status: 'success', results: users.length, users });
 // });
 
-exports.UpdateMe = catchAsync(async (req, res, next) => {
+// TODO: When user update username for example, username should be changed on all chatmessages
+exports.updateMe = catchAsync(async (req, res, next) => {
   console.log('running updateMe');
+  console.log(req.file);
+  console.log(req.body);
 
   // 1) if user tries to update password, send error. Use /updatePassword PATCH authcontroller.
   if (req.body.password || req.body.passwordConfirm) {
@@ -29,10 +56,11 @@ exports.UpdateMe = catchAsync(async (req, res, next) => {
 
   // Only Username and Email are allowed here. can add more if needed.
   const cleanedReqBody = cleanReqBody(req.body, 'username', 'email');
+  if (req.file) cleanedReqBody.avatar = req.file.filename;
 
   // 2) update user data with the cleaned req.body object
   const user = await User.findByIdAndUpdate(req.user._id, cleanedReqBody, {
-    new: true, // returns the updates doc
+    new: true, // returns the updated doc
     runValidators: true,
   });
 

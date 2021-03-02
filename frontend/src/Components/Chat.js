@@ -17,7 +17,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 
-import noImg from '../images/no-img.png';
 import ChatMessageArea from './ChatMessageArea';
 
 const useStyles = makeStyles({
@@ -55,9 +54,9 @@ const Chat = props => {
       <Grid container component={Paper} className={classes.chatSection}>
         <Grid item xs={3} className={classes.borderRight500}>
           <List>
-            <ListItem button key='RemySharp'>
+            <ListItem button key={props.user._id}>
               <ListItemIcon>
-                <Avatar alt='Remy Sharp' src={noImg} />
+                <Avatar alt={props.user.username} src={props.user.avatar} />
               </ListItemIcon>
               <ListItemText primary={props.user.username}></ListItemText>
             </ListItem>
