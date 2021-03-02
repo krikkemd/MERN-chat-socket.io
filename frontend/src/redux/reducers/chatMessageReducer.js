@@ -54,6 +54,7 @@ export default function chatMessageReducer(state = initialState, action) {
       };
 
     case SET_LAST_CHAT_MESSAGE: {
+      // Resort the friendslist on last created message
       let newLastMessages = [...state.lastMessages];
 
       newLastMessages.map((message, i) => {
@@ -61,7 +62,6 @@ export default function chatMessageReducer(state = initialState, action) {
           return (newLastMessages[i] = { ...action.payload });
         }
       });
-      // console.log(newLastMessages);
 
       return {
         ...state,
@@ -104,7 +104,7 @@ export default function chatMessageReducer(state = initialState, action) {
         // loading: false,
         lastMessages: lastMessages,
         // chatRooms: action.payload,
-        chatRooms: sortedChatRooms,
+        chatRooms: sortedChatRooms, // initial sort on page load/refresh. rerender sorting happens in SET_LAST_CHAT_MESSAGE
       };
     case SET_ACTIVE_CHATROOM:
       return {
