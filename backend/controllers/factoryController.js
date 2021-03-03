@@ -19,6 +19,7 @@ exports.getSingleDoc = (Model, ...fieldsToPopulate) => {
   return catchAsync(async (req, res, next) => {
     console.log('running getSingleDoc');
     const docId = req.params.id;
+    console.log(fieldsToPopulate);
 
     const doc = await Model.findById({ _id: docId }).populate(...fieldsToPopulate);
 

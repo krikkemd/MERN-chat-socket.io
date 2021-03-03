@@ -19,7 +19,10 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       validate: [validator.isEmail, 'please provide a valid email'],
     },
-    avatar: String,
+    avatar: {
+      type: String,
+      default: 'no-img.png',
+    },
     // IEDEREEN KAN ROLE ZETTEN VIA POSTMAN. MOET HANDMATIG IN DB
     role: {
       type: String,

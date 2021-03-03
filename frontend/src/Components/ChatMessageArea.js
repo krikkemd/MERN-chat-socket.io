@@ -9,11 +9,15 @@ import {
   createChatMessage,
   deleteChatMessage,
   emitCreateChatMessageFromServerToAllClients,
+  emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
+  getAllUserChatRooms,
 } from '../redux/actions/chatMessageActions';
 
 // Receive from server types:
 import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
+
+import moment from 'moment';
 
 // MUI
 import Grid from '@material-ui/core/Grid';
@@ -29,49 +33,61 @@ import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import noImg from '../images/no-img.png';
 
-import { createMuiTheme } from '@material-ui/core/styles';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      light: '#33ab9f',
-      main: '#009688',
-      dark: '#00695f',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#ff7961',
-      main: '#f44336',
-      dark: '#ba000d',
-      contrastText: '#000',
-    },
-  },
-});
-
 const ChatMessageArea = props => {
-  const { primary } = theme.palette;
-
   // Local State
   const [chatMessage, setChatMessage] = useState('');
 
+  const {
+    socket,
+    activeChatRoom,
+    emitCreateChatMessageFromServerToAllClients,
+    emitLastChatMessage,
+    emitDeleteChatMessageFromServerToAllClients,
+    getAllUserChatRooms,
+  } = props;
+
   //   On changes to the chatMessages in the state
   useEffect(() => {
+    // Dont stack multiple callbacks, just execute once
+
+    if (socket._callbacks !== undefined && socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
+      socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
+    }
+
+    // console.log(props);
+    // console.log(socket._callbacks);
+
     // Listen to incoming chatMessages from the backend
-    props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
+    socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
       // props.createChatMessage(messageFromBackend);
       console.log('message from backend:');
       console.log(messageFromBackend);
 
-      // Dispatch from here, so that the redux state is updated for all clients.
-      props.emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+      // updates the lastChatMessage at the friendsList for both the sender and the receiver of the message.
+      emitLastChatMessage(messageFromBackend);
+
+      // Reorder friendList to show latest conversation on top (SENDER)
+      getAllUserChatRooms();
+
+      // Dispatch from here, so that the redux state is updated for all client in the room.
+      if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
+        console.log('only runs when activeChatRoom === messageFromBackend.chatRoomId');
+        emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+      }
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
-    props.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
-      props.emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
+    socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
+      emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
     });
-  }, []);
+  }, [
+    socket,
+    activeChatRoom,
+    emitCreateChatMessageFromServerToAllClients,
+    emitLastChatMessage,
+    emitDeleteChatMessageFromServerToAllClients,
+  ]);
 
   // Scroll to bottom on new chatMessage
   const chatEnd = useRef(null);
@@ -125,7 +141,7 @@ const ChatMessageArea = props => {
                 <Grid item xs={12}>
                   <ListItemText
                     align={props.user._id === message.userId ? 'right' : 'left'}
-                    secondary='09:30'></ListItemText>
+                    secondary={moment(message.createdAt).fromNow()}></ListItemText>
                 </Grid>
               </Grid>
             </ListItem>
@@ -174,5 +190,7 @@ export default connect(mapStateToProps, {
   createChatMessage,
   deleteChatMessage,
   emitCreateChatMessageFromServerToAllClients,
+  emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
+  getAllUserChatRooms,
 })(ChatMessageArea);

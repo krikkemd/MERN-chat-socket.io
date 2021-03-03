@@ -19,16 +19,20 @@ import {
 import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
 
 const ChatPage = props => {
-  // Props
-  // console.log(props);
-
   // Local State
   const [chatMessage, setChatMessage] = useState('');
 
+  const {
+    socket,
+    getAllChatMessages,
+    emitCreateChatMessageFromServerToAllClients,
+    emitDeleteChatMessageFromServerToAllClients,
+  } = props;
+
   // ComponentDidMount: fetch all chats messages once
   useEffect(() => {
-    props.getAllChatMessages();
-  }, []);
+    getAllChatMessages();
+  }, [getAllChatMessages]);
 
   // PRIVATE MESSAGE
   useEffect(() => {
@@ -37,21 +41,25 @@ const ChatPage = props => {
     // });
 
     // Listen to incoming chatMessages from the backend
-    props.socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
+    socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
       // Dispatch messageFromBackend to the chatMessageReducer, to update the state/props to rerender
       // props.createChatMessage(messageFromBackend);
       console.log('message from backend:');
       console.log(messageFromBackend);
 
       // Dispatch from here, so that the redux state is updated for all clients.
-      props.emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+      emitCreateChatMessageFromServerToAllClients(messageFromBackend);
     });
 
     // Listen to incoming ID's from deleted chatMessages from the backend / db
-    props.socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
-      props.emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
+    socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
+      emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
     });
-  }, []);
+  }, [
+    socket,
+    emitCreateChatMessageFromServerToAllClients,
+    emitDeleteChatMessageFromServerToAllClients,
+  ]);
 
   // Scroll to bottom on new chatMessage
   const chatEnd = useRef(null);

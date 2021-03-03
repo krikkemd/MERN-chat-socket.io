@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 // Render
 const SignIn = props => {
   // Props
-  console.log(props.user);
+  // console.log(props.user);
 
   // Local State
   const [fields, setFields] = useState({
