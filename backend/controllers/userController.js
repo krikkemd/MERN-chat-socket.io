@@ -3,18 +3,22 @@ const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
 const factoryController = require('./factoryController');
 const multer = require('multer');
+const sharp = require('sharp');
 // TODO: set ExpiresAt when user deleteMe. create functionality when user re-activates account. signup function active false is not good.
 
 // Location to store uploaded images (error first)
-const multerStorage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, '../frontend/public');
-  },
-  filename: (req, file, callback) => {
-    const extention = file.mimetype.split('/')[1];
-    callback(null, `user-${req.user._id}-${Date.now()}.${extention}`);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, callback) => {
+//     callback(null, '../frontend/public');
+//   },
+//   filename: (req, file, callback) => {
+//     const extention = file.mimetype.split('/')[1];
+//     callback(null, `user-${req.user._id}-${Date.now()}.${extention}`);
+//   },
+// });
+
+// stores img in memory as a buffer
+const multerStorage = multer.memoryStorage();
 
 // Check if uploaded file is an image
 const multerFilter = (req, file, callback) => {
@@ -29,6 +33,25 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 exports.uploadUserAvatar = upload.single('avatar');
 
+exports.resizeUserAvatar = (req, res, next) => {
+  if (!req.file) return next();
+  console.log('running resizdeUserAvatar');
+
+  console.log(req.file);
+
+  // define the filename, because we store it in memory so the filename is not set
+  req.file.filename = `user-${req.user._id}-${Date.now()}.jpeg`;
+
+  // resize and crop the image
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`../frontend/public/${req.file.filename}`);
+
+  next();
+};
+
 exports.getAllUsers = factoryController.getAllDocuments(User);
 exports.getSingleUser = factoryController.getSingleDoc(User);
 
@@ -41,8 +64,6 @@ exports.getSingleUser = factoryController.getSingleDoc(User);
 // TODO: When user update username for example, username should be changed on all chatmessages
 exports.updateMe = catchAsync(async (req, res, next) => {
   console.log('running updateMe');
-  console.log(req.file);
-  console.log(req.body);
 
   // 1) if user tries to update password, send error. Use /updatePassword PATCH authcontroller.
   if (req.body.password || req.body.passwordConfirm) {

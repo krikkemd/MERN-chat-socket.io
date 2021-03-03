@@ -49,15 +49,17 @@ const StyledBadge = withStyles(theme => ({
 const ChatFriendsList = props => {
   // authroute calls getsAllUserRooms, which queries the chatrooms with {req.user._id} where the current logged in user is a member of.
   // We add the chatrooms to the redux state
-  // we render the chatrooms, with the name of the member that is not the currentUser
-  // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms.
+  // we render the chatrooms, with the name of the member that is not the currentUser, sorted by the last created or received message on top.
+  // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms. (SERVER SIDE: NO LONGER TRUE)
+  // in socketManager we query the chatRooms where the user is a member, we loop through the rooms and socket.join them all.
 
   useEffect(() => {
     props.getAllUsers();
   }, []);
 
-  console.log(Object.values(props.connectedUsers));
-
+  // CONTACTS ONCLICK FUNCTIE MAKEN DIE CHECKT OF ER EEN ROOM / GESPREK IS MET DIE USER, ANDERS NIEUWE ROOM MAKEN
+  // ROOMS ALLEEN SHOWEN ONDER CHATS ALS ER MESSAGES IN STAAN?
+  // GEEN LEGE ROOMS SHOWEN ONDER CHATS
   const [toggleChat, setToggleChat] = useState('contacts');
 
   return (

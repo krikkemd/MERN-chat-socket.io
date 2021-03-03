@@ -20,6 +20,7 @@ const {
   deleteMe,
   getSingleUser,
   uploadUserAvatar,
+  resizeUserAvatar,
 } = require('../controllers/userController');
 
 // Auth
@@ -38,7 +39,7 @@ router.route('/').get(getAllUsers);
 router.route('/:id').get(getSingleUser);
 
 // Logged in user change own data
-router.patch('/updateMe', uploadUserAvatar, updateMe);
+router.patch('/updateMe', uploadUserAvatar, resizeUserAvatar, updateMe);
 router.delete('/deleteMe', deleteMe);
 
 module.exports = router;
