@@ -34,7 +34,9 @@ export default function userReducer(state = initialState, action) {
         users: action.payload,
       };
     case UPDATE_CONNECTED_USERLIST:
+      // userlist from backend
       const onlineUsers = { ...action.payload };
+      console.log(onlineUsers);
 
       const sortedByOnlineUsers = [...state.users];
 
@@ -51,6 +53,22 @@ export default function userReducer(state = initialState, action) {
           return b.online - a.online;
         });
       });
+
+      // Sorting contacts in the friendlist: Online users on top, then alphabetically. no good yet...
+      // sortedByOnlineUsers.sort((a, b) => {
+      //   if (b.online - a.online) {
+      //     return 1;
+      //   }
+      //   if (a.username.toLowerCase() < b.username.toLowerCase()) {
+      //     return -1;
+      //   }
+      //   if (a.username.toLowerCase() > b.username.toLowerCase()) {
+      //     return 1;
+      //   }
+      //   return 0;
+      // });
+
+      console.log(sortedByOnlineUsers);
 
       return {
         ...state,

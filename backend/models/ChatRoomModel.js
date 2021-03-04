@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { User } = require('./UserModel');
 
 const chatRoomSchema = new mongoose.Schema(
   {
@@ -8,8 +9,11 @@ const chatRoomSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
+        min: 2,
+        max: 50,
       },
     ],
+    // members: Array,
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } },
 );
@@ -19,6 +23,14 @@ chatRoomSchema.pre(/^find/, function (next) {
     path: 'members',
     select: 'username avatar',
   });
+  next();
+});
+
+// Embed the chatRoomMembers inside the chatRoom mind the CHATMESSAGES
+chatRoomSchema.pre('save', async function (next) {
+  const membersPromises = this.members.map(async id => await User.findById(id));
+  this.members = await Promise.all(membersPromises);
+  this.chatMessages = [];
   next();
 });
 

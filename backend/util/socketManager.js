@@ -23,6 +23,9 @@ const {
   USER_DISCONNECTED,
   OUTPUT_CHAT_MESSAGE,
   DELETED_CHAT_MESSAGE,
+  CREATED_CHAT_ROOM,
+  EMIT_CREATED_CHAT_ROOM,
+  MEMBERS_JOIN_NEW_CHAT_ROOM,
 } = require('../types/types');
 
 let connectedUsers = {};
@@ -61,6 +64,30 @@ db.once('open', () => {
       return io.emit(DELETED_CHAT_MESSAGE, messageId);
     }
   });
+
+  // CHANGESTREAM CHATROOMS
+  const chatRoomCollection = db.collection('chatrooms');
+
+  // Watch the chat messages collection for changes
+  const changeChatRoomStream = chatRoomCollection.watch();
+
+  changeChatRoomStream.on('change', change => {
+    console.log(change);
+
+    // On insert chatRoom
+    if (change.operationType === 'insert') {
+      const room = change.fullDocument;
+      console.log(room);
+
+      // Return chatMessage Back to client
+      // return io.emit(OUTPUT_CHAT_MESSAGE, message);
+      // return io.in(room.chatRoomId.toString()).emit(OUTPUT_CHAT_MESSAGE, message);
+
+      // socket.on('private message', (anotherSocketId, msg) => {
+      //   socket.to(anotherSocketId).emit('private message', socket.id, msg);
+      // });
+    }
+  });
 });
 
 module.exports = socket => {
@@ -68,8 +95,8 @@ module.exports = socket => {
 
   // user connects
   socket.on(USER_CONNECTED, async user => {
+    console.log('USER_CONNECTED');
     user.socketId = socket.id;
-    console.log('hier');
     console.log(user);
     connectedUsers = addUser(connectedUsers, user);
     socket.user = user.username;
@@ -82,6 +109,29 @@ module.exports = socket => {
 
     console.log(connectedUsers);
     io.emit(USER_CONNECTED, connectedUsers);
+  });
+
+  // Clients emits new created chatroom to the server.
+  socket.on(CREATED_CHAT_ROOM, chatRoomFromClient => {
+    // console.log('CREATED_CHAT_ROOM');
+    // console.log('connected users:');
+    // console.log(connectedUsers);
+    // console.log('chatroom from client');
+    // console.log(chatRoomFromClient);
+    // socket.join(chatRoomFromClient._id.toString());
+    // console.log('socket.rooms:');
+    // console.log(socket.rooms);
+
+    // the server sends the new created chatroom back to all connected clients.
+    // if the connected client is member of the new created chatroom, it will emit MEMBERS_JOIN_NEW_CHAT_ROOM
+    io.emit(EMIT_CREATED_CHAT_ROOM, chatRoomFromClient);
+  });
+
+  // members of the new created chat room socket.join the chatroom
+  socket.on(MEMBERS_JOIN_NEW_CHAT_ROOM, chatRoomFromClient => {
+    console.log('MEMBERS JOINING ROOMS');
+    console.log(chatRoomFromClient);
+    socket.join(chatRoomFromClient._id.toString());
   });
 
   // let roomArray = [];
@@ -140,6 +190,8 @@ function addUser(userList, user) {
   let newList = Object.assign({}, userList);
   // newList[user.username] = user.socketId;
   newList[user.username] = user._id;
+  // newList[user.username] = { userId: user._id, socketId: user.socketId };
+
   return newList;
 }
 

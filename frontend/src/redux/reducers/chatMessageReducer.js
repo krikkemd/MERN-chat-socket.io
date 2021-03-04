@@ -5,6 +5,7 @@ import {
   DELETE_CHAT_MESSAGE,
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
+  CREATE_CHAT_ROOM,
 } from '../types';
 
 const initialState = {
@@ -54,9 +55,11 @@ export default function chatMessageReducer(state = initialState, action) {
       };
 
     case SET_LAST_CHAT_MESSAGE: {
-      // Resort the friendslist on last created message
-      let newLastMessages = [...state.lastMessages];
+      // only return lastMessages where the message is not undefined
+      let newLastMessages = [...state.lastMessages].filter(message => message && message);
+      // console.log(newLastMessages);
 
+      // Resort the friendslist on last created message
       newLastMessages.map((message, i) => {
         if (message.chatRoomId === action.payload.chatRoomId) {
           return (newLastMessages[i] = { ...action.payload });
@@ -89,14 +92,22 @@ export default function chatMessageReducer(state = initialState, action) {
         chatMessages: filteredChatMessages,
       };
     }
-    case SET_USER_CHATROOMS:
+    case SET_USER_CHATROOMS: // Only chatRooms that have messages are rendered
       let lastMessages = action.payload.map(room => room.chatMessages[0]);
-      console.log(action.payload);
+      // console.log(action.payload);
 
       let sortedChatRooms = [...action.payload];
 
+      // only return the chatrooms where there are chatmessages
+      // sortedChatRooms = sortedChatRooms.filter(room => room.chatMessages.length > 0 && room);
+
+      console.log(sortedChatRooms);
+
       sortedChatRooms.sort((a, b) => {
-        return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
+        if (a.chatMessages[0] && b.chatMessages[0]) {
+          return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
+        }
+        return;
       });
 
       return {
@@ -107,11 +118,23 @@ export default function chatMessageReducer(state = initialState, action) {
         chatRooms: sortedChatRooms, // initial sort on page load/refresh. rerender sorting happens in SET_LAST_CHAT_MESSAGE
       };
     case SET_ACTIVE_CHATROOM:
+      console.log(action.payload);
+
       return {
         ...state,
         activeChatRoom: action.payload,
         chatMessages: action.payload.chatMessages.reverse(),
       };
+    case CREATE_CHAT_ROOM: {
+      const newChatRooms = [...state.chatRooms];
+      console.log(newChatRooms);
+      console.log(action.payload);
+
+      return {
+        ...state,
+        chatRooms: [...newChatRooms, action.payload],
+      };
+    }
     default:
       return state;
   }

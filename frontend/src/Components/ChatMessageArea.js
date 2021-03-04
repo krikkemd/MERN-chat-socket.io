@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 
 // Redux
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 // Redux Actions
 import {
@@ -14,8 +14,13 @@ import {
   getAllUserChatRooms,
 } from '../redux/actions/chatMessageActions';
 
-// Receive from server types:
-import { OUTPUT_CHAT_MESSAGE, DELETED_CHAT_MESSAGE } from '../redux/types';
+import {
+  OUTPUT_CHAT_MESSAGE,
+  DELETED_CHAT_MESSAGE,
+  CREATE_CHAT_ROOM,
+  EMIT_CREATED_CHAT_ROOM,
+  MEMBERS_JOIN_NEW_CHAT_ROOM,
+} from '../redux/types';
 
 import moment from 'moment';
 
@@ -37,7 +42,12 @@ const ChatMessageArea = props => {
   // Local State
   const [chatMessage, setChatMessage] = useState('');
 
+  const dispatch = useDispatch();
+
+  console.log(props.socket);
+
   const {
+    user,
     socket,
     activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
@@ -54,7 +64,11 @@ const ChatMessageArea = props => {
       socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
     }
 
-    // console.log(props);
+    if (socket._callbacks !== undefined && socket._callbacks['$EMIT_CREATED_CHAT_ROOM']) {
+      socket._callbacks['$EMIT_CREATED_CHAT_ROOM'].length = 0;
+    }
+
+    console.log(props);
     // console.log(socket._callbacks);
 
     // Listen to incoming chatMessages from the backend
@@ -80,6 +94,20 @@ const ChatMessageArea = props => {
     // Listen to incoming ID's from deleted chatMessages from the backend / db
     socket.on(DELETED_CHAT_MESSAGE, messageIdFromBackEnd => {
       emitDeleteChatMessageFromServerToAllClients(messageIdFromBackEnd);
+    });
+
+    // When a new chatRoom is created, update the props.chatRooms for all members.
+    socket.on(EMIT_CREATED_CHAT_ROOM, createdChatRoom => {
+      console.log(createdChatRoom);
+
+      // if the the current logged in user is a member of the new created chatroom, dispatch add the chatroom to the state. emit the chatroom to the server from all members, so they can all socket.join(theNewChatRoom) serverside
+      createdChatRoom.members.map(member => {
+        if (member._id === user._id) {
+          console.log(member);
+          dispatch({ type: CREATE_CHAT_ROOM, payload: createdChatRoom });
+          socket.emit(MEMBERS_JOIN_NEW_CHAT_ROOM, createdChatRoom);
+        }
+      });
     });
   }, [
     socket,
