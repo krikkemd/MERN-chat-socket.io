@@ -6,6 +6,8 @@ import {
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
   CREATE_CHAT_ROOM,
+  TOGGLE_CHAT,
+  TOGGLE_CONTACTS,
 } from '../types';
 
 const initialState = {
@@ -13,6 +15,7 @@ const initialState = {
   chatRooms: [],
   lastMessages: [],
   activeChatRoom: [],
+  toggleFriendList: 'contacts',
   // loading: true,
 };
 export default function chatMessageReducer(state = initialState, action) {
@@ -98,16 +101,18 @@ export default function chatMessageReducer(state = initialState, action) {
 
       let sortedChatRooms = [...action.payload];
 
-      // only return the chatrooms where there are chatmessages
-      // sortedChatRooms = sortedChatRooms.filter(room => room.chatMessages.length > 0 && room);
+      // only return the chatrooms where there are chatmessages // not sure if this works correctly
+      sortedChatRooms = sortedChatRooms.filter(room => room.chatMessages.length > 0 && room);
 
       console.log(sortedChatRooms);
 
       sortedChatRooms.sort((a, b) => {
         if (a.chatMessages[0] && b.chatMessages[0]) {
           return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
+        } else {
+          console.log('NO CHATMESSAGES TO SORT');
+          return;
         }
-        return;
       });
 
       return {
@@ -133,6 +138,18 @@ export default function chatMessageReducer(state = initialState, action) {
       return {
         ...state,
         chatRooms: [...newChatRooms, action.payload],
+      };
+    }
+    case TOGGLE_CHAT: {
+      return {
+        ...state,
+        toggleFriendList: 'chats',
+      };
+    }
+    case TOGGLE_CONTACTS: {
+      return {
+        ...state,
+        toggleFriendList: 'contacts',
       };
     }
     default:

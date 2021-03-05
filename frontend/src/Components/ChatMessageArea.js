@@ -20,6 +20,7 @@ import {
   CREATE_CHAT_ROOM,
   EMIT_CREATED_CHAT_ROOM,
   MEMBERS_JOIN_NEW_CHAT_ROOM,
+  TOGGLE_CHAT,
 } from '../redux/types';
 
 import moment from 'moment';
@@ -43,8 +44,6 @@ const ChatMessageArea = props => {
   const [chatMessage, setChatMessage] = useState('');
 
   const dispatch = useDispatch();
-
-  console.log(props.socket);
 
   const {
     user,
@@ -84,7 +83,9 @@ const ChatMessageArea = props => {
       // Reorder friendList to show latest conversation on top (SENDER)
       getAllUserChatRooms();
 
-      // Dispatch from here, so that the redux state is updated for all client in the room.
+      dispatch({ type: TOGGLE_CHAT });
+
+      // Dispatch from here, so that the redux state is updated for all clients in the room.
       if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
         console.log('only runs when activeChatRoom === messageFromBackend.chatRoomId');
         emitCreateChatMessageFromServerToAllClients(messageFromBackend);

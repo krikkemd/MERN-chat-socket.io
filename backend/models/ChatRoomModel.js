@@ -13,6 +13,11 @@ const chatRoomSchema = new mongoose.Schema(
         max: 50,
       },
     ],
+    expireAt: {
+      type: Date,
+      // default: Date.now,
+      index: { expires: null },
+    },
     // members: Array,
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } },

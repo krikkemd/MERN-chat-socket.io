@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 
 // Redux
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 // Redux actions
 import { getAllUsers } from '../redux/actions/userActions';
 import { getSingleChatRoom, createChatRoom } from '../redux/actions/chatMessageActions';
+
+// Types
+import { TOGGLE_CHAT, TOGGLE_CONTACTS } from '../redux/types';
 
 // MUI
 import { withStyles } from '@material-ui/core/styles';
@@ -53,14 +56,14 @@ const ChatFriendsList = props => {
   // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms. (SERVER SIDE: NO LONGER TRUE)
   // in socketManager we query the chatRooms where the user is a member, we loop through the rooms and socket.join them all.
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     props.getAllUsers();
   }, []);
 
-  // CONTACTS ONCLICK FUNCTIE MAKEN DIE CHECKT OF ER EEN ROOM / GESPREK IS MET DIE USER, ANDERS NIEUWE ROOM MAKEN
-  // ROOMS ALLEEN SHOWEN ONDER CHATS ALS ER MESSAGES IN STAAN?
-  // GEEN LEGE ROOMS SHOWEN ONDER CHATS
-  const [toggleChat, setToggleChat] = useState('contacts');
+  // const [toggleChat, dispatch({type: })] = useState('contacts');
+  const { toggleFriendList } = props;
 
   // check if there is a chatroom with the clicked on contact. create one if there is not.
   const checkIfContactHasChatRoom = clickedContact => {
@@ -79,10 +82,10 @@ const ChatFriendsList = props => {
       props.getSingleChatRoom(chatroom._id);
 
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
-      chatroom.chatMessages.length > 0 && setToggleChat('chats');
+      chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
     } else {
       // There is no chatRoom, stay in 'contacts
-      setToggleChat('contacts');
+      dispatch({ type: TOGGLE_CONTACTS });
       console.log('no chatroom');
 
       //  chatmessages: [] at chatroomModel?
@@ -108,8 +111,8 @@ const ChatFriendsList = props => {
           <ListItem
             button
             onClick={e => {
-              setToggleChat('contacts');
-              console.log(toggleChat);
+              dispatch({ type: TOGGLE_CONTACTS });
+              console.log(toggleFriendList);
             }}>
             <ListItemText primary='Contacts' style={{ textAlign: 'center' }}>
               Contacts
@@ -121,8 +124,8 @@ const ChatFriendsList = props => {
           <ListItem
             button
             onClick={e => {
-              setToggleChat('chats');
-              console.log(toggleChat);
+              dispatch({ type: TOGGLE_CHAT });
+              console.log(toggleFriendList);
             }}>
             <ListItemText primary='Chats' style={{ textAlign: 'center' }}>
               Chats
@@ -132,7 +135,7 @@ const ChatFriendsList = props => {
       </Grid>
 
       {/* Render chats with messages */}
-      {props.chatRooms && toggleChat === 'chats'
+      {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
             // Render ONLINE CHAT users: sorted: chat with last received message on top
             return (
@@ -204,7 +207,7 @@ const ChatFriendsList = props => {
           })
         : // Render ONLINE CONTACTS: sorted online users first
           props.users &&
-          toggleChat === 'contacts' &&
+          toggleFriendList === 'contacts' &&
           props.users.map(user => {
             if (
               Object.values(props.connectedUsers).includes(user._id) &&
@@ -271,6 +274,7 @@ const mapStateToProps = state => {
   return {
     socket: state.socket.socket,
     user: state.user.user,
+    toggleFriendList: state.chat.toggleFriendList,
     chatRooms: state.chat.chatRooms,
     lastMessages: state.chat.lastMessages,
     connectedUsers: state.user.connectedUsers,
