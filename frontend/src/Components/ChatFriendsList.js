@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 // Redux
 import { connect, useDispatch } from 'react-redux';
@@ -8,7 +8,7 @@ import { getAllUsers } from '../redux/actions/userActions';
 import { getSingleChatRoom, createChatRoom } from '../redux/actions/chatMessageActions';
 
 // Types
-import { TOGGLE_CHAT, TOGGLE_CONTACTS } from '../redux/types';
+import { TOGGLE_CHAT, TOGGLE_CONTACTS, SET_NO_ACTIVE_CHATROOM } from '../redux/types';
 
 // MUI
 import { withStyles } from '@material-ui/core/styles';
@@ -62,7 +62,6 @@ const ChatFriendsList = props => {
     props.getAllUsers();
   }, []);
 
-  // const [toggleChat, dispatch({type: })] = useState('contacts');
   const { toggleFriendList } = props;
 
   // check if there is a chatroom with the clicked on contact. create one if there is not.
@@ -84,11 +83,11 @@ const ChatFriendsList = props => {
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
       chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
     } else {
-      // There is no chatRoom, stay in 'contacts
+      // There is no chatRoom, stay in 'contacts'
       dispatch({ type: TOGGLE_CONTACTS });
       console.log('no chatroom');
 
-      //  chatmessages: [] at chatroomModel?
+      // chatmessages: [] at chatroomModel?
       // If there is no chatroom found, create a new chatroom.
       // When the chatRoom is created, send it: socket.emit(CREATED_CHAT_MESSAGE, res.data.doc) to the server.
       // dispatch SET_ACTIVE_CHATROOM which updates the props.activeChatRoom of the current user to the newly created chatroom
@@ -96,9 +95,9 @@ const ChatFriendsList = props => {
       // Server emits EMIT_CREATED_CHATROOM to chatMessageArea
       // dispatch CREATE_CHAT_ROOM which updates the props.chatrooms of the chatRoomsMembers, updating the state. can't create 2 rooms ✅
       // socket.emit(MEMBERS_JOIN_CHAT_ROOMS, newCreatedChatRoomId) to the server, so all connected members join the new chat room.
-      // TODO: on create message / props.chatMessages.length > 0. toggle 'chats'
+      // TODO: Notification on unread messages
+      // TODO: onClick 'contacts' or 'chats' setActiveChat to null
       // TODO: set an expiry time on the chatRoom if no messages are sent within one hour/day?
-      // TODO: SORTING LASTMESSAGE = FUCKED, FILTER IF NULL?
       // TODO: process nog een x doorlopen, misschien kan er wel een emit of dispatch tussen uit. bijvoorbeeld na onchange, als we toch emitten naar iedereen, en dan pas de members filteren.
       props.createChatRoom(props.socket, clickedContact._id, props.user._id);
     }
@@ -112,6 +111,7 @@ const ChatFriendsList = props => {
             button
             onClick={e => {
               dispatch({ type: TOGGLE_CONTACTS });
+              dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
             <ListItemText primary='Contacts' style={{ textAlign: 'center' }}>
@@ -125,6 +125,7 @@ const ChatFriendsList = props => {
             button
             onClick={e => {
               dispatch({ type: TOGGLE_CHAT });
+              dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
             <ListItemText primary='Chats' style={{ textAlign: 'center' }}>

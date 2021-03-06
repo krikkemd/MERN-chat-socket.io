@@ -83,7 +83,7 @@ const ChatMessageArea = props => {
       // Reorder friendList to show latest conversation on top (SENDER)
       getAllUserChatRooms();
 
-      dispatch({ type: TOGGLE_CHAT });
+      if (user._id === messageFromBackend.userId) dispatch({ type: TOGGLE_CHAT });
 
       // Dispatch from here, so that the redux state is updated for all clients in the room.
       if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {

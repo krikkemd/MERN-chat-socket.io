@@ -8,6 +8,7 @@ import {
   CREATE_CHAT_ROOM,
   TOGGLE_CHAT,
   TOGGLE_CONTACTS,
+  SET_NO_ACTIVE_CHATROOM,
 } from '../types';
 
 const initialState = {
@@ -138,6 +139,12 @@ export default function chatMessageReducer(state = initialState, action) {
       return {
         ...state,
         chatRooms: [...newChatRooms, action.payload],
+      };
+    }
+    case SET_NO_ACTIVE_CHATROOM: {
+      return {
+        ...state,
+        activeChatRoom: [],
       };
     }
     case TOGGLE_CHAT: {
