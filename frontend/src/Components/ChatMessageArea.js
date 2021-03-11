@@ -30,7 +30,6 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import Fab from '@material-ui/core/Fab';
 import SendIcon from '@material-ui/icons/Send';
@@ -59,16 +58,25 @@ const ChatMessageArea = props => {
   useEffect(() => {
     // Dont stack multiple callbacks, just execute once
 
-    if (socket._callbacks !== undefined && socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
-      socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
-    }
+    // if (socket._callbacks !== undefined && socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
+    //   socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
+    // }
 
-    if (socket._callbacks !== undefined && socket._callbacks['$EMIT_CREATED_CHAT_ROOM']) {
-      socket._callbacks['$EMIT_CREATED_CHAT_ROOM'].length = 0;
-    }
+    // if (socket._callbacks !== undefined && socket._callbacks['$EMIT_CREATED_CHAT_ROOM']) {
+    //   socket._callbacks['$EMIT_CREATED_CHAT_ROOM'].length = 0;
+    // }
 
-    console.log(props);
-    // console.log(socket._callbacks);
+    // if (socket._callbacks !== undefined && socket._callbacks['$DELETED_CHAT_MESSAGE']) {
+    //   socket._callbacks['$DELETED_CHAT_MESSAGE'].length = 0;
+    // }
+
+    if (socket._callbacks !== undefined) {
+      Object.keys(socket._callbacks).map(callback => {
+        if (socket._callbacks[callback]) {
+          socket._callbacks[callback].length = 0;
+        }
+      });
+    }
 
     // Listen to incoming chatMessages from the backend
     socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
@@ -143,12 +151,11 @@ const ChatMessageArea = props => {
 
   return (
     <>
-      <List className={props.classes.messageArea}>
+      <List>
         {props.activeChatRoom.chatMessages ? (
           props.chatMessages.map(message => (
             <ListItem key={message._id}>
               <Grid container>
-                <Grid item xs={12}></Grid>
                 <Grid item xs={12}>
                   {/* username */}
                   <ListItemText
@@ -182,8 +189,15 @@ const ChatMessageArea = props => {
         <div ref={chatEnd} />
       </List>
 
-      <Divider />
-      <Grid container style={{ padding: '20px' }}>
+      {/* <Grid
+        container
+        wrap='nowrap'
+        style={{
+          padding: '20px',
+          paddingTop: '40px',
+          marginBottom: '40px',
+          borderTop: '1px solid #eee',
+        }}>
         <Grid item xs={11}>
           <form onSubmit={submitChatMessage}>
             <TextField
@@ -196,12 +210,12 @@ const ChatMessageArea = props => {
             />
           </form>
         </Grid>
-        <Grid align='right'>
+        <Grid item xs align='right'>
           <Fab color='primary' aria-label='add'>
             <SendIcon />
           </Fab>
         </Grid>
-      </Grid>
+      </Grid> */}
     </>
   );
 };

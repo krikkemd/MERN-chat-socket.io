@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer';
 import chatMessageReducer from './reducers/chatMessageReducer';
 import socketReducer from './reducers/socketReducer';
+import themeReducer from './reducers/themeReducer';
 
 const initialState = {};
 
@@ -13,6 +14,7 @@ const reducers = combineReducers({
   user: userReducer,
   chat: chatMessageReducer,
   socket: socketReducer,
+  theme: themeReducer,
   //   ui: uiReducer,
 });
 

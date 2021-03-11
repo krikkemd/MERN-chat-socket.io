@@ -10,16 +10,21 @@ import { getSingleChatRoom, createChatRoom } from '../redux/actions/chatMessageA
 // Types
 import { TOGGLE_CHAT, TOGGLE_CONTACTS, SET_NO_ACTIVE_CHATROOM } from '../redux/types';
 
+// Helper functions
+import { firstCharUpperCase } from '../util/helperFunctions';
+
 // MUI
 import { withStyles } from '@material-ui/core/styles';
+import theme from '../util/darkTheme';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import MessageIcon from '@material-ui/icons/Message';
 
 // online badge icon
 const StyledBadge = withStyles(theme => ({
@@ -96,7 +101,6 @@ const ChatFriendsList = props => {
       // dispatch CREATE_CHAT_ROOM which updates the props.chatrooms of the chatRoomsMembers, updating the state. can't create 2 rooms ✅
       // socket.emit(MEMBERS_JOIN_CHAT_ROOMS, newCreatedChatRoomId) to the server, so all connected members join the new chat room.
       // TODO: Notification on unread messages
-      // TODO: onClick 'contacts' or 'chats' setActiveChat to null
       // TODO: set an expiry time on the chatRoom if no messages are sent within one hour/day?
       // TODO: process nog een x doorlopen, misschien kan er wel een emit of dispatch tussen uit. bijvoorbeeld na onchange, als we toch emitten naar iedereen, en dan pas de members filteren.
       props.createChatRoom(props.socket, clickedContact._id, props.user._id);
@@ -106,7 +110,7 @@ const ChatFriendsList = props => {
   return (
     <List>
       <Grid container justify='space-between'>
-        <Grid item xs={5}>
+        <Grid item xs={6} style={{ borderRight: '1px solid lightgrey' }}>
           <ListItem
             button
             onClick={e => {
@@ -114,13 +118,13 @@ const ChatFriendsList = props => {
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            <ListItemText primary='Contacts' style={{ textAlign: 'center' }}>
-              Contacts
+            <ListItemText style={{ textAlign: 'center' }}>
+              {/* Contacts */}
+              {props.theme === 'dark' ? <PeopleAltIcon /> : <PeopleAltIcon color='primary' />}
             </ListItemText>
           </ListItem>
         </Grid>
-        <Divider orientation='vertical' flexItem />
-        <Grid item xs={5}>
+        <Grid item xs={6}>
           <ListItem
             button
             onClick={e => {
@@ -128,8 +132,9 @@ const ChatFriendsList = props => {
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            <ListItemText primary='Chats' style={{ textAlign: 'center' }}>
-              Chats
+            <ListItemText style={{ textAlign: 'center' }}>
+              {/* Chats */}
+              {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
             </ListItemText>
           </ListItem>
         </Grid>
@@ -164,10 +169,10 @@ const ChatFriendsList = props => {
                             horizontal: 'right',
                           }}
                           variant='dot'>
-                          <Avatar alt={member.username} src={member.avatar} />
+                          <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
                         </StyledBadge>
                       </ListItemIcon>
-                      <ListItemText primary={member.username}>{member.username}</ListItemText>
+                      <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
                       <ListItemText
                         secondary={props.lastMessages.map(lastMessage => {
                           if (lastMessage && lastMessage.chatRoomId === room._id) {
@@ -190,16 +195,19 @@ const ChatFriendsList = props => {
                         // props.socket.emit('roomId', room._id);
                       }}>
                       <ListItemIcon>
-                        <Avatar alt={member.username} src={member.avatar} />
+                        <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
                       </ListItemIcon>
-                      <ListItemText primary={member.username}>{member.username}</ListItemText>
+                      <ListItemText primary={firstCharUpperCase(member.username)}>
+                        {firstCharUpperCase(member.username)}
+                      </ListItemText>
                       <ListItemText
                         secondary={props.lastMessages.map(lastMessage => {
                           if (lastMessage && lastMessage.chatRoomId === room._id) {
                             return lastMessage.body;
                           }
                         })}
-                        align='right'></ListItemText>
+                        align='right'
+                      />
                     </ListItem>
                   );
                 }
@@ -237,10 +245,12 @@ const ChatFriendsList = props => {
                         horizontal: 'right',
                       }}
                       variant='dot'>
-                      <Avatar alt={user.username} src={user.avatar} />
+                      <Avatar alt={user.username.toUpperCase()} src={user.avatar} />
                     </StyledBadge>
                   </ListItemIcon>
-                  <ListItemText primary={user.username}>{user.username}</ListItemText>
+                  <ListItemText primary={firstCharUpperCase(user.username)}>
+                    {firstCharUpperCase(user.username)}
+                  </ListItemText>
                 </ListItem>
               );
             }
@@ -259,9 +269,11 @@ const ChatFriendsList = props => {
                     checkIfContactHasChatRoom(user);
                   }}>
                   <ListItemIcon>
-                    <Avatar alt={user.username} src={user.avatar} />
+                    <Avatar alt={user.username.toUpperCase()} src={user.avatar} />
                   </ListItemIcon>
-                  <ListItemText primary={user.username}>{user.username}</ListItemText>
+                  <ListItemText primary={firstCharUpperCase(user.username)}>
+                    {firstCharUpperCase(user.username)}
+                  </ListItemText>
                   <ListItemText secondary='Offline' align='right'></ListItemText>
                 </ListItem>
               );
@@ -280,6 +292,7 @@ const mapStateToProps = state => {
     lastMessages: state.chat.lastMessages,
     connectedUsers: state.user.connectedUsers,
     users: state.user.users,
+    theme: state.theme.theme,
   };
 };
 
