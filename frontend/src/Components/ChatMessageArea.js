@@ -58,29 +58,25 @@ const ChatMessageArea = props => {
   useEffect(() => {
     // Dont stack multiple callbacks, just execute once
 
-    // if (socket._callbacks !== undefined && socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
-    //   socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
-    // }
-
-    // if (socket._callbacks !== undefined && socket._callbacks['$EMIT_CREATED_CHAT_ROOM']) {
-    //   socket._callbacks['$EMIT_CREATED_CHAT_ROOM'].length = 0;
-    // }
-
-    // if (socket._callbacks !== undefined && socket._callbacks['$DELETED_CHAT_MESSAGE']) {
-    //   socket._callbacks['$DELETED_CHAT_MESSAGE'].length = 0;
-    // }
-
-    if (socket._callbacks !== undefined) {
-      Object.keys(socket._callbacks).map(callback => {
-        if (
-          socket._callbacks[callback] &&
-          !socket._callbacks['$USER_CONNECTED'] &&
-          !socket._callbacks['$USER_DISCONNECTED']
-        ) {
-          socket._callbacks[callback].length = 0;
-        }
-      });
+    if (socket._callbacks !== undefined && socket._callbacks['$OUTPUT_CHAT_MESSAGE']) {
+      socket._callbacks['$OUTPUT_CHAT_MESSAGE'].length = 0;
     }
+
+    if (socket._callbacks !== undefined && socket._callbacks['$EMIT_CREATED_CHAT_ROOM']) {
+      socket._callbacks['$EMIT_CREATED_CHAT_ROOM'].length = 0;
+    }
+
+    if (socket._callbacks !== undefined && socket._callbacks['$DELETED_CHAT_MESSAGE']) {
+      socket._callbacks['$DELETED_CHAT_MESSAGE'].length = 0;
+    }
+
+    // if (socket._callbacks !== undefined) {
+    //   Object.keys(socket._callbacks).map(callback => {
+    //     if (socket._callbacks[callback]) {
+    //       socket._callbacks[callback].length = 0;
+    //     }
+    //   });
+    // }
 
     // Listen to incoming chatMessages from the backend
     socket.on(OUTPUT_CHAT_MESSAGE, messageFromBackend => {
