@@ -5,6 +5,7 @@ import {
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
   SET_LAST_CHAT_MESSAGE,
+  CREATED_CHAT_ROOM,
 } from '../types';
 import axios from '../../config/axios';
 
@@ -52,6 +53,24 @@ export const getAllUserChatRooms = () => dispatch => {
     .then(res => {
       console.log(res.data);
       dispatch({ type: SET_USER_CHATROOMS, payload: res.data.chatRooms });
+    })
+    .catch(err => console.log(err));
+};
+
+export const createChatRoom = (socket, ...members) => dispatch => {
+  console.log(socket);
+  let newChatRoom = {
+    members: members,
+  };
+  console.log(newChatRoom);
+
+  axios
+    .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+    .then(res => {
+      console.log(res.data);
+      socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+
+      dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
     })
     .catch(err => console.log(err));
 };

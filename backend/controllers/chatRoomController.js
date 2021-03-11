@@ -21,3 +21,15 @@ exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, {
 exports.createChatRoom = factoryController.createOne(ChatRoom);
 exports.updateChatRoom = factoryController.updateOne(ChatRoom);
 exports.deleteChatRoom = factoryController.deleteOne(ChatRoom);
+
+// exports.deleteChatRoom = catchAsync(async (req, res, next) => {
+//   console.log('running deleteOne');
+//   const docId = req.params.id;
+//   const doc = await ChatRoom.deleteOne({ _id: docId });
+
+//   if (!doc) return next(new AppError('No document found with that ID', 404));
+
+//   console.log('❌ document deleted successfully');
+
+//   return res.status(204).json({ status: 'succces', data: null });
+// });
