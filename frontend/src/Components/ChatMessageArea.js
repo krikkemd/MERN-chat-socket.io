@@ -72,7 +72,11 @@ const ChatMessageArea = props => {
 
     if (socket._callbacks !== undefined) {
       Object.keys(socket._callbacks).map(callback => {
-        if (socket._callbacks[callback]) {
+        if (
+          socket._callbacks[callback] &&
+          !socket._callbacks['$USER_CONNECTED'] &&
+          !socket._callbacks['$USER_DISCONNECTED']
+        ) {
           socket._callbacks[callback].length = 0;
         }
       });
