@@ -40,9 +40,6 @@ export const getSingleChatRoom = roomId => dispatch => {
       console.log(res.data.doc.chatMessages);
       dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
     })
-    .then(() => {
-      // SET_CHAT_MESSAGES_READ
-    })
     .catch(err => {
       console.log(err);
     });
