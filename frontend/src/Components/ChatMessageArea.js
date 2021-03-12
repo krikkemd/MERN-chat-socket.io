@@ -30,18 +30,9 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import TextField from '@material-ui/core/TextField';
-import Fab from '@material-ui/core/Fab';
-import SendIcon from '@material-ui/icons/Send';
-
-import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
-import noImg from '../images/no-img.png';
 
 const ChatMessageArea = props => {
-  // Local State
-  const [chatMessage, setChatMessage] = useState('');
-
   const dispatch = useDispatch();
 
   const {
@@ -132,23 +123,6 @@ const ChatMessageArea = props => {
     chatEnd.current.scrollIntoView({ behavior: 'smooth' });
   });
 
-  //   Local funcions
-  const handleChange = e => {
-    setChatMessage(e.target.value);
-  };
-
-  const submitChatMessage = e => {
-    e.preventDefault();
-
-    // Create chat message action
-    props.createChatMessage({
-      chatRoomId: props.activeChatRoom._id,
-      body: chatMessage,
-    });
-
-    setChatMessage('');
-  };
-
   return (
     <>
       <List>
@@ -165,7 +139,6 @@ const ChatMessageArea = props => {
                   {/* chat message body */}
                   <ListItemText align={props.user._id === message.userId ? 'right' : 'left'}>
                     <Chip
-                      avatar={<Avatar alt={props.user.username} src={noImg} />}
                       label={message.body}
                       align={props.user._id === message.userId ? 'right' : 'left'}
                       color='primary'
@@ -183,39 +156,13 @@ const ChatMessageArea = props => {
             </ListItem>
           ))
         ) : (
-          <div>No Messages yet</div>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            Selecteer een gesprek
+          </div>
         )}
 
         <div ref={chatEnd} />
       </List>
-
-      {/* <Grid
-        container
-        wrap='nowrap'
-        style={{
-          padding: '20px',
-          paddingTop: '40px',
-          marginBottom: '40px',
-          borderTop: '1px solid #eee',
-        }}>
-        <Grid item xs={11}>
-          <form onSubmit={submitChatMessage}>
-            <TextField
-              id='outlined-basic-email'
-              label='Type Something'
-              fullWidth
-              autoFocus={true}
-              value={chatMessage}
-              onChange={handleChange}
-            />
-          </form>
-        </Grid>
-        <Grid item xs align='right'>
-          <Fab color='primary' aria-label='add'>
-            <SendIcon />
-          </Fab>
-        </Grid>
-      </Grid> */}
     </>
   );
 };

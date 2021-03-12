@@ -149,7 +149,7 @@ const ChatFriendsList = props => {
               console.log(toggleFriendList);
             }}>
             {toggleFriendList === 'contacts' ? (
-              <Badge badgeContent={totalUnreadMessages} max={9} color='primary'>
+              <Badge badgeContent={totalUnreadMessages} max={9} color='secondary'>
                 <ListItemText style={{ textAlign: 'center' }}>
                   {/* Chats */}
                   {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
@@ -213,7 +213,7 @@ const ChatFriendsList = props => {
                               }).length
                             : 0
                         }
-                        color='primary'
+                        color='secondary'
                         max={9}>
                         <ListItemText
                           secondary={props.lastMessages.map(lastMessage => {
@@ -258,7 +258,7 @@ const ChatFriendsList = props => {
                               }).length
                             : 0
                         }
-                        color='primary'
+                        color='secondary'
                         max={9}>
                         <ListItemText
                           secondary={props.lastMessages.map(lastMessage => {

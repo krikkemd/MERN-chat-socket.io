@@ -26,12 +26,12 @@ const ToggleTheme = ({ theme }) => {
     theme === 'light' ? dispatch({ type: SET_DARK_THEME }) : dispatch({ type: SET_LIGHT_THEME });
   };
 
-  const buttonLabel = theme === 'light' ? 'Dark Theme' : 'Light Theme';
+  const buttonLabel = theme === 'light' ? '🌞' : '🌛';
 
   return (
     <FormGroup className={classes.container}>
       <FormControlLabel
-        control={<Switch color='primary' checked={checked} onChange={toggleChecked} />}
+        control={<Switch color='secondary' checked={checked} onChange={toggleChecked} />}
         label={buttonLabel}
       />
     </FormGroup>
