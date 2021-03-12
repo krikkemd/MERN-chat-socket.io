@@ -110,6 +110,18 @@ const ChatFriendsList = props => {
     }
   };
 
+  const countTotalUnreadMessages = props.chatRooms.map(room => {
+    return room.chatMessages.filter(message => {
+      return message.read === false && message.userId !== props.user._id;
+    }).length;
+  });
+
+  let totalUnreadMessages;
+  if (countTotalUnreadMessages[0]) {
+    totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
+  }
+  console.log(totalUnreadMessages);
+
   return (
     <List>
       <Grid container justify='space-between'>
@@ -129,16 +141,26 @@ const ChatFriendsList = props => {
         </Grid>
         <Grid item xs={6}>
           <ListItem
+            style={{ justifyContent: 'center' }}
             button
             onClick={e => {
               dispatch({ type: TOGGLE_CHAT });
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            <ListItemText style={{ textAlign: 'center' }}>
-              {/* Chats */}
-              {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
-            </ListItemText>
+            {toggleFriendList === 'contacts' ? (
+              <Badge badgeContent={totalUnreadMessages} max={9} color='primary'>
+                <ListItemText style={{ textAlign: 'center' }}>
+                  {/* Chats */}
+                  {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                </ListItemText>
+              </Badge>
+            ) : (
+              <ListItemText style={{ textAlign: 'center' }}>
+                {/* Chats */}
+                {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+              </ListItemText>
+            )}
           </ListItem>
         </Grid>
       </Grid>
@@ -191,7 +213,8 @@ const ChatFriendsList = props => {
                               }).length
                             : 0
                         }
-                        color='primary'>
+                        color='primary'
+                        max={9}>
                         <ListItemText
                           secondary={props.lastMessages.map(lastMessage => {
                             if (lastMessage && lastMessage.chatRoomId === room._id) {
@@ -236,7 +259,7 @@ const ChatFriendsList = props => {
                             : 0
                         }
                         color='primary'
-                        max={10}>
+                        max={9}>
                         <ListItemText
                           secondary={props.lastMessages.map(lastMessage => {
                             if (lastMessage && lastMessage.chatRoomId === room._id) {

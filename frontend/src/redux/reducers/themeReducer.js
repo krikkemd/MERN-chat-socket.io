@@ -1,7 +1,7 @@
 import { SET_LIGHT_THEME, SET_DARK_THEME } from '../types';
 
 const initialState = {
-  theme: 'light',
+  theme: 'dark',
 };
 
 export default function socketReducer(state = initialState, action) {
