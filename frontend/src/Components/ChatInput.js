@@ -25,35 +25,44 @@ const ChatInput = props => {
   const submitChatMessage = e => {
     e.preventDefault();
 
-    // Create chat message action
-    props.createChatMessage({
-      chatRoomId: props.activeChatRoom._id,
-      body: chatMessage,
-    });
+    let trimmedChatMessage = chatMessage.trim();
+    if (trimmedChatMessage) {
+      // Create chat message action
+      props.createChatMessage({
+        chatRoomId: props.activeChatRoom._id,
+        body: trimmedChatMessage,
+      });
 
-    setChatMessage('');
+      setChatMessage('');
+    }
   };
 
   return (
-    <Grid container wrap='nowrap'>
-      <Grid item xs={12}>
-        <form onSubmit={submitChatMessage}>
-          <TextField
-            id='outlined-basic-email'
-            label='Type Something'
-            fullWidth
-            autoFocus={true}
-            value={chatMessage}
-            onChange={handleChange}
-          />
-        </form>
-      </Grid>
-      <Grid item xs align='right'>
-        <Fab color='primary' aria-label='add'>
-          <SendIcon />
-        </Fab>
-      </Grid>
-    </Grid>
+    <>
+      {props.activeChatRoom._id ? (
+        <Grid container wrap='nowrap'>
+          <Grid item xs={12}>
+            <form onSubmit={submitChatMessage}>
+              <TextField
+                id='outlined-basic-email'
+                label='Type Something'
+                fullWidth
+                autoFocus={true}
+                value={chatMessage}
+                onChange={handleChange}
+              />
+            </form>
+          </Grid>
+          <Grid item xs align='right'>
+            <Fab color='primary' aria-label='add'>
+              <SendIcon />
+            </Fab>
+          </Grid>
+        </Grid>
+      ) : (
+        ''
+      )}
+    </>
   );
 };
 
