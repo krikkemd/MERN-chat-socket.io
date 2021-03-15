@@ -35,7 +35,7 @@ exports.uploadUserAvatar = upload.single('avatar');
 
 exports.resizeUserAvatar = (req, res, next) => {
   if (!req.file) return next();
-  console.log('running resizdeUserAvatar');
+  console.log('running resizeUserAvatar');
 
   console.log(req.file);
 
@@ -47,7 +47,7 @@ exports.resizeUserAvatar = (req, res, next) => {
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`../frontend/public/${req.file.filename}`);
+    .toFile(`./uploads/${req.file.filename}`);
 
   next();
 };
@@ -77,7 +77,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // Only Username and Email are allowed here. can add more if needed.
   const cleanedReqBody = cleanReqBody(req.body, 'username', 'email');
-  if (req.file) cleanedReqBody.avatar = req.file.filename;
+  if (req.file) cleanedReqBody.avatar = `http://localhost:1337/${req.file.filename}`;
 
   // 2) update user data with the cleaned req.body object
   const user = await User.findByIdAndUpdate(req.user._id, cleanedReqBody, {

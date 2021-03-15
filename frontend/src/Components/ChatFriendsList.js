@@ -28,6 +28,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // online badge icon
 const StyledBadge = withStyles(theme => ({
@@ -134,8 +135,10 @@ const ChatFriendsList = props => {
               console.log(toggleFriendList);
             }}>
             <ListItemText style={{ textAlign: 'center' }}>
-              {/* Contacts */}
-              {props.theme === 'dark' ? <PeopleAltIcon /> : <PeopleAltIcon color='primary' />}
+              <Tooltip title='Contacten' placement='top-start' arrow interactive>
+                {/* Contacts */}
+                {props.theme === 'dark' ? <PeopleAltIcon /> : <PeopleAltIcon color='primary' />}
+              </Tooltip>
             </ListItemText>
           </ListItem>
         </Grid>
@@ -148,17 +151,29 @@ const ChatFriendsList = props => {
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            {toggleFriendList === 'contacts' ? (
+            {toggleFriendList === 'contacts' && totalUnreadMessages > 0 ? (
               <Badge badgeContent={totalUnreadMessages} max={9} color='secondary'>
                 <ListItemText style={{ textAlign: 'center' }}>
-                  {/* Chats */}
-                  {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                  <Tooltip
+                    title={
+                      totalUnreadMessages > 1
+                        ? `${totalUnreadMessages} nieuwe berichten`
+                        : `${totalUnreadMessages} nieuw bericht`
+                    }
+                    placement='top-start'
+                    arrow
+                    interactive>
+                    {/* Chats */}
+                    {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                  </Tooltip>
                 </ListItemText>
               </Badge>
             ) : (
               <ListItemText style={{ textAlign: 'center' }}>
-                {/* Chats */}
-                {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                <Tooltip title='Berichten' placement='top-start' arrow interactive>
+                  {/* Chats */}
+                  {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                </Tooltip>
               </ListItemText>
             )}
           </ListItem>

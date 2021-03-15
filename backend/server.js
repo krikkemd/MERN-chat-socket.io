@@ -101,8 +101,8 @@ const port = process.env.PORT || 9000;
 // });
 
 // UDEMY JONAS:
-// app.set(express.static(path.join(__dirname, 'public')));
-// app.use(express.static('public'));
+app.set(express.static(path.join(__dirname, 'uploads')));
+app.use(express.static('uploads'));
 
 // If route is not found on the server. When you put a parameter in next it is automatically and error.
 app.all('*', (req, res, next) => {

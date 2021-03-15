@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 
 // CSS
-import '../css/Chat.scss';
+// import '../css/Chat.scss';
 
 // Redux
 import { connect } from 'react-redux';

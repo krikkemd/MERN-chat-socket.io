@@ -19,6 +19,7 @@ import Mui from './Components/Mui';
 
 // Util components
 import AuthRoute from './util/AuthRoute';
+import UploadAvatar from './util/UploadAvatar';
 import Spinner from './util/Spinner';
 import ToggleTheme from './util/ToggleTheme';
 
@@ -35,8 +36,8 @@ function App(props) {
         <Paper style={{ height: '100vh' }}>
           <div className='app'>
             <Switch>
-              <AuthRoute exact path='/' component={Mui} />
-              <AuthRoute exact path='/chat' component={Chat} />
+              <AuthRoute exact path='/' component={UploadAvatar} />
+              <AuthRoute exact path='/chat' component={Mui} />
               <Route exact path='/login' component={Login} />
               <Route exact path='/spin' component={Spinner} />
             </Switch>
