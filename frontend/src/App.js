@@ -36,8 +36,8 @@ function App(props) {
         <Paper style={{ height: '100vh' }}>
           <div className='app'>
             <Switch>
-              <AuthRoute exact path='/' component={UploadAvatar} />
-              <AuthRoute exact path='/chat' component={Mui} />
+              <AuthRoute exact path='/' component={Mui} />
+              <AuthRoute exact path='/upload' component={UploadAvatar} />
               <Route exact path='/login' component={Login} />
               <Route exact path='/spin' component={Spinner} />
             </Switch>

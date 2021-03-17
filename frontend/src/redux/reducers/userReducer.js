@@ -4,6 +4,7 @@ import {
   SET_CURRENT_USER,
   GET_ALL_USERS,
   UPDATE_CONNECTED_USERLIST,
+  UPDATE_AVATAR,
 } from '../types';
 
 const initialState = {
@@ -82,6 +83,12 @@ export default function userReducer(state = initialState, action) {
         ...state,
         users: sortedByOnlineUsers,
         connectedUsers: action.payload,
+      };
+    case UPDATE_AVATAR:
+      console.log(action.payload);
+      return {
+        ...state,
+        user: action.payload,
       };
     case SET_ERRORS:
       return {

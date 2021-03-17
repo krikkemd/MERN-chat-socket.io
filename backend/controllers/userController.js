@@ -47,7 +47,7 @@ exports.resizeUserAvatar = (req, res, next) => {
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`./uploads/${req.file.filename}`);
+    .toFile(`./uploads/avatars/${req.file.filename}`);
 
   next();
 };
