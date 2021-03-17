@@ -48,6 +48,39 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
   });
 });
 
+// Mark message as read
+// exports.updateChatMessage = catchAsync(async (req, res, next) => {
+//   const cleanedReqBody = cleanReqBody(req.body, 'read');
+
+//   console.log('running updateChatMessage');
+//   const chatMessageId = req.params.id;
+//   const chatMessage = await ChatMessage.findByIdAndUpdate({ _id: chatMessageId }, cleanedReqBody, {
+//     new: true,
+//     runValidators: true,
+//   });
+
+//   if (!chatMessage) return next(new AppError('No document found with that ID', 404));
+
+//   console.log('✅ chat message updated');
+
+//   return res.status(202).json({ status: 'succces', data: chatMessage });
+// });
+
+exports.markMessagesRead = catchAsync(async (req, res, next) => {
+  const messages = await ChatMessage.updateMany(
+    { read: false, chatRoomId: req.body.chatRoomId, userId: req.body.memberId },
+    { read: true },
+    (err, res) => {
+      if (err) return next(new AppError('updateMany went wrong', 500));
+
+      console.log(req.body.chatRoomId);
+
+      console.log('✅ chat messages marked as read');
+    },
+  );
+  return res.status(200).json({ status: 'success', data: messages });
+});
+
 exports.deleteChatMessage = catchAsync(async (req, res, next) => {
   console.log('running deleteChatMessage');
   const chatMessageId = req.params.id;
@@ -59,3 +92,16 @@ exports.deleteChatMessage = catchAsync(async (req, res, next) => {
 
   return res.status(204).json({ status: 'succces', data: null });
 });
+
+// helper function to clean the req.body so user can only change values that are allowed.
+// const cleanReqBody = (reqBody, ...allowedValuesToChangeOnDoc) => {
+//   let cleanedReqBody = {};
+//   console.log('filtering req.body');
+//   console.log(reqBody);
+//   Object.keys(reqBody).forEach(el => {
+//     if (allowedValuesToChangeOnDoc.includes(el)) {
+//       cleanedReqBody[el] = reqBody[el];
+//     }
+//   });
+//   return cleanedReqBody;
+// };

@@ -5,7 +5,11 @@ import { connect, useDispatch } from 'react-redux';
 
 // Redux actions
 import { getAllUsers } from '../redux/actions/userActions';
-import { getSingleChatRoom, createChatRoom } from '../redux/actions/chatMessageActions';
+import {
+  getSingleChatRoom,
+  createChatRoom,
+  markMessagesRead,
+} from '../redux/actions/chatMessageActions';
 
 // Types
 import { TOGGLE_CHAT, TOGGLE_CONTACTS, SET_NO_ACTIVE_CHATROOM } from '../redux/types';
@@ -15,7 +19,6 @@ import { firstCharUpperCase } from '../util/helperFunctions';
 
 // MUI
 import { withStyles } from '@material-ui/core/styles';
-import theme from '../util/darkTheme';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -25,6 +28,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // online badge icon
 const StyledBadge = withStyles(theme => ({
@@ -107,6 +111,18 @@ const ChatFriendsList = props => {
     }
   };
 
+  const countTotalUnreadMessages = props.chatRooms.map(room => {
+    return room.chatMessages.filter(message => {
+      return message.read === false && message.userId !== props.user._id;
+    }).length;
+  });
+
+  let totalUnreadMessages;
+  if (countTotalUnreadMessages[0]) {
+    totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
+  }
+  console.log(totalUnreadMessages);
+
   return (
     <List>
       <Grid container justify='space-between'>
@@ -119,23 +135,47 @@ const ChatFriendsList = props => {
               console.log(toggleFriendList);
             }}>
             <ListItemText style={{ textAlign: 'center' }}>
-              {/* Contacts */}
-              {props.theme === 'dark' ? <PeopleAltIcon /> : <PeopleAltIcon color='primary' />}
+              <Tooltip title='Contacten' placement='top-start' arrow interactive>
+                {/* Contacts */}
+                {props.theme === 'dark' ? <PeopleAltIcon /> : <PeopleAltIcon color='primary' />}
+              </Tooltip>
             </ListItemText>
           </ListItem>
         </Grid>
         <Grid item xs={6}>
           <ListItem
+            style={{ justifyContent: 'center' }}
             button
             onClick={e => {
               dispatch({ type: TOGGLE_CHAT });
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            <ListItemText style={{ textAlign: 'center' }}>
-              {/* Chats */}
-              {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
-            </ListItemText>
+            {toggleFriendList === 'contacts' && totalUnreadMessages > 0 ? (
+              <Badge badgeContent={totalUnreadMessages} max={9} color='secondary'>
+                <ListItemText style={{ textAlign: 'center' }}>
+                  <Tooltip
+                    title={
+                      totalUnreadMessages > 1
+                        ? `${totalUnreadMessages} nieuwe berichten`
+                        : `${totalUnreadMessages} nieuw bericht`
+                    }
+                    placement='top-start'
+                    arrow
+                    interactive>
+                    {/* Chats */}
+                    {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                  </Tooltip>
+                </ListItemText>
+              </Badge>
+            ) : (
+              <ListItemText style={{ textAlign: 'center' }}>
+                <Tooltip title='Berichten' placement='top-start' arrow interactive>
+                  {/* Chats */}
+                  {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                </Tooltip>
+              </ListItemText>
+            )}
           </ListItem>
         </Grid>
       </Grid>
@@ -159,6 +199,11 @@ const ChatFriendsList = props => {
                         console.log('click');
                         console.log(`Room Id: ${room._id}`);
                         props.getSingleChatRoom(room._id);
+
+                        let memberId = room.members.filter(member => member._id !== props.user._id);
+
+                        props.markMessagesRead(room._id, memberId);
+
                         // props.socket.emit('roomId', room._id);
                       }}>
                       <ListItemIcon>
@@ -173,13 +218,26 @@ const ChatFriendsList = props => {
                         </StyledBadge>
                       </ListItemIcon>
                       <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
-                      <ListItemText
-                        secondary={props.lastMessages.map(lastMessage => {
-                          if (lastMessage && lastMessage.chatRoomId === room._id) {
-                            return lastMessage.body;
-                          }
-                        })}
-                        align='right'></ListItemText>
+                      <Badge
+                        badgeContent={
+                          room._id !== props.activeChatRoom._id
+                            ? room.chatMessages.filter(message => {
+                                return (
+                                  message.username !== props.user.username && message.read === false
+                                );
+                              }).length
+                            : 0
+                        }
+                        color='secondary'
+                        max={9}>
+                        <ListItemText
+                          secondary={props.lastMessages.map(lastMessage => {
+                            if (lastMessage && lastMessage.chatRoomId === room._id) {
+                              return lastMessage.body;
+                            }
+                          })}
+                          align='right'></ListItemText>
+                      </Badge>
                     </ListItem>
                   );
                   // Render OFFLINE CHAT users
@@ -192,6 +250,10 @@ const ChatFriendsList = props => {
                         console.log('click');
                         console.log(`Room Id: ${room._id}`);
                         props.getSingleChatRoom(room._id);
+
+                        let memberId = room.members.filter(member => member._id !== props.user._id);
+
+                        props.markMessagesRead(room._id, memberId);
                         // props.socket.emit('roomId', room._id);
                       }}>
                       <ListItemIcon>
@@ -200,14 +262,28 @@ const ChatFriendsList = props => {
                       <ListItemText primary={firstCharUpperCase(member.username)}>
                         {firstCharUpperCase(member.username)}
                       </ListItemText>
-                      <ListItemText
-                        secondary={props.lastMessages.map(lastMessage => {
-                          if (lastMessage && lastMessage.chatRoomId === room._id) {
-                            return lastMessage.body;
-                          }
-                        })}
-                        align='right'
-                      />
+
+                      <Badge
+                        badgeContent={
+                          room._id !== props.activeChatRoom._id
+                            ? room.chatMessages.filter(message => {
+                                return (
+                                  message.username !== props.user.username && message.read === false
+                                );
+                              }).length
+                            : 0
+                        }
+                        color='secondary'
+                        max={9}>
+                        <ListItemText
+                          secondary={props.lastMessages.map(lastMessage => {
+                            if (lastMessage && lastMessage.chatRoomId === room._id) {
+                              return lastMessage.body;
+                            }
+                          })}
+                          align='right'
+                        />
+                      </Badge>
                     </ListItem>
                   );
                 }
@@ -290,12 +366,16 @@ const mapStateToProps = state => {
     toggleFriendList: state.chat.toggleFriendList,
     chatRooms: state.chat.chatRooms,
     lastMessages: state.chat.lastMessages,
+    activeChatRoom: state.chat.activeChatRoom,
     connectedUsers: state.user.connectedUsers,
     users: state.user.users,
     theme: state.theme.theme,
   };
 };
 
-export default connect(mapStateToProps, { getSingleChatRoom, getAllUsers, createChatRoom })(
-  ChatFriendsList,
-);
+export default connect(mapStateToProps, {
+  getSingleChatRoom,
+  getAllUsers,
+  createChatRoom,
+  markMessagesRead,
+})(ChatFriendsList);

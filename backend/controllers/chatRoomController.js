@@ -9,7 +9,7 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   console.log('running getAllChatRooms');
   const chatRooms = await ChatRoom.find({ members: req.user._id }).populate({
     path: 'chatMessages',
-    options: { sort: { createdAt: 'desc' }, perDocumentLimit: 1 },
+    options: { sort: { createdAt: 'desc' }, perDocumentLimit: 10 },
   }); // returns rooms where the currentUser is a member
   res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
 });

@@ -28,27 +28,6 @@ export default function chatMessageReducer(state = initialState, action) {
       };
 
     case CREATE_CHAT_MESSAGE:
-      // room.chatMessages[0]?.body
-
-      // TODO: CODE HIERONDER RENDERT DE STATE NIET
-      // MISSCHIEN DOOR DE LASTMESSAGES MAPPEN, EN WAAR ACTION.PAYLOAD._ID HETZELFDE IS AL LASTMESSAGE ID VERVANGEN
-      // let newLastMessages = [...state.lastMessages];
-
-      // newLastMessages.map((message, i) => {
-      //   if (message.chatRoomId === action.payload.chatRoomId) {
-      //     return (newLastMessages[i] = { ...action.payload });
-      //   }
-      // });
-      // console.log(newLastMessages);
-
-      // console.log(lastMessage);
-      // state.chatRooms.map(room => {
-      //   if (room._id === action.payload.chatRoomId) {
-      //     console.log(room);
-      //     return (room.chatMessages[0].body = action.payload.body);
-      //   }
-      // });
-
       return {
         ...state,
         // lastMessages: newLastMessages,
@@ -105,14 +84,28 @@ export default function chatMessageReducer(state = initialState, action) {
       // only return the chatrooms where there are chatmessages // not sure if this works correctly
       sortedChatRooms = sortedChatRooms.filter(room => room.chatMessages.length > 0 && room);
 
-      console.log(sortedChatRooms);
-
       sortedChatRooms.sort((a, b) => {
         if (a.chatMessages[0] && b.chatMessages[0]) {
           return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
         } else {
           console.log('NO CHATMESSAGES TO SORT');
           return;
+        }
+      });
+
+      console.log(state);
+      console.log(sortedChatRooms);
+
+      // Mark chatmessage as read if the user has the chatroom open (without having to click the chatroom )
+      sortedChatRooms.map(room => {
+        if (room._id === state.activeChatRoom._id) {
+          console.log('👻👻');
+          room.chatMessages.map(message => {
+            if (message.read === false) {
+              console.log(message);
+              message.read = true;
+            }
+          });
         }
       });
 
@@ -124,7 +117,20 @@ export default function chatMessageReducer(state = initialState, action) {
         chatRooms: sortedChatRooms, // initial sort on page load/refresh. rerender sorting happens in SET_LAST_CHAT_MESSAGE
       };
     case SET_ACTIVE_CHATROOM:
-      console.log(action.payload);
+      // console.log(action.payload);
+      // console.log(state);
+
+      // set chatroom message as read
+      let rooms = state.chatRooms?.filter(room => {
+        if (action.payload._id === room._id) {
+          room.chatMessages?.filter(message => {
+            if (message.read === false) {
+              message.read = true;
+            }
+          });
+        }
+      });
+      console.log(rooms);
 
       return {
         ...state,

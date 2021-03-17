@@ -50,6 +50,7 @@ const AuthRoute = props => {
 
       // Receive the connected users userList from the backend
       socket.on(USER_CONNECTED, userListFromBackend => {
+        console.log('USER CONNECTED 🧙‍♂️');
         console.log(userListFromBackend);
         // TODO dispatch action to update props.connectedUsers
         updateConnectedUserList(userListFromBackend);

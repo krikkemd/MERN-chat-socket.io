@@ -1,13 +1,13 @@
-import Grid from '@material-ui/core/Grid';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-
 // Components
-
 import ChatUserData from './ChatUserData';
 import ChatHeader from './ChatHeader';
 import ChatFriendList from './ChatFriendsList';
 import ChatMessageArea from './ChatMessageArea';
 import ChatInput from './ChatInput';
+
+// MUI
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   userData: {
@@ -41,7 +41,6 @@ const Mui = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
 
-  console.log(classes);
   return (
     <>
       <Grid container>

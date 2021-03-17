@@ -22,8 +22,8 @@ const Copyright = () => {
   return (
     <Typography variant='body2' color='textSecondary' align='center'>
       {'Copyright © '}
-      <Link color='inherit' href='https://material-ui.com/'>
-        IMDK
+      <Link color='inherit' href='https://dnk.nl/'>
+        DNK
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}

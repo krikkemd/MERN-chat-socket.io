@@ -96,6 +96,16 @@ export const createChatMessage = chatMessage => dispatch => {
     });
 };
 
+// MemberId is the OTHER member in the room, not you. only set messages to read you've received
+export const markMessagesRead = (roomId, memberId) => dispatch => {
+  axios
+    .patch(baseUrl, { chatRoomId: roomId, memberId: memberId })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => console.log(err));
+};
+
 // Takes in the message from backend after change in db. emit to all connected clients.
 export const emitCreateChatMessageFromServerToAllClients = messageFromBackend => dispatch => {
   dispatch({

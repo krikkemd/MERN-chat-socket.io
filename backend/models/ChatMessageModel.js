@@ -27,7 +27,11 @@ const messageSchema = new mongoose.Schema(
       // ref: 'User',
       required: [true, 'Message should have a userId'],
     }, // mongoose.ObjectId
-    sender: Boolean,
+    // sender: Boolean,
+    read: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

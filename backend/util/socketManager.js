@@ -26,6 +26,7 @@ const {
   CREATED_CHAT_ROOM,
   EMIT_CREATED_CHAT_ROOM,
   MEMBERS_JOIN_NEW_CHAT_ROOM,
+  UPDATE_AVATAR,
 } = require('../types/types');
 
 let connectedUsers = {};
@@ -132,6 +133,15 @@ module.exports = socket => {
     console.log('MEMBERS JOINING ROOMS');
     console.log(chatRoomFromClient);
     socket.join(chatRoomFromClient._id.toString());
+  });
+
+  socket.on(UPDATE_AVATAR, user => {
+    console.log('UPDATE_AVATAR');
+    console.log('UPDATE_AVATAR');
+    console.log('UPDATE_AVATAR');
+    console.log('UPDATE_AVATAR');
+    console.log('UPDATE_AVATAR');
+    console.log(user);
   });
 
   // let roomArray = [];

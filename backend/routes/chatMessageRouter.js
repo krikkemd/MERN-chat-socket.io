@@ -10,16 +10,23 @@ const {
   getAllChatMessages,
   createChatMessage,
   deleteChatMessage,
+  // updateChatMessage,
+  markMessagesRead,
   getSingleChatMessage,
 } = require('../controllers/chatMessageController');
 
 // res.locals.user
 // router.use(isLoggedIn);
 
-router.route('/').get(protectRoute, getAllChatMessages).post(protectRoute, createChatMessage);
+router
+  .route('/')
+  .get(protectRoute, getAllChatMessages)
+  .post(protectRoute, createChatMessage)
+  .patch(protectRoute, markMessagesRead);
 router
   .route('/:id')
   .get(protectRoute, getSingleChatMessage)
+  // .patch(protectRoute, updateChatMessage)
   .delete(protectRoute, deleteChatMessage);
 
 module.exports = router;
