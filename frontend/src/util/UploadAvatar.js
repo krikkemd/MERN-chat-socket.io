@@ -5,6 +5,7 @@ import axios from '../config/axios';
 // MUI
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 // Icons
 import IconButton from '@material-ui/core/IconButton';
@@ -16,31 +17,9 @@ import { UPDATE_AVATAR } from '../redux/types';
 
 const url = `http://localhost:1337/api/v1/users/updateMe`;
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  input: {
-    display: 'none',
-  },
-  photoIcon: {
-    height: 40,
-    width: 40,
-  },
-  buttonContainer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  uploadButton: {
-    marginLeft: 20,
-  },
-}));
+const useStyles = makeStyles(theme => theme.UploadAvatar);
 
 const UploadAvatar = props => {
-  console.log(props);
-
   const dispatch = useDispatch();
   const classes = useStyles();
   const [file, setFile] = useState(null);
@@ -63,7 +42,7 @@ const UploadAvatar = props => {
         props.socket.emit(UPDATE_AVATAR, res.data.user);
         dispatch({ type: UPDATE_AVATAR, payload: res.data.user });
 
-        // handleClose();
+        // Success snackbar
       })
       .catch(err => console.log(err));
   };
@@ -78,31 +57,35 @@ const UploadAvatar = props => {
         type='file'
       />
       {!file ? (
-        <label htmlFor='icon-button-file'>
-          <IconButton color='primary' aria-label='upload picture' component='span'>
-            <PhotoCamera className={classes.photoIcon} />
-          </IconButton>
-        </label>
+        <>
+          <Typography className={classes.text}>Nieuwe foto uploaden</Typography>
+          <label htmlFor='icon-button-file'>
+            <IconButton color='primary' aria-label='upload picture' component='span'>
+              <PhotoCamera className={classes.photoIcon} />
+            </IconButton>
+          </label>
+        </>
       ) : (
-        <div className={classes.buttonContainer}>
-          <Button
-            variant='contained'
-            color='secondary'
-            component='span'
-            onClick={props.handleClose}
-            startIcon={<CancelIcon />}>
-            Cancel
-          </Button>
-          <Button
-            className={classes.uploadButton}
-            variant='contained'
-            color='primary'
-            component='span'
-            onClick={handleSubmit}
-            startIcon={<CloudUploadIcon />}>
-            Upload
-          </Button>
-        </div>
+        <>
+          <Typography className={classes.text}>{file.name}</Typography>
+          <div className={classes.buttonContainer}>
+            <Button
+              color='primary'
+              component='span'
+              onClick={props.handleClose}
+              startIcon={<CancelIcon />}>
+              Annuleren
+            </Button>
+            <Button
+              className={classes.uploadButton}
+              color='secondary'
+              component='span'
+              onClick={handleSubmit}
+              startIcon={<CloudUploadIcon />}>
+              Uploaden
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
