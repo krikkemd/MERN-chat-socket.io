@@ -12,7 +12,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 // Components
 import Login from './Components/Login';
-import ChatPage from './Components/ChatPage';
 import Chat from './Components/Chat';
 import Truncate from './Components/Truncate';
 import Mui from './Components/Mui';

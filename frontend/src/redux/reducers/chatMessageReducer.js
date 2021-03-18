@@ -24,7 +24,7 @@ export default function chatMessageReducer(state = initialState, action) {
     case GET_ALL_CHAT_MESSAGES:
       return {
         ...state,
-        chatMessages: action.payload,
+        chatMessages: [...action.payload.reverse(), ...state.chatMessages],
       };
 
     case CREATE_CHAT_MESSAGE:

@@ -12,10 +12,10 @@ import axios from '../../config/axios';
 const baseUrl = 'http://localhost:1337/api/v1/chatMessages';
 
 // REDUX
-export const getAllChatMessages = () => dispatch => {
+export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
   // dispatch({ type: LOADING_DATA });
   axios
-    .get(`${baseUrl}`)
+    .get(`${baseUrl}?skip=${skip}&chatRoomId=${chatRoomId}`)
     .then(res => {
       console.log(res);
       dispatch({

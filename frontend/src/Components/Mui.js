@@ -1,3 +1,9 @@
+import { useState, useEffect } from 'react';
+
+// Redux
+import { connect } from 'react-redux';
+import { getAllChatMessages } from '../redux/actions/chatMessageActions';
+
 // Components
 import ChatUserData from './ChatUserData';
 import ChatHeader from './ChatHeader';
@@ -37,15 +43,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Mui = () => {
+const Mui = props => {
+  console.log(props);
   const theme = useTheme();
   const classes = useStyles(theme);
+  const [skip, setSkip] = useState(10);
+
+  useEffect(() => {
+    setSkip(10);
+    console.log(skip);
+  }, [props.activeChatRoom]);
 
   const handleScroll = e => {
     let { scrollTop } = e.target;
     if (scrollTop === 0) {
-      // && chatMessages >9
       console.log('setSkip');
+      console.log(skip);
+      setSkip(skip + 25);
+      props.getAllChatMessages(props.activeChatRoom._id, skip);
     }
   };
 
@@ -81,4 +96,11 @@ const Mui = () => {
   );
 };
 
-export default Mui;
+const mapStateToProps = state => {
+  return {
+    activeChatRoom: state.chat.activeChatRoom,
+    chatMessages: state.chat.chatMessages,
+  };
+};
+
+export default connect(mapStateToProps, { getAllChatMessages })(Mui);
