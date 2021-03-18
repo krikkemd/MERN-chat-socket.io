@@ -1,6 +1,5 @@
 import teal from '@material-ui/core/colors/teal';
 import purple from '@material-ui/core/colors/purple';
-import { makeStyles } from '@material-ui/core/styles';
 
 export default {
   palette: {

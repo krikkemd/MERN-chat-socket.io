@@ -41,6 +41,14 @@ const Mui = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
 
+  const handleScroll = e => {
+    let { scrollTop } = e.target;
+    if (scrollTop === 0) {
+      // && chatMessages >9
+      console.log('setSkip');
+    }
+  };
+
   return (
     <>
       <Grid container>
@@ -61,7 +69,7 @@ const Mui = () => {
 
         {/* Chat Messages */}
         <Grid container xs={9} md={9}>
-          <Grid item xs={12} className={classes.chatMessages}>
+          <Grid item xs={12} className={classes.chatMessages} onScroll={handleScroll}>
             <ChatMessageArea />
           </Grid>
           <Grid item xs={12} className={classes.input}>

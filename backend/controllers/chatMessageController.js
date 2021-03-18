@@ -2,11 +2,22 @@ const { ChatMessage } = require('../models/ChatMessageModel');
 const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
 
-// TODO: SET USER DATA IN CREATE FROM REQ.USER
-
 exports.getAllChatMessages = catchAsync(async (req, res, next) => {
-  console.log('running getAllChatMessages');
-  const chatMessages = await ChatMessage.find();
+  console.log('running getAllChatMessages❌ INCLUDING SKIP OF 10 ');
+  console.log(req.query);
+  console.log(req.user._id);
+
+  const skip = req.query.skip && /^\d+$/.test(req.query.skip) ? Number(req.query.skip) : 0;
+
+  console.log(skip);
+
+  // req.user._id zodat alleen logged in user messages te zien krijgt, miss req.user._id sturen vanaf frontend en hier pakken in req.query.userId
+  const chatMessages = await ChatMessage.find({ userId: req.user._id }, undefined, {
+    skip,
+    limit: 10,
+  }).sort({
+    createdAt: 'desc',
+  });
 
   return res.status(200).json({
     status: 'success',
@@ -36,8 +47,6 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
     body: req.body.body,
     username: req.user.username,
     userId: req.user._id,
-    // sender: req.body.sender,
-    // type: req.body.type,
   });
 
   console.log('✅ chat message created');
@@ -47,24 +56,6 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
     chatMessage: newMessage,
   });
 });
-
-// Mark message as read
-// exports.updateChatMessage = catchAsync(async (req, res, next) => {
-//   const cleanedReqBody = cleanReqBody(req.body, 'read');
-
-//   console.log('running updateChatMessage');
-//   const chatMessageId = req.params.id;
-//   const chatMessage = await ChatMessage.findByIdAndUpdate({ _id: chatMessageId }, cleanedReqBody, {
-//     new: true,
-//     runValidators: true,
-//   });
-
-//   if (!chatMessage) return next(new AppError('No document found with that ID', 404));
-
-//   console.log('✅ chat message updated');
-
-//   return res.status(202).json({ status: 'succces', data: chatMessage });
-// });
 
 exports.markMessagesRead = catchAsync(async (req, res, next) => {
   const messages = await ChatMessage.updateMany(
