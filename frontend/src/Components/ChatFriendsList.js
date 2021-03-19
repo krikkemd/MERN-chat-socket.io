@@ -90,7 +90,12 @@ const ChatFriendsList = props => {
       props.getSingleChatRoom(chatroom._id);
 
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
-      chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
+      // chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
+      if (chatroom.chatMessages.length > 0) {
+        dispatch({ type: TOGGLE_CHAT });
+        let memberId = chatroom.members.filter(member => member._id !== props.user._id);
+        props.markMessagesRead(chatroom._id, memberId);
+      }
     } else {
       // There is no chatRoom, stay in 'contacts'
       dispatch({ type: TOGGLE_CONTACTS });

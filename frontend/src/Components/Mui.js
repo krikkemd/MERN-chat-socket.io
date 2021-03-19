@@ -47,19 +47,23 @@ const Mui = props => {
   console.log(props);
   const theme = useTheme();
   const classes = useStyles(theme);
-  const [skip, setSkip] = useState(10);
+  const [skip, setSkip] = useState(props.chatMessages.length);
 
   useEffect(() => {
-    setSkip(10);
+    setSkip(props.chatMessages.length);
+    console.log(props.chatMessages.length);
     console.log(skip);
-  }, [props.activeChatRoom]);
+  }, [props.activeChatRoom, props.chatMessages.length]);
 
   const handleScroll = e => {
     let { scrollTop } = e.target;
-    if (scrollTop === 0) {
+
+    // ALs de result meer dan 0 is
+    if (scrollTop === 0 && props.chatMessages.length >= 10) {
       console.log('setSkip');
       console.log(skip);
-      setSkip(skip + 25);
+      console.log(props.chatMessages.length);
+      setSkip(props.chatMessages.length);
       props.getAllChatMessages(props.activeChatRoom._id, skip);
     }
   };

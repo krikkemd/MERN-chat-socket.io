@@ -12,6 +12,7 @@ import {
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
   getAllUserChatRooms,
+  markMessagesRead,
 } from '../redux/actions/chatMessageActions';
 
 import {
@@ -43,6 +44,7 @@ const ChatMessageArea = props => {
     emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
     getAllUserChatRooms,
+    markMessagesRead,
   } = props;
 
   //   On changes to the chatMessages in the state
@@ -82,12 +84,20 @@ const ChatMessageArea = props => {
       // Reorder friendList to show latest conversation on top (SENDER)
       getAllUserChatRooms();
 
+      // toggle chat for the message sender
       if (user._id === messageFromBackend.userId) dispatch({ type: TOGGLE_CHAT });
 
       // Dispatch from here, so that the redux state is updated for all clients in the room.
       if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
         console.log('only runs when activeChatRoom === messageFromBackend.chatRoomId');
         emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+
+        // Scroll to bottom on send and receive message when the activeChatRoom === room that message is send to
+        chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+
+        // When the received message is in the activeChatRoom, mark the message as read
+        let memberId = props.activeChatRoom.members.filter(member => member._id !== user._id);
+        markMessagesRead(props.activeChatRoom._id, memberId);
       }
     });
 
@@ -125,11 +135,23 @@ const ChatMessageArea = props => {
 
   const scrollIntoLastMessage = useRef(null);
   useEffect(() => {
+    console.log(props.chatMessages.length);
     if (props.chatMessages.length > 10) {
-      if (scrollIntoLastMessage.current.childNodes[20]) {
-        scrollIntoLastMessage.current.childNodes[20].scrollIntoView({
-          behavior: 'smooth',
-        });
+      // if the chatMessages array length is divisible by exactly 10, scroll into the new 10th which is the top message
+      if (scrollIntoLastMessage.current.childNodes[10] && props.chatMessages.length % 10 === 0) {
+        scrollIntoLastMessage.current.childNodes[10].scrollIntoView();
+
+        // if the chatMessages array length is not divisible by exactly 10, e.g. 26, substract the array length (20) of the 26, and scroll into the 6
+      } else if (
+        scrollIntoLastMessage.current.childNodes[10] &&
+        props.chatMessages.length % 10 !== 0
+      ) {
+        console.log('not divisible by 10');
+        console.log(props.chatMessages.length);
+        let scrollLength =
+          props.chatMessages.length - Math.floor(props.chatMessages.length / 10) * 10;
+        console.log(scrollLength);
+        scrollIntoLastMessage.current.childNodes[scrollLength].scrollIntoView();
       } else {
         chatEnd.current.scrollIntoView({ behavior: 'smooth' });
       }
@@ -196,4 +218,5 @@ export default connect(mapStateToProps, {
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
   getAllUserChatRooms,
+  markMessagesRead,
 })(ChatMessageArea);

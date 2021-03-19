@@ -18,10 +18,12 @@ export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
     .get(`${baseUrl}?skip=${skip}&chatRoomId=${chatRoomId}`)
     .then(res => {
       console.log(res);
-      dispatch({
-        type: GET_ALL_CHAT_MESSAGES,
-        payload: res.data.chatMessages,
-      });
+      if (res.data.chatMessages.length > 0) {
+        dispatch({
+          type: GET_ALL_CHAT_MESSAGES,
+          payload: res.data.chatMessages,
+        });
+      }
     })
     .catch(err => {
       console.log(err.response.data);

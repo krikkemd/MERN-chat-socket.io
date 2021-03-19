@@ -14,7 +14,7 @@ exports.getAllChatMessages = catchAsync(async (req, res, next) => {
   // req.user._id zodat alleen logged in user messages te zien krijgt, miss req.user._id sturen vanaf frontend en hier pakken in req.query.userId
   const chatMessages = await ChatMessage.find({ chatRoomId: req.query.chatRoomId }, undefined, {
     skip,
-    limit: 25,
+    limit: 10,
   }).sort({
     createdAt: 'desc',
   });
