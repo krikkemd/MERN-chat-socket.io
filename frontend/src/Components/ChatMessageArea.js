@@ -121,11 +121,24 @@ const ChatMessageArea = props => {
   const chatEnd = useRef(null);
   useEffect(() => {
     chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+  }, [activeChatRoom]);
+
+  const scrollIntoLastMessage = useRef(null);
+  useEffect(() => {
+    if (props.chatMessages.length > 10) {
+      if (scrollIntoLastMessage.current.childNodes[20]) {
+        scrollIntoLastMessage.current.childNodes[20].scrollIntoView({
+          behavior: 'smooth',
+        });
+      } else {
+        chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   });
 
   return (
     <>
-      <List>
+      <List ref={scrollIntoLastMessage}>
         {props.activeChatRoom.chatMessages ? (
           props.chatMessages.map(message => (
             <ListItem key={message._id}>
@@ -141,7 +154,7 @@ const ChatMessageArea = props => {
                     <Chip
                       label={message.body}
                       align={props.user._id === message.userId ? 'right' : 'left'}
-                      color='primary'
+                      color={props.user._id === message.userId ? 'primary' : 'secondary'}
                     />
                   </ListItemText>
                 </Grid>
