@@ -93,7 +93,11 @@ const ChatMessageArea = props => {
         emitCreateChatMessageFromServerToAllClients(messageFromBackend);
 
         // Scroll to bottom on send and receive message when the activeChatRoom === room that message is send to
-        chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+        // chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+        console.log(props.chatMessages.length);
+        scrollIntoLastMessage.current.childNodes[9].scrollIntoView({
+          behavior: 'smooth',
+        });
 
         // When the received message is in the activeChatRoom, mark the message as read
         let memberId = props.activeChatRoom.members.filter(member => member._id !== user._id);
@@ -120,6 +124,7 @@ const ChatMessageArea = props => {
       });
     });
   }, [
+    props.chatMessages.length,
     socket,
     activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
@@ -133,15 +138,30 @@ const ChatMessageArea = props => {
     chatEnd.current.scrollIntoView({ behavior: 'smooth' });
   }, [activeChatRoom]);
 
+  // Gewoon omhoog scrollen werkt perfect
+  // Typen zonder omhoog te scrollen werkt perfect
+  // Eerst scrollen dan typen, werkt
+  // Eerst typen, dan scrollen, dan typen werkt
+
   const scrollIntoLastMessage = useRef(null);
+
   useEffect(() => {
-    console.log(props.chatMessages.length);
+    // childTen === pos 9, arrays 0 based
+    let childTen = scrollIntoLastMessage.current.childNodes[9]?.innerText.split(/\r?\n/)[2];
+    console.log(scrollIntoLastMessage.current.childNodes);
+    // let childTen = scrollIntoLastMessage.current.childNodes[props.chatMessages.length - 1]?.innerText.split(/\r?\n/)[2];
+    let lastMessage = props.chatMessages[props.chatMessages.length - 1]?.body;
+
+    console.log(childTen);
+    console.log(lastMessage);
     if (props.chatMessages.length > 10) {
       // if the chatMessages array length is divisible by exactly 10, scroll into the new 10th which is the top message
       if (scrollIntoLastMessage.current.childNodes[10] && props.chatMessages.length % 10 === 0) {
         scrollIntoLastMessage.current.childNodes[10].scrollIntoView();
-
+        console.log('if');
         // if the chatMessages array length is not divisible by exactly 10, e.g. 26, substract the array length (20) of the 26, and scroll into the 6
+
+        // Not divisible by 10 === end of messages
       } else if (
         scrollIntoLastMessage.current.childNodes[10] &&
         props.chatMessages.length % 10 !== 0
@@ -153,7 +173,8 @@ const ChatMessageArea = props => {
         console.log(scrollLength);
         scrollIntoLastMessage.current.childNodes[scrollLength].scrollIntoView();
       } else {
-        chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+        console.log('else');
+        // chatEnd.current.scrollIntoView({ behavior: 'smooth' });
       }
     }
   });
@@ -196,7 +217,7 @@ const ChatMessageArea = props => {
           </div>
         )}
 
-        <div ref={chatEnd} />
+        <div className={'test'} ref={chatEnd} />
       </List>
     </>
   );

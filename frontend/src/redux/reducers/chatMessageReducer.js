@@ -28,12 +28,19 @@ export default function chatMessageReducer(state = initialState, action) {
       };
 
     case CREATE_CHAT_MESSAGE:
+      let chatMessages = [...state.chatMessages];
+      console.log(state.chatMessages.length);
+      // When a user has scrolled up to get older messages, shrink the array down to 10 again, so it scrolls into the last message
+      if (chatMessages.length > 10) {
+        chatMessages = chatMessages.slice(state.chatMessages.length - 10);
+      }
+      console.log(chatMessages);
       return {
         ...state,
         // lastMessages: newLastMessages,
         chatMessages:
-          state.chatMessages.length > 10
-            ? [...state.chatMessages, action.payload].slice(1) // keep the max size of chatMessages at 10
+          state.chatMessages.length > 9
+            ? [...chatMessages, action.payload].slice(1) // keep the max size of chatMessages at 10
             : [...state.chatMessages, action.payload],
       };
 
@@ -102,7 +109,7 @@ export default function chatMessageReducer(state = initialState, action) {
           console.log('👻👻');
           room.chatMessages.map(message => {
             if (message.read === false) {
-              console.log(message);
+              // console.log(message);
               message.read = true;
             }
           });
