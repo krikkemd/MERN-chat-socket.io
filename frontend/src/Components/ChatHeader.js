@@ -4,6 +4,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Divider from '@material-ui/core/Divider';
 
 // Redux
@@ -22,6 +23,7 @@ const useStyles = makeStyles(theme => ({
   avatar: {
     width: 60,
     height: 60,
+    border: 'none',
   },
   members: {
     fontWeight: 'bold',
@@ -67,10 +69,20 @@ const ChatHeader = props => {
         </>
       )}
 
-      {/* > 2 chat room members */}
+      {/* More than 2 chat room members */}
       {contact && activeChatRoom.members.length > 2 && (
         <>
-          <Avatar className={classes.avatar} />
+          <AvatarGroup max={5}>
+            {activeChatRoom.members.map(member => {
+              return (
+                <Avatar
+                  key={member._id}
+                  className={classes.avatar}
+                  alt={member.username.toUpperCase()}
+                  src={member.avatar}></Avatar>
+              );
+            })}
+          </AvatarGroup>
           <Typography variant='caption' className={classes.text}>
             <Typography variant='caption' className={classes.members}>
               Members:

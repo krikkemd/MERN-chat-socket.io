@@ -19,7 +19,7 @@ router
   .route('/:id')
   .get(protectRoute, getSingleChatRoom)
   .patch(protectRoute, updateChatRoom)
-  .delete(deleteChatRoom);
+  .delete(protectRoute, deleteChatRoom);
 // .post(createChatMessage);
 // router.route('/:id').get(getSingleChatMessage).delete(deleteChatMessage);
 

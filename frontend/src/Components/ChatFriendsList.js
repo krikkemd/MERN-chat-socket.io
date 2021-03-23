@@ -189,8 +189,8 @@ const ChatFriendsList = props => {
       {/* Render chats with messages with more than 2 members */}
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
-            if (room.members.length > 2 && room.chatMessages.length > 0) {
-              return <GroupChat />;
+            if (room.members.length > 2) {
+              return <GroupChat room={room} key={room._id} />;
             }
 
             // Render chats with messages with max 2 members

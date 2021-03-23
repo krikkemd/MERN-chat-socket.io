@@ -10,7 +10,7 @@ const chatRoomSchema = new mongoose.Schema(
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         min: 2,
-        max: 50,
+        max: 10,
       },
     ],
     expireAt: {
