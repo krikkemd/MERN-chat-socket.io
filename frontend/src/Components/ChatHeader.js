@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 const ChatHeader = props => {
   const classes = useStyles();
+  console.log(props);
 
   const { user, activeChatRoom } = props;
 
@@ -44,13 +45,32 @@ const ChatHeader = props => {
 
   return (
     <div className={classes.container}>
-      {contact && (
+      {/* 2 chat room members */}
+      {contact && activeChatRoom.members.length === 2 && (
         <>
           <Avatar
             className={classes.avatar}
             alt={contact && contact[0]?.username.toUpperCase()}
             src={contact && contact[0]?.avatar}
           />
+          <Typography variant='caption' className={classes.text}>
+            <Typography variant='caption' className={classes.members}>
+              Members:
+            </Typography>
+            {activeChatRoom.members.map(
+              member =>
+                `${firstCharUpperCase(member.username)} ${
+                  member !== activeChatRoom.members[activeChatRoom.members.length - 1] ? '&' : ''
+                } `,
+            )}
+          </Typography>
+        </>
+      )}
+
+      {/* > 2 chat room members */}
+      {contact && activeChatRoom.members.length > 2 && (
+        <>
+          <Avatar className={classes.avatar} />
           <Typography variant='caption' className={classes.text}>
             <Typography variant='caption' className={classes.members}>
               Members:

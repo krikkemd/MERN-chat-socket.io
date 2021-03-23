@@ -63,6 +63,7 @@ exports.markMessagesRead = catchAsync(async (req, res, next) => {
     { read: true },
     (err, res) => {
       if (err) return next(new AppError('updateMany went wrong', 500));
+      console.log(req.body.memberId);
 
       console.log(req.body.chatRoomId);
 

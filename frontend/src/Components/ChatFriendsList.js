@@ -29,6 +29,7 @@ import Badge from '@material-ui/core/Badge';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
 import Tooltip from '@material-ui/core/Tooltip';
+import GroupChat from './GroupChat';
 
 // online badge icon
 const StyledBadge = withStyles(theme => ({
@@ -185,112 +186,125 @@ const ChatFriendsList = props => {
         </Grid>
       </Grid>
 
-      {/* Render chats with messages */}
+      {/* Render chats with messages with more than 2 members */}
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
+            if (room.members.length > 2 && room.chatMessages.length > 0) {
+              return <GroupChat />;
+            }
+
+            // Render chats with messages with max 2 members
             // Render ONLINE CHAT users: sorted: chat with last received message on top
             return (
               room.chatMessages.length > 0 &&
               room.members.map(member => {
-                if (
-                  Object.values(props.connectedUsers).includes(member._id) &&
-                  member.username !== props.user.username
-                ) {
-                  return (
-                    <ListItem
-                      button
-                      key={room._id}
-                      onClick={e => {
-                        console.log('click');
-                        console.log(`Room Id: ${room._id}`);
-                        props.getSingleChatRoom(room._id);
+                if (room.members.length === 2) {
+                  if (
+                    Object.values(props.connectedUsers).includes(member._id) &&
+                    member.username !== props.user.username
+                  ) {
+                    return (
+                      <ListItem
+                        button
+                        key={room._id}
+                        onClick={e => {
+                          console.log('click');
+                          console.log(`Room Id: ${room._id}`);
+                          props.getSingleChatRoom(room._id);
 
-                        let memberId = room.members.filter(member => member._id !== props.user._id);
+                          let memberId = room.members.filter(
+                            member => member._id !== props.user._id,
+                          );
 
-                        props.markMessagesRead(room._id, memberId);
+                          props.markMessagesRead(room._id, memberId);
 
-                        // props.socket.emit('roomId', room._id);
-                      }}>
-                      <ListItemIcon>
-                        <StyledBadge
-                          overlap='circle'
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                          }}
-                          variant='dot'>
+                          // props.socket.emit('roomId', room._id);
+                        }}>
+                        <ListItemIcon>
+                          <StyledBadge
+                            overlap='circle'
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'right',
+                            }}
+                            variant='dot'>
+                            <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
+                          </StyledBadge>
+                        </ListItemIcon>
+                        <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
+                        <Badge
+                          badgeContent={
+                            room._id !== props.activeChatRoom._id
+                              ? room.chatMessages.filter(message => {
+                                  return (
+                                    message.username !== props.user.username &&
+                                    message.read === false
+                                  );
+                                }).length
+                              : 0
+                          }
+                          color='secondary'
+                          max={9}>
+                          <ListItemText
+                            secondary={props.lastMessages.map(lastMessage => {
+                              if (lastMessage && lastMessage.chatRoomId === room._id) {
+                                return lastMessage.body;
+                              }
+                            })}
+                            align='right'></ListItemText>
+                        </Badge>
+                      </ListItem>
+                    );
+                    // Render OFFLINE CHAT users
+                  } else if (member.username !== props.user.username) {
+                    return (
+                      <ListItem
+                        button
+                        key={room._id}
+                        onClick={e => {
+                          console.log('click');
+                          console.log(`Room Id: ${room._id}`);
+                          props.getSingleChatRoom(room._id);
+
+                          let memberId = room.members.filter(
+                            member => member._id !== props.user._id,
+                          );
+
+                          props.markMessagesRead(room._id, memberId);
+                          // props.socket.emit('roomId', room._id);
+                        }}>
+                        <ListItemIcon>
                           <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
-                        </StyledBadge>
-                      </ListItemIcon>
-                      <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
-                      <Badge
-                        badgeContent={
-                          room._id !== props.activeChatRoom._id
-                            ? room.chatMessages.filter(message => {
-                                return (
-                                  message.username !== props.user.username && message.read === false
-                                );
-                              }).length
-                            : 0
-                        }
-                        color='secondary'
-                        max={9}>
-                        <ListItemText
-                          secondary={props.lastMessages.map(lastMessage => {
-                            if (lastMessage && lastMessage.chatRoomId === room._id) {
-                              return lastMessage.body;
-                            }
-                          })}
-                          align='right'></ListItemText>
-                      </Badge>
-                    </ListItem>
-                  );
-                  // Render OFFLINE CHAT users
-                } else if (member.username !== props.user.username) {
-                  return (
-                    <ListItem
-                      button
-                      key={room._id}
-                      onClick={e => {
-                        console.log('click');
-                        console.log(`Room Id: ${room._id}`);
-                        props.getSingleChatRoom(room._id);
+                        </ListItemIcon>
+                        <ListItemText primary={firstCharUpperCase(member.username)}>
+                          {firstCharUpperCase(member.username)}
+                        </ListItemText>
 
-                        let memberId = room.members.filter(member => member._id !== props.user._id);
-
-                        props.markMessagesRead(room._id, memberId);
-                        // props.socket.emit('roomId', room._id);
-                      }}>
-                      <ListItemIcon>
-                        <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
-                      </ListItemIcon>
-                      <ListItemText primary={firstCharUpperCase(member.username)}>
-                        {firstCharUpperCase(member.username)}
-                      </ListItemText>
-
-                      <Badge
-                        badgeContent={
-                          room._id !== props.activeChatRoom._id
-                            ? room.chatMessages.filter(message => {
-                                return (
-                                  message.username !== props.user.username && message.read === false
-                                );
-                              }).length
-                            : 0
-                        }
-                        color='secondary'
-                        max={9}>
-                        <ListItemText
-                          secondary={props.lastMessages.map(lastMessage => {
-                            if (lastMessage && lastMessage.chatRoomId === room._id) {
-                              return lastMessage.body;
-                            }
-                          })}
-                          align='right'
-                        />
-                      </Badge>
-                    </ListItem>
-                  );
+                        <Badge
+                          badgeContent={
+                            room._id !== props.activeChatRoom._id
+                              ? room.chatMessages.filter(message => {
+                                  return (
+                                    message.username !== props.user.username &&
+                                    message.read === false
+                                  );
+                                }).length
+                              : 0
+                          }
+                          color='secondary'
+                          max={9}>
+                          <ListItemText
+                            secondary={props.lastMessages.map(lastMessage => {
+                              if (lastMessage && lastMessage.chatRoomId === room._id) {
+                                return lastMessage.body;
+                              }
+                            })}
+                            align='right'
+                          />
+                        </Badge>
+                      </ListItem>
+                    );
+                  }
                 }
               })
             );

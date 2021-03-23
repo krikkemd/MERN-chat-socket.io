@@ -106,7 +106,7 @@ export default function chatMessageReducer(state = initialState, action) {
       // Mark chatmessage as read if the user has the chatroom open (without having to click the chatroom )
       sortedChatRooms.map(room => {
         if (room._id === state.activeChatRoom._id) {
-          console.log('👻👻');
+          console.log('mark messages read');
           room.chatMessages.map(message => {
             if (message.read === false) {
               // console.log(message);
