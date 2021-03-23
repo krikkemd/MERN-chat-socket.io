@@ -30,7 +30,7 @@ export default function chatMessageReducer(state = initialState, action) {
     case CREATE_CHAT_MESSAGE:
       let chatMessages = [...state.chatMessages];
       console.log(state.chatMessages.length);
-      // When a user has scrolled up to get older messages, shrink the array down to 10 again, so it scrolls into the last message
+      // When a user has scrolled up to get older messages, shrink the array down to 10 again, so it scrolls into the created message
       if (chatMessages.length > 10) {
         chatMessages = chatMessages.slice(state.chatMessages.length - 10);
       }

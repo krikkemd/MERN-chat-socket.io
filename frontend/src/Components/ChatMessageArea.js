@@ -95,9 +95,15 @@ const ChatMessageArea = props => {
         // Scroll to bottom on send and receive message when the activeChatRoom === room that message is send to
         // chatEnd.current.scrollIntoView({ behavior: 'smooth' });
         console.log(props.chatMessages.length);
-        scrollIntoLastMessage.current.childNodes[9].scrollIntoView({
-          behavior: 'smooth',
-        });
+        if (props.chatMessages.length >= 10) {
+          scrollIntoLastMessage.current.childNodes[9].scrollIntoView({
+            behavior: 'smooth',
+          });
+        } else if (props.chatMessages.length > 0) {
+          scrollIntoLastMessage.current.childNodes[props.chatMessages.length - 1].scrollIntoView({
+            behavior: 'smooth',
+          });
+        }
 
         // When the received message is in the activeChatRoom, mark the message as read
         let memberId = props.activeChatRoom.members.filter(member => member._id !== user._id);
