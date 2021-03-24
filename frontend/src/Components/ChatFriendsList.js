@@ -30,6 +30,8 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
 import Tooltip from '@material-ui/core/Tooltip';
 import GroupChat from './GroupChat';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import CreateGroupModal from '../util/CreateGroupModal';
 
 // online badge icon
 const StyledBadge = withStyles(theme => ({
@@ -132,7 +134,7 @@ const ChatFriendsList = props => {
   return (
     <List>
       <Grid container justify='space-between'>
-        <Grid item xs={6} style={{ borderRight: '1px solid lightgrey' }}>
+        <Grid item xs={4} style={{ borderRight: '1px solid lightgrey' }}>
           <ListItem
             button
             onClick={e => {
@@ -148,7 +150,7 @@ const ChatFriendsList = props => {
             </ListItemText>
           </ListItem>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4} style={{ borderRight: '1px solid lightgrey' }}>
           <ListItem
             style={{ justifyContent: 'center' }}
             button
@@ -184,6 +186,9 @@ const ChatFriendsList = props => {
             )}
           </ListItem>
         </Grid>
+
+        {/* Add Group */}
+        <CreateGroupModal />
       </Grid>
 
       {/* Render chats with messages with more than 2 members */}
