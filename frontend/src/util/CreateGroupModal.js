@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+
+// Redux
+import { connect, useDispatch } from 'react-redux';
+
+// Redux chatMessage actions
+import { createChatRoom } from '../redux/actions/chatMessageActions';
+
+// Helper
 import { firstCharUpperCase } from '../util/helperFunctions';
-// Components
 
 // MUI
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,12 +20,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
-
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,6 +46,12 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(0.5, 0),
     backgroundColor: theme.palette.background.paper,
+  },
+  input: {
+    '& > *': {
+      margin: theme.spacing(1),
+      width: '25ch',
+    },
   },
   submit: {
     marginTop: 20,
@@ -66,6 +78,7 @@ const CreateGroupModal = props => {
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState([]);
   const [right, setRight] = useState([]);
+  const [groupName, setGroupName] = useState('');
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -119,15 +132,30 @@ const CreateGroupModal = props => {
     console.log('Add users left');
     let users = [];
     props.users.map(user => {
-      return users.push(user);
+      return props.user._id !== user._id && users.push(user);
     });
     setLeft(users);
     console.log(users);
   }, [open]);
 
-  //   Enable the submit button when > 2 users are selected
-  const handleSubmit = selectedUsers => {
+  //   Enable the submit button when 2 or more users are selected, + add current user
+  const handleSubmit = (e, selectedUsers) => {
+    e.preventDefault();
+    console.log(groupName);
+    selectedUsers = [...selectedUsers, props.user];
     console.log(selectedUsers);
+
+    selectedUsers.map(user => {
+      console.log(user._id);
+    });
+
+    props.createChatRoom(
+      props.socket,
+      selectedUsers.map(user => user._id),
+    );
+
+    // When ready
+    setGroupName('');
   };
 
   const customList = (title, items) => {
@@ -178,7 +206,7 @@ const CreateGroupModal = props => {
   const modalBody = (
     <>
       <Grid container spacing={2} justify='center' alignItems='center' className={classes.root}>
-        <Grid item>{customList('Selecteer minimaal 3 leden', left)}</Grid>
+        <Grid item>{customList('Selecteer minimaal 2 leden', left)}</Grid>
         <Grid item>
           <Grid container direction='column' alignItems='center'>
             <Button
@@ -203,17 +231,34 @@ const CreateGroupModal = props => {
         </Grid>
         <Grid item>{customList('Geselecteerd', right)}</Grid>
       </Grid>
-      <Button
-        disabled={right.length > 2 ? false : true}
-        onClick={() => {
+
+      {/* Form */}
+      <form
+        onSubmit={e => {
           console.log('submit create group');
-          handleSubmit(right);
+          handleSubmit(e, right);
         }}
-        className={classes.submit}
-        variant='contained'
-        color='primary'>
-        Groep Aanmaken
-      </Button>
+        className={classes.input}
+        noValidate
+        autoComplete='off'>
+        <TextField
+          value={groupName}
+          onChange={e => setGroupName(e.target.value)}
+          id='standard-basic'
+          label='Naam'
+        />
+        <Button
+          disabled={right.length > 1 ? false : true}
+          className={classes.submit}
+          onClick={e => {
+            console.log('submit create group');
+            handleSubmit(e, right);
+          }}
+          variant='contained'
+          color='primary'>
+          Groep Aanmaken
+        </Button>
+      </form>
     </>
   );
 
@@ -255,10 +300,11 @@ const CreateGroupModal = props => {
 
 const mapStateToProps = state => {
   return {
+    socket: state.socket.socket,
     user: state.user.user,
     users: state.user.users,
     theme: state.theme.theme,
   };
 };
 
-export default connect(mapStateToProps)(CreateGroupModal);
+export default connect(mapStateToProps, { createChatRoom })(CreateGroupModal);

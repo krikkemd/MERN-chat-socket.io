@@ -30,7 +30,6 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
 import Tooltip from '@material-ui/core/Tooltip';
 import GroupChat from './GroupChat';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import CreateGroupModal from '../util/CreateGroupModal';
 
 // online badge icon

@@ -64,17 +64,33 @@ export const createChatRoom = (socket, ...members) => dispatch => {
   let newChatRoom = {
     members: members,
   };
+
   console.log(newChatRoom);
+  console.log(...members);
 
-  axios
-    .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
-    .then(res => {
-      console.log(res.data);
-      socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+  if (newChatRoom.members.length === 2) {
+    console.log('createChatRoom with 2 members');
+    // axios
+    // .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+    // .then(res => {
+    //   console.log(res.data);
+    //   socket.emit(CREATED_CHAT_ROOM, res.data.doc);
 
-      dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
-    })
-    .catch(err => console.log(err));
+    //   dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+    // })
+    // .catch(err => console.log(err));
+  } else {
+    console.log('create chatRoom with > 2 members');
+    // axios
+    // .post(`http://localhost:1337/api/v1/rooms`, ...members)
+    // .then(res => {
+    //   console.log(res.data);
+    //   socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+
+    //   dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+    // })
+    // .catch(err => console.log(err));
+  }
 };
 
 // Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE
