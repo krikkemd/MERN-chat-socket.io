@@ -72,6 +72,8 @@ function union(a, b) {
 }
 
 const CreateGroupModal = props => {
+  console.log(props);
+
   const classes = useStyles();
   console.log(classes);
   const [open, setOpen] = useState(false);
@@ -237,7 +239,10 @@ const CreateGroupModal = props => {
       <form
         onSubmit={e => {
           console.log('submit create group');
-          handleSubmit(e, right);
+          if (groupName.length < 1) {
+            console.log('Geef een groepsnaam op');
+          }
+          e.preventDefault();
         }}
         className={classes.input}
         noValidate
@@ -247,6 +252,7 @@ const CreateGroupModal = props => {
           onChange={e => setGroupName(e.target.value)}
           id='standard-basic'
           label='Groepsnaam'
+          // error={props.errors && props.errors.length > 0 ? true : false}
         />
         <Button
           disabled={right.length > 1 ? false : true}
@@ -303,6 +309,7 @@ const mapStateToProps = state => {
     socket: state.socket.socket,
     user: state.user.user,
     users: state.user.users,
+    errors: state.user.errors,
     theme: state.theme.theme,
   };
 };

@@ -5,8 +5,8 @@ const chatRoomSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      minlength: 1,
-      maxlength: 25,
+      minlength: [1, 'Groepsnaam te kort'],
+      maxlength: [25, 'Groepsnaam te lang, maximaal 25 tekens'],
     },
     description: String,
     members: [

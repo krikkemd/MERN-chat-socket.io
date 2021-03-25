@@ -6,6 +6,7 @@ import {
   SET_USER_CHATROOMS,
   SET_LAST_CHAT_MESSAGE,
   CREATED_CHAT_ROOM,
+  SET_ERRORS,
 } from '../types';
 import axios from '../../config/axios';
 
@@ -70,17 +71,31 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
 
   if (newChatRoom.members.length === 2) {
     console.log('createChatRoom with 2 members');
-    // axios
-    //   .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
-    //   .then(res => {
-    //     console.log(res.data);
-    //     socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+    axios
+      .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+      .then(res => {
+        console.log(res.data);
+        socket.emit(CREATED_CHAT_ROOM, res.data.doc);
 
-    //     dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
-    //   })
-    //   .catch(err => console.log(err));
+        dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+      })
+      .catch(err => console.log(err));
   } else {
     console.log('create chatRoom with > 2 members');
+
+    if (name.length < 1) {
+      return dispatch({
+        type: SET_ERRORS,
+        payload: 'Groepsnaam is te kort',
+      });
+    } else if (name.length > 25) {
+      return dispatch({
+        type: SET_ERRORS,
+        payload: {
+          error: 'Groepsnaam is te lang, gebruik maximaal 25 tekens.',
+        },
+      });
+    }
 
     // members: ['60599e90e50ae834b8a4db37', '6059a170e50ae834b8a4db4c'];
     // console.log(Object.values(...members));
@@ -98,7 +113,7 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
 
         dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err.response.data.error.errors.name.message));
   }
 };
 

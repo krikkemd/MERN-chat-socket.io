@@ -94,7 +94,7 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        errors: action.payload,
+        errors: [...state.errors, action.payload],
       };
 
     default:
