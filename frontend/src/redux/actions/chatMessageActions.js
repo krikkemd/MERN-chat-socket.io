@@ -59,7 +59,7 @@ export const getAllUserChatRooms = () => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const createChatRoom = (socket, ...members) => dispatch => {
+export const createChatRoom = (socket, name, ...members) => dispatch => {
   console.log(socket);
   let newChatRoom = {
     members: members,
@@ -71,25 +71,34 @@ export const createChatRoom = (socket, ...members) => dispatch => {
   if (newChatRoom.members.length === 2) {
     console.log('createChatRoom with 2 members');
     // axios
-    // .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
-    // .then(res => {
-    //   console.log(res.data);
-    //   socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+    //   .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+    //   .then(res => {
+    //     console.log(res.data);
+    //     socket.emit(CREATED_CHAT_ROOM, res.data.doc);
 
-    //   dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
-    // })
-    // .catch(err => console.log(err));
+    //     dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+    //   })
+    //   .catch(err => console.log(err));
   } else {
     console.log('create chatRoom with > 2 members');
-    // axios
-    // .post(`http://localhost:1337/api/v1/rooms`, ...members)
-    // .then(res => {
-    //   console.log(res.data);
-    //   socket.emit(CREATED_CHAT_ROOM, res.data.doc);
 
-    //   dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
-    // })
-    // .catch(err => console.log(err));
+    // members: ['60599e90e50ae834b8a4db37', '6059a170e50ae834b8a4db4c'];
+    // console.log(Object.values(...members));
+    newChatRoom = {
+      name: name,
+      members: Object.values(...members),
+    };
+
+    console.log(newChatRoom);
+    axios
+      .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+      .then(res => {
+        console.log(res.data);
+        socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+
+        dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+      })
+      .catch(err => console.log(err));
   }
 };
 

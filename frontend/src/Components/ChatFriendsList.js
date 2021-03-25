@@ -114,7 +114,7 @@ const ChatFriendsList = props => {
       // TODO: Notification on unread messages
       // TODO: set an expiry time on the chatRoom if no messages are sent within one hour/day?
       // TODO: process nog een x doorlopen, misschien kan er wel een emit of dispatch tussen uit. bijvoorbeeld na onchange, als we toch emitten naar iedereen, en dan pas de members filteren.
-      props.createChatRoom(props.socket, clickedContact._id, props.user._id);
+      props.createChatRoom(props.socket, null, clickedContact._id, props.user._id);
     }
   };
 

@@ -48,14 +48,14 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   input: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+
     '& > *': {
       margin: theme.spacing(1),
       width: '25ch',
     },
-  },
-  submit: {
-    marginTop: 20,
-    left: '45.5%',
   },
 }));
 
@@ -151,6 +151,7 @@ const CreateGroupModal = props => {
 
     props.createChatRoom(
       props.socket,
+      groupName,
       selectedUsers.map(user => user._id),
     );
 
@@ -245,11 +246,10 @@ const CreateGroupModal = props => {
           value={groupName}
           onChange={e => setGroupName(e.target.value)}
           id='standard-basic'
-          label='Naam'
+          label='Groepsnaam'
         />
         <Button
           disabled={right.length > 1 ? false : true}
-          className={classes.submit}
           onClick={e => {
             console.log('submit create group');
             handleSubmit(e, right);

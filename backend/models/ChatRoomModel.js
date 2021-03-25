@@ -3,7 +3,11 @@ const { User } = require('./UserModel');
 
 const chatRoomSchema = new mongoose.Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      minlength: 1,
+      maxlength: 25,
+    },
     description: String,
     members: [
       {
@@ -18,7 +22,6 @@ const chatRoomSchema = new mongoose.Schema(
       // default: Date.now,
       index: { expires: null },
     },
-    // members: Array,
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } },
 );
