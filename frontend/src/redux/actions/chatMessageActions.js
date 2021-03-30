@@ -75,9 +75,11 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
       .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
       .then(res => {
         console.log(res.data);
-        socket.emit(CREATED_CHAT_ROOM, res.data.doc);
 
-        dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+        if (res.data) {
+          socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+          dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+        }
       })
       .catch(err => console.log(err));
   } else {
@@ -105,6 +107,7 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
     };
 
     console.log(newChatRoom);
+
     axios
       .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
       .then(res => {
@@ -113,7 +116,7 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
 
         dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
       })
-      .catch(err => console.log(err.response.data.error.errors.name.message));
+      .catch(err => console.log(err.response.data));
   }
 };
 

@@ -14,11 +14,14 @@ import {
 // Types
 import { TOGGLE_CHAT, TOGGLE_CONTACTS, SET_NO_ACTIVE_CHATROOM } from '../redux/types';
 
+// Components
+import { StyledBadge } from '../util/StyledBadge';
+
 // Helper functions
 import { firstCharUpperCase } from '../util/helperFunctions';
 
 // MUI
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -32,33 +35,15 @@ import Tooltip from '@material-ui/core/Tooltip';
 import GroupChat from './GroupChat';
 import CreateGroupModal from '../util/CreateGroupModal';
 
-// online badge icon
-const StyledBadge = withStyles(theme => ({
-  badge: {
-    backgroundColor: '#44b700',
-    color: '#44b700',
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    '&::after': {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      borderRadius: '50%',
-      animation: '$ripple 1.2s infinite ease-in-out',
-      border: '1px solid currentColor',
-      content: '""',
-    },
+const useStyles = makeStyles(theme => ({
+  chatButtons: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+    backgroundColor: theme.palette.background.paper,
+    justify: 'space-between',
   },
-  '@keyframes ripple': {
-    '0%': {
-      transform: 'scale(.8)',
-      opacity: 1,
-    },
-    '100%': {
-      transform: 'scale(2.4)',
-      opacity: 0,
-    },
-  },
-}))(Badge);
+}));
 
 const ChatFriendsList = props => {
   // authroute calls getsAllUserRooms, which queries the chatrooms with {req.user._id} where the current logged in user is a member of.
@@ -67,6 +52,7 @@ const ChatFriendsList = props => {
   // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms. (SERVER SIDE: NO LONGER TRUE)
   // in socketManager we query the chatRooms where the user is a member, we loop through the rooms and socket.join them all.
 
+  const classes = useStyles();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -132,7 +118,7 @@ const ChatFriendsList = props => {
 
   return (
     <List>
-      <Grid container justify='space-between'>
+      <Grid container className={classes.chatButtons}>
         <Grid item xs={4} style={{ borderRight: '1px solid lightgrey' }}>
           <ListItem
             button

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { User } = require('./UserModel');
+const AppError = require('../util/appError');
 
 const chatRoomSchema = new mongoose.Schema(
   {
@@ -38,6 +39,26 @@ chatRoomSchema.pre(/^find/, function (next) {
 chatRoomSchema.pre('save', async function (next) {
   const membersPromises = this.members.map(async id => await User.findById(id));
   this.members = await Promise.all(membersPromises);
+  this.chatMessages = [];
+  next();
+});
+
+// Check the numbers of groupmembers. If there are more than 10 members, return
+chatRoomSchema.pre('save', async function (next) {
+  const membersPromises = this.members.map(async id => await User.findById(id));
+
+  console.log('✅✅✅✅✅✅');
+  console.log(membersPromises.length);
+
+  if (membersPromises.length > 10) {
+    console.log('too many members selected');
+    return next(new AppError('Too many members selected', 500));
+  }
+
+  this.members = await Promise.all(membersPromises);
+
+  console.log(this.members.length);
+
   this.chatMessages = [];
   next();
 });
