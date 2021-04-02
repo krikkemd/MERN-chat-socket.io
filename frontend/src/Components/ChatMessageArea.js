@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Redux
 import { connect, useDispatch } from 'react-redux';

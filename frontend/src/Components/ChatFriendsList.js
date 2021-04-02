@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   chatButtons: {
     position: 'sticky',
     top: 0,
-    zIndex: 10,
+    zIndex: 1000,
     backgroundColor: theme.palette.background.paper,
     justify: 'space-between',
   },

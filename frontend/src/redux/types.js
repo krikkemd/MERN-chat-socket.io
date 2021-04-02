@@ -42,3 +42,4 @@ export const SET_DARK_THEME = 'SET_DARK_THEME';
 
 // ERROR TYPES
 export const SET_ERRORS = 'SET_ERRORS';
+export const CLEAR_ERRORS = 'CLEAR_ERRORS';

@@ -314,4 +314,10 @@ const mapStateToProps = state => {
   };
 };
 
+// TODO:
+// ABLE TO CREATE GROUPS WITH 1 MEMBER SELECTED
+// ABLE TO CREATE GROUP WITH 0 MEMBERS, WITH A NAME
+// ERROR HANDLING WITH DISPATCH? helpertext props.errors[props.errors.length - 1]
+// AANLEVERING VAN DATA IN CREATECHATROOM VANUIT FRIENDLIST, MEMBERS.LENGHT KLOPT NIET
+
 export default connect(mapStateToProps, { createChatRoom })(CreateGroupModal);

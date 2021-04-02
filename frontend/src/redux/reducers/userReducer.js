@@ -1,5 +1,6 @@
 import {
   SET_ERRORS,
+  CLEAR_ERRORS,
   LOGIN_USER,
   SET_CURRENT_USER,
   GET_ALL_USERS,
@@ -95,6 +96,12 @@ export default function userReducer(state = initialState, action) {
         ...state,
         loading: false,
         errors: [...state.errors, action.payload],
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        errors: [],
       };
 
     default:
