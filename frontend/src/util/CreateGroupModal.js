@@ -147,7 +147,7 @@ const CreateGroupModal = props => {
     selectedUsers = [...selectedUsers, props.user];
     console.log(selectedUsers);
 
-    selectedUsers.map(user => {
+    selectedUsers.forEach(user => {
       console.log(user._id);
     });
 

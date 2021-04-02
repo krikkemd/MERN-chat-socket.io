@@ -121,7 +121,7 @@ const ChatMessageArea = props => {
       console.log(createdChatRoom);
 
       // if the the current logged in user is a member of the new created chatroom, dispatch add the chatroom to the state. emit the chatroom to the server from all members, so they can all socket.join(theNewChatRoom) serverside
-      createdChatRoom.members.map(member => {
+      createdChatRoom.members.forEach(member => {
         if (member._id === user._id) {
           console.log(member);
           dispatch({ type: CREATE_CHAT_ROOM, payload: createdChatRoom });

@@ -44,6 +44,7 @@ const GroupChat = props => {
                 />
               );
             }
+            return null;
           })}
         </AvatarGroup>
       </ListItemIcon>
@@ -63,6 +64,7 @@ const GroupChat = props => {
             if (lastMessage && lastMessage.chatRoomId === room._id) {
               return lastMessage.body;
             }
+            return null;
           })}
           align='right'></ListItemText>
       </Badge>

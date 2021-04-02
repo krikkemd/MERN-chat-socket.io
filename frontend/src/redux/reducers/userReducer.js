@@ -51,7 +51,7 @@ export default function userReducer(state = initialState, action) {
       const sortedByOnlineUsers = [...state.users];
 
       // Display online users on top in the contacts friendlist
-      sortedByOnlineUsers.map(user => {
+      sortedByOnlineUsers.forEach(user => {
         if (Object.values(onlineUsers).includes(user._id)) {
           console.log(user);
           user.online = true;

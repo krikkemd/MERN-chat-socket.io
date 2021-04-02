@@ -54,6 +54,7 @@ export default function chatMessageReducer(state = initialState, action) {
         if (message.chatRoomId === action.payload.chatRoomId) {
           return (newLastMessages[i] = { ...action.payload });
         }
+        return null;
       });
 
       return {
@@ -96,6 +97,7 @@ export default function chatMessageReducer(state = initialState, action) {
         ) {
           return room;
         }
+        return null;
       });
 
       sortedChatRooms.sort((a, b) => {
@@ -103,7 +105,7 @@ export default function chatMessageReducer(state = initialState, action) {
           return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
         } else {
           console.log('NO CHATMESSAGES TO SORT');
-          return;
+          return null;
         }
       });
 
@@ -119,8 +121,10 @@ export default function chatMessageReducer(state = initialState, action) {
               // console.log(message);
               message.read = true;
             }
+            return null;
           });
         }
+        return null;
       });
 
       return {
@@ -141,8 +145,10 @@ export default function chatMessageReducer(state = initialState, action) {
             if (message.read === false) {
               message.read = true;
             }
+            return null;
           });
         }
+        return null;
       });
       console.log(rooms);
 

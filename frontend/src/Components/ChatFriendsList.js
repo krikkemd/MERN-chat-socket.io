@@ -64,8 +64,8 @@ const ChatFriendsList = props => {
   // check if there is a chatroom with the clicked on contact. create one if there is not.
   const checkIfContactHasChatRoom = clickedContact => {
     let chatroom;
-    props.chatRooms.map(room => {
-      room.members.map(member => {
+    props.chatRooms.forEach(room => {
+      room.members.forEach(member => {
         if (clickedContact._id === member._id && room.members.length <= 2) {
           chatroom = room;
         }
@@ -240,6 +240,7 @@ const ChatFriendsList = props => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {
                                 return lastMessage.body;
                               }
+                              return null;
                             })}
                             align='right'></ListItemText>
                         </Badge>
@@ -288,6 +289,7 @@ const ChatFriendsList = props => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {
                                 return lastMessage.body;
                               }
+                              return null;
                             })}
                             align='right'
                           />
@@ -296,6 +298,7 @@ const ChatFriendsList = props => {
                     );
                   }
                 }
+                return null;
               })
             );
           })
@@ -363,6 +366,7 @@ const ChatFriendsList = props => {
                 </ListItem>
               );
             }
+            return null;
           })}
     </List>
   );
