@@ -144,7 +144,6 @@ const CreateGroupModal = props => {
     e.preventDefault();
     console.log(groupName);
     selectedUsers = [...selectedUsers, props.user];
-    console.log(selectedUsers);
 
     if (selectedUsers.length <= 2)
       return dispatch({ type: SET_ERRORS, payload: 'Groep heeft te weinig leden' });
@@ -318,9 +317,5 @@ const mapStateToProps = state => {
     theme: state.theme.theme,
   };
 };
-
-// TODO:
-// ABLE TO CREATE GROUPS WITH 1 MEMBER SELECTED
-// AANLEVERING VAN DATA IN CREATECHATROOM VANUIT FRIENDLIST, MEMBERS.LENGHT KLOPT NIET
 
 export default connect(mapStateToProps, { createChatRoom })(CreateGroupModal);
