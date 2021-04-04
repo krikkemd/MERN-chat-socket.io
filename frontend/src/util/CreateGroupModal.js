@@ -26,7 +26,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
-import { CLEAR_ERRORS } from '../redux/types';
+import { CLEAR_ERRORS, SET_ERRORS } from '../redux/types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -146,6 +146,9 @@ const CreateGroupModal = props => {
     selectedUsers = [...selectedUsers, props.user];
     console.log(selectedUsers);
 
+    if (selectedUsers.length <= 2)
+      return dispatch({ type: SET_ERRORS, payload: 'Groep heeft te weinig leden' });
+
     selectedUsers.forEach(user => {
       console.log(user._id);
     });
@@ -208,7 +211,7 @@ const CreateGroupModal = props => {
   const modalBody = (
     <>
       <Grid container spacing={2} justify='center' alignItems='center' className={classes.root}>
-        <Grid item>{customList('Selecteer minimaal 2 leden', left)}</Grid>
+        <Grid item>{customList('Selecteer min 2 & max 9 leden', left)}</Grid>
         <Grid item>
           <Grid container direction='column' alignItems='center'>
             <Button
@@ -318,8 +321,6 @@ const mapStateToProps = state => {
 
 // TODO:
 // ABLE TO CREATE GROUPS WITH 1 MEMBER SELECTED
-// ABLE TO CREATE GROUP WITH 0 MEMBERS, WITH A NAME
-// ERROR HANDLING WITH DISPATCH? helpertext props.errors[props.errors.length - 1]
 // AANLEVERING VAN DATA IN CREATECHATROOM VANUIT FRIENDLIST, MEMBERS.LENGHT KLOPT NIET
 
 export default connect(mapStateToProps, { createChatRoom })(CreateGroupModal);

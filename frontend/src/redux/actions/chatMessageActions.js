@@ -119,7 +119,10 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
 
         dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
       })
-      .catch(err => console.log(err.response.data));
+      .catch(err => {
+        console.log(err.response.data);
+        return dispatch({ type: SET_ERRORS, payload: err.response.data.message });
+      });
   }
 };
 
