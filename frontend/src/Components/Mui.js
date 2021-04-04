@@ -84,13 +84,13 @@ const Mui = props => {
       </Grid>
 
       {/* Friends list */}
-      <Grid container xs={12}>
+      <Grid item container xs={12}>
         <Grid item xs={3} className={classes.list}>
           <ChatFriendList />
         </Grid>
 
         {/* Chat Messages */}
-        <Grid container xs={9} md={9}>
+        <Grid item container xs={9} md={9}>
           <Grid item xs={12} className={classes.chatMessages} onScroll={handleScroll}>
             <ChatMessageArea />
           </Grid>

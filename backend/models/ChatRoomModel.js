@@ -45,6 +45,7 @@ chatRoomSchema.pre('save', async function (next) {
 
 // Check the numbers of groupmembers. If there are more than 10 members, return
 chatRoomSchema.pre('save', async function (next) {
+  console.log('Check the numbers of groupmembers');
   const membersPromises = this.members.map(async id => await User.findById(id));
 
   console.log('✅✅✅✅✅✅');
@@ -53,6 +54,8 @@ chatRoomSchema.pre('save', async function (next) {
   if (membersPromises.length > 10) {
     console.log('too many members selected');
     return next(new AppError('Too many members selected', 500));
+  } else if (membersPromises.length < 2) {
+    return next(new AppError('Not enough members selected', 500));
   }
 
   this.members = await Promise.all(membersPromises);

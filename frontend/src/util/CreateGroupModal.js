@@ -26,6 +26,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
+import { CLEAR_ERRORS } from '../redux/types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,10 +73,8 @@ function union(a, b) {
 }
 
 const CreateGroupModal = props => {
-  console.log(props);
-
+  const dispatch = useDispatch();
   const classes = useStyles();
-  console.log(classes);
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState([]);
@@ -239,20 +238,23 @@ const CreateGroupModal = props => {
       <form
         onSubmit={e => {
           console.log('submit create group');
-          if (groupName.length < 1) {
-            console.log('Geef een groepsnaam op');
-          }
-          e.preventDefault();
+          handleSubmit(e, right);
         }}
         className={classes.input}
         noValidate
         autoComplete='off'>
         <TextField
           value={groupName}
-          onChange={e => setGroupName(e.target.value)}
+          onChange={e => {
+            dispatch({ type: CLEAR_ERRORS });
+            setGroupName(e.target.value);
+          }}
           id='standard-basic'
           label='Groepsnaam'
-          // error={props.errors && props.errors.length > 0 ? true : false}
+          error={props.errors && props.errors.length > 0 ? true : false}
+          helperText={
+            props.errors && props.errors.length > 0 ? props.errors[props.errors.length - 1] : ''
+          }
         />
         <Button
           disabled={right.length > 1 ? false : true}

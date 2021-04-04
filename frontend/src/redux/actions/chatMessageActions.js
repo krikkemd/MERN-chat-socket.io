@@ -67,6 +67,7 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
   };
 
   console.log(newChatRoom);
+  console.log(members);
   console.log(...members);
 
   if (newChatRoom.members.length === 2) {
@@ -86,11 +87,13 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
     console.log('create chatRoom with > 2 members');
 
     if (name.length < 1) {
+      console.log('Groepsnaam is te kort');
       return dispatch({
         type: SET_ERRORS,
         payload: 'Groepsnaam is te kort',
       });
     } else if (name.length > 25) {
+      console.log('Groepsnaam is te lang, gebruik maximaal 25 tekens.');
       return dispatch({
         type: SET_ERRORS,
         payload: {

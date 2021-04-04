@@ -1,7 +1,7 @@
 import teal from '@material-ui/core/colors/teal';
 import purple from '@material-ui/core/colors/purple';
 
-export default {
+const lightTheme = {
   palette: {
     type: 'light',
     primary: {
@@ -90,3 +90,5 @@ export default {
     },
   },
 };
+
+export default lightTheme;
