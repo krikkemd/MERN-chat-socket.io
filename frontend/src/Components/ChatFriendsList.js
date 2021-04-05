@@ -43,6 +43,10 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
     justify: 'space-between',
   },
+  noMessages: {
+    paddingTop: 30,
+    justifyContent: 'center',
+  },
 }));
 
 const ChatFriendsList = props => {
@@ -88,6 +92,13 @@ const ChatFriendsList = props => {
       // There is no chatRoom, stay in 'contacts'
       dispatch({ type: TOGGLE_CONTACTS });
       console.log('no chatroom');
+
+      // TODO:
+      // ONCLICK CONTACT WHEN PAGE IS REFRESHED CREATES NEW CHAT ROOM
+      // Remove empty chatrooms
+      // lastMessage truncate
+      // Wrap chat messages
+      // Check group title length
 
       // chatmessages: [] at chatroomModel?
       // If there is no chatroom found, create a new chatroom.
@@ -368,6 +379,9 @@ const ChatFriendsList = props => {
             }
             return null;
           })}
+      {props.chatRooms.length === 0 && toggleFriendList === 'chats' && (
+        <ListItem className={classes.noMessages}>Geen berichten gevonden...</ListItem>
+      )}
     </List>
   );
 };

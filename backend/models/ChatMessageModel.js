@@ -16,6 +16,8 @@ const messageSchema = new mongoose.Schema(
     body: {
       type: String,
       required: [true, 'chat message cannot be empty'],
+      minlength: [1, 'Een bericht moet bestaan uit minimaal 1 karakter'],
+      maxlength: [2000, 'Maximaal 2000 karakters per bericht'],
     },
     username: {
       type: String,

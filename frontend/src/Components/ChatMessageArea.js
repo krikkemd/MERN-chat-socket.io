@@ -31,7 +31,6 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Chip from '@material-ui/core/Chip';
 
 const ChatMessageArea = props => {
   const dispatch = useDispatch();
@@ -200,11 +199,21 @@ const ChatMessageArea = props => {
 
                   {/* chat message body */}
                   <ListItemText align={props.user._id === message.userId ? 'right' : 'left'}>
-                    <Chip
-                      label={message.body}
+                    <ListItemText
+                      style={{
+                        // backgroundColor: props.theme.palette.background.paper,
+                        backgroundColor: 'lightgray',
+                        paddingTop: 12.5,
+                        paddingBottom: 12.5,
+                        paddingLeft: 20,
+                        paddingRight: 20,
+                        borderRadius: 100 / 2,
+                        display: 'inline-flex',
+                      }}
                       align={props.user._id === message.userId ? 'right' : 'left'}
-                      color={props.user._id === message.userId ? 'primary' : 'secondary'}
-                    />
+                      color={props.user._id === message.userId ? 'primary' : 'secondary'}>
+                      {message.body}
+                    </ListItemText>
                   </ListItemText>
                 </Grid>
 
@@ -235,6 +244,7 @@ const mapStateToProps = state => {
     chatMessages: state.chat.chatMessages,
     user: state.user.user,
     activeChatRoom: state.chat.activeChatRoom,
+    theme: state.theme.theme,
   };
 };
 
