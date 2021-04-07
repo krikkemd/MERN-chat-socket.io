@@ -27,13 +27,35 @@ import {
 import moment from 'moment';
 
 // MUI
+import { makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
+const useStyles = makeStyles(theme => {
+  console.log(theme);
+  return {
+    messageBody: {
+      backgroundColor: theme.palette.primary.main,
+      color: '#fff',
+      paddingTop: 12.5,
+      paddingBottom: 12.5,
+      paddingLeft: 20,
+      paddingRight: 20,
+      borderRadius: 100 / 2,
+      boxShadow:
+        '0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%)',
+      display: 'inline-flex',
+    },
+  };
+});
+
 const ChatMessageArea = props => {
   const dispatch = useDispatch();
+  const classes = useStyles();
+
+  console.log(classes);
 
   const {
     user,
@@ -200,18 +222,11 @@ const ChatMessageArea = props => {
                   {/* chat message body */}
                   <ListItemText align={props.user._id === message.userId ? 'right' : 'left'}>
                     <ListItemText
-                      style={{
-                        // backgroundColor: props.theme.palette.background.paper,
-                        backgroundColor: 'lightgray',
-                        paddingTop: 12.5,
-                        paddingBottom: 12.5,
-                        paddingLeft: 20,
-                        paddingRight: 20,
-                        borderRadius: 100 / 2,
-                        display: 'inline-flex',
-                      }}
+                      className={classes.messageBody}
                       align={props.user._id === message.userId ? 'right' : 'left'}
-                      color={props.user._id === message.userId ? 'primary' : 'secondary'}>
+                      style={{
+                        backgroundColor: props.user._id !== message.userId && '#9c27b0',
+                      }}>
                       {message.body}
                     </ListItemText>
                   </ListItemText>

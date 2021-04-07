@@ -32,23 +32,22 @@ const GroupChat = props => {
         props.markMessagesRead(room._id, memberId);
       }}>
       <ListItemIcon>
-        <AvatarGroup max={3} spacing='medium'>
+        <AvatarGroup max={2} spacing='medium'>
           {room.members.map(member => {
             if (member._id !== props.user._id) {
-              return (
-                <Avatar
-                  alt={member.username}
-                  src={member.avatar}
-                  style={{ border: 'none' }}
-                  key={member._id}
-                />
-              );
+              return <Avatar alt={member.username} src={member.avatar} key={member._id} />;
             }
             return null;
           })}
         </AvatarGroup>
       </ListItemIcon>
-      <ListItemText primary={room.name} style={{ marginLeft: 10 }}></ListItemText>
+      <ListItemText
+        primary={room.name}
+        style={{
+          minWidth: 179.52,
+          marginLeft: 10,
+          marginRight: 10,
+        }}></ListItemText>
       <Badge
         badgeContent={
           room._id !== props.activeChatRoom._id

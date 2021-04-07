@@ -96,9 +96,7 @@ const ChatFriendsList = props => {
       // TODO:
       // ONCLICK CONTACT WHEN PAGE IS REFRESHED CREATES NEW CHAT ROOM
       // Remove empty chatrooms
-      // lastMessage truncate
-      // Wrap chat messages
-      // Check group title length
+      // Close modal on created group
 
       // chatmessages: [] at chatroomModel?
       // If there is no chatroom found, create a new chatroom.
@@ -278,7 +276,12 @@ const ChatFriendsList = props => {
                         <ListItemIcon>
                           <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
                         </ListItemIcon>
-                        <ListItemText primary={firstCharUpperCase(member.username)}>
+                        <ListItemText
+                          style={{
+                            marginRight: 10,
+                            minWidth: 213.52,
+                          }}
+                          primary={firstCharUpperCase(member.username)}>
                           {firstCharUpperCase(member.username)}
                         </ListItemText>
 

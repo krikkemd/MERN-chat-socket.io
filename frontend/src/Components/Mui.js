@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '1px solid lightgrey',
   },
   list: {
-    // minHeight: '85vh',
+    minHeight: '85vh',
     height: '821px',
     overflowX: 'hidden',
     overflowY: 'auto',
