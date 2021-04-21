@@ -49,10 +49,12 @@ export const getSingleChatRoom = roomId => dispatch => {
 };
 
 // GetAllRooms({members: "req.user._id"}) // gets all the chatrooms where the currentUser is a member
-export const getAllUserChatRooms = () => dispatch => {
+export const getAllUserChatRooms = queryString => dispatch => {
   console.log('running getAllUserChatRooms');
+
+  console.log(queryString);
   axios
-    .get('http://localhost:1337/api/v1/rooms')
+    .get(`http://localhost:1337/api/v1/rooms?${queryString}`)
     .then(res => {
       console.log(res.data);
       dispatch({ type: SET_USER_CHATROOMS, payload: res.data.chatRooms });
@@ -139,7 +141,7 @@ export const createChatMessage = chatMessage => dispatch => {
       // });
     })
     .catch(err => {
-      console.log(err.response.data);
+      console.log(err.response);
       // Redirect to log in page when not logged in
       window.location.replace('/login');
     });

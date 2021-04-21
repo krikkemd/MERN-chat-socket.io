@@ -43,7 +43,7 @@ const AuthRoute = props => {
     // When the user is set, emit the user to the backend, where the user is added to the connected userList.
     if (user._id) {
       // Get all the chatRooms the user is a member of when the user is set
-      getAllUserChatRooms();
+      getAllUserChatRooms(`members=${user._id}`);
 
       socket.emit(USER_CONNECTED, user);
       console.log('user is set');

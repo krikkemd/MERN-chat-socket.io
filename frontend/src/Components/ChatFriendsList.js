@@ -96,7 +96,11 @@ const ChatFriendsList = props => {
       // TODO:
       // ONCLICK CONTACT WHEN PAGE IS REFRESHED CREATES NEW CHAT ROOM
       // Remove empty chatrooms
+      // Add extra user to group
       // Close modal on created group
+      // chat messages read by
+      // Group images?
+      // Secure API routes + register users + close registration
 
       // chatmessages: [] at chatroomModel?
       // If there is no chatroom found, create a new chatroom.

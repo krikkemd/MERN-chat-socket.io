@@ -103,7 +103,7 @@ const ChatMessageArea = props => {
       emitLastChatMessage(messageFromBackend);
 
       // Reorder friendList to show latest conversation on top (SENDER)
-      getAllUserChatRooms();
+      getAllUserChatRooms(`members=${user._id}`);
 
       // toggle chat for the message sender
       if (user._id === messageFromBackend.userId) dispatch({ type: TOGGLE_CHAT });

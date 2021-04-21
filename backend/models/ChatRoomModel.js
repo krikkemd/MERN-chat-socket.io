@@ -24,10 +24,11 @@ const chatRoomSchema = new mongoose.Schema(
       index: { expires: null },
     },
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true },
 );
 
 chatRoomSchema.pre(/^find/, function (next) {
+  console.log('pre find chatroom');
   this.populate({
     path: 'members',
     select: 'username avatar',
@@ -72,6 +73,16 @@ chatRoomSchema.virtual('chatMessages', {
   foreignField: 'chatRoomId',
   localField: '_id',
 });
+
+// chatRoomSchema.post('find', async function (doc, next) {
+//   console.log('RUNNING POST FIND MIDDLEWARE');
+
+//   ChatRoom.find({ chatMessages: { $exists: true, $size: 0 } }).then(res => {
+//     console.log(res);
+//   });
+
+//   next();
+// });
 
 const ChatRoom = mongoose.model('ChatRoom', chatRoomSchema);
 module.exports = { ChatRoom };
