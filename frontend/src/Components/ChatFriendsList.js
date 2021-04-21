@@ -7,6 +7,7 @@ import { connect, useDispatch } from 'react-redux';
 import { getAllUsers } from '../redux/actions/userActions';
 import {
   getSingleChatRoom,
+  getAllUserChatRooms,
   createChatRoom,
   markMessagesRead,
 } from '../redux/actions/chatMessageActions';
@@ -66,7 +67,14 @@ const ChatFriendsList = props => {
   const { toggleFriendList } = props;
 
   // check if there is a chatroom with the clicked on contact. create one if there is not.
-  const checkIfContactHasChatRoom = clickedContact => {
+  const checkIfContactHasChatRoom = async clickedContact => {
+    // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
+    const recoom = await props.getAllUserChatRooms(
+      `members[all]=${clickedContact._id}&members[all]=${props.user._id}`,
+    );
+
+    console.log(recoom);
+
     let chatroom;
     props.chatRooms.forEach(room => {
       room.members.forEach(member => {
@@ -409,6 +417,7 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   getSingleChatRoom,
+  getAllUserChatRooms,
   getAllUsers,
   createChatRoom,
   markMessagesRead,

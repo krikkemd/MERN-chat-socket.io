@@ -44,12 +44,23 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
 
   console.log(req.query);
 
+  const queryObj = { ...req.query };
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = JSON.parse(queryStr.replace(/\b(all)\b/g, match => `$${match}`));
+
+  console.log(queryStr);
+
   // members: { _id: '60546994d69580265440a788', _id: '6024eb027e691904f4b006e4' }
   // { members: { _id: '603cede2e2d1512304ad4997' } }
 
   // const chatRooms = await ChatRoom.find({ members: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }],})
+  // const chatRooms = await ChatRoom.find({ members: { $in: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }] },})
+  // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
+  // marlies: 6033a9fae16ec73670656ba2
+  // mickey:  6024eb027e691904f4b006e4
+  // bobby:   603cede2e2d1512304ad4997
 
-  const chatRooms = await ChatRoom.find(req.query).populate({
+  const chatRooms = await ChatRoom.find(queryStr).populate({
     path: 'chatMessages',
     options: { sort: { createdAt: 'desc' }, perDocumentLimit: 10 },
   });
