@@ -70,32 +70,44 @@ const ChatFriendsList = props => {
   const checkIfContactHasChatRoom = async clickedContact => {
     // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
     const recoom = await props.getAllUserChatRooms(
-      `members[all]=${clickedContact._id}&members[all]=${props.user._id}`,
+      `members[all]=${clickedContact._id}&members[all]=${props.user._id}&members[size]=2`,
     );
 
     console.log(recoom);
+    console.log(recoom.chatRooms.length);
 
-    let chatroom;
-    props.chatRooms.forEach(room => {
-      room.members.forEach(member => {
-        if (clickedContact._id === member._id && room.members.length <= 2) {
-          chatroom = room;
-        }
-      });
-    });
-    console.log(chatroom);
+    // let chatroom;
+    // props.chatRooms.forEach(room => {
+    //   room.members.forEach(member => {
+    //     if (clickedContact._id === member._id && room.members.length <= 2) {
+    //       chatroom = room;
+    //     }
+    //   });
+    // });
+    // console.log(chatroom);
 
     // If there is a chatroom, set it as the activeChatRoom
-    if (chatroom) {
-      props.getSingleChatRoom(chatroom._id);
+    if (recoom.chatRooms.length) {
+      props.getSingleChatRoom(recoom.chatRooms[0]._id);
+
+      // Origineel:
+      // props.getSingleChatRoom(chatroom._id);
 
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
       // chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
-      if (chatroom.chatMessages.length > 0) {
+
+      if (recoom.chatRooms[0].chatMessages.length > 0) {
         dispatch({ type: TOGGLE_CHAT });
-        let memberId = chatroom.members.filter(member => member._id !== props.user._id);
-        props.markMessagesRead(chatroom._id, memberId);
+        let memberId = recoom.chatRooms[0].members.filter(member => member._id !== props.user._id);
+        props.markMessagesRead(recoom.chatRooms[0]._id, memberId);
       }
+
+      // Origineel:
+      // if (chatroom.chatMessages.length > 0) {
+      //   dispatch({ type: TOGGLE_CHAT });
+      //   let memberId = chatroom.members.filter(member => member._id !== props.user._id);
+      //   props.markMessagesRead(chatroom._id, memberId);
+      // }
     } else {
       // There is no chatRoom, stay in 'contacts'
       dispatch({ type: TOGGLE_CONTACTS });

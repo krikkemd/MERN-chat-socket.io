@@ -46,7 +46,9 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
 
   const queryObj = { ...req.query };
   let queryStr = JSON.stringify(queryObj);
-  queryStr = JSON.parse(queryStr.replace(/\b(all)\b/g, match => `$${match}`));
+  queryStr = JSON.parse(
+    queryStr.replace(/\b(gte|gt|lte|lt|exists|size|all)\b/g, match => `$${match}`),
+  );
 
   console.log(queryStr);
 

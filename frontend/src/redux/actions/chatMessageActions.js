@@ -53,11 +53,16 @@ export const getAllUserChatRooms = queryString => dispatch => {
   console.log('running getAllUserChatRooms');
 
   console.log(queryString);
+
   return axios
     .get(`http://localhost:1337/api/v1/rooms?${queryString}`)
     .then(res => {
       console.log(res.data);
-      dispatch({ type: SET_USER_CHATROOMS, payload: res.data.chatRooms });
+
+      if (!queryString.includes('[all]')) {
+        console.log('query does not include [all], dispatch SET_USER_CHATROOMS');
+        dispatch({ type: SET_USER_CHATROOMS, payload: res.data.chatRooms });
+      }
       return res.data;
     })
     .catch(err => console.log(err));
