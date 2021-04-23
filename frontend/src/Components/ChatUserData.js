@@ -64,7 +64,7 @@ const ChatUserData = props => {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-      <Tooltip title='Profiel' placement='bottom' arrow interactive>
+      <Tooltip title='Profiel' placement='bottom' arrow>
         <div key={props.user._id} className={classes.container} onClick={handleOpen}>
           <Avatar
             className={classes.avatar}

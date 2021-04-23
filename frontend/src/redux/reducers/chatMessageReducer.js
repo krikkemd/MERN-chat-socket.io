@@ -6,6 +6,7 @@ import {
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
   CREATE_CHAT_ROOM,
+  LEAVE_CHATROOM,
   TOGGLE_CHAT,
   TOGGLE_CONTACTS,
   SET_NO_ACTIVE_CHATROOM,
@@ -165,6 +166,27 @@ export default function chatMessageReducer(state = initialState, action) {
       return {
         ...state,
         chatRooms: [...newChatRooms, action.payload],
+      };
+    }
+    case LEAVE_CHATROOM: {
+      const newChatRooms = [...state.chatRooms];
+      console.log(newChatRooms);
+      console.log(action.payload.data._id);
+      let roomId = action.payload.data._id;
+
+      const roomIndex = newChatRooms.findIndex(room => {
+        console.log(room);
+        return room.id === roomId;
+      });
+
+      console.log(roomIndex);
+
+      newChatRooms.splice(roomIndex, 1);
+      console.log(newChatRooms);
+
+      return {
+        ...state,
+        chatRooms: newChatRooms,
       };
     }
     case SET_NO_ACTIVE_CHATROOM: {

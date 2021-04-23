@@ -7,6 +7,8 @@ import {
   SET_LAST_CHAT_MESSAGE,
   CREATED_CHAT_ROOM,
   SET_ERRORS,
+  LEAVE_CHATROOM,
+  SET_NO_ACTIVE_CHATROOM,
 } from '../types';
 import axios from '../../config/axios';
 
@@ -15,6 +17,8 @@ const baseUrl = 'http://localhost:1337/api/v1/chatMessages';
 // REDUX
 export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
   // dispatch({ type: LOADING_DATA });
+  if (!chatRoomId) return console.error('GEEN CHATROOMID');
+
   axios
     .get(`${baseUrl}?skip=${skip}&chatRoomId=${chatRoomId}`)
     .then(res => {
@@ -27,7 +31,7 @@ export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
       }
     })
     .catch(err => {
-      console.log(err.response.data);
+      console.log(err);
       // dispatch({
       //   type: SET_ERRORS,
       //   payload: err.response.data,
@@ -130,6 +134,20 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
         return dispatch({ type: SET_ERRORS, payload: err.response.data.message });
       });
   }
+};
+
+export const leaveChatRoom = roomId => dispatch => {
+  axios
+    .patch(`/api/v1/rooms/${roomId}/leaveChatRoom`)
+    .then(res => {
+      console.log('running leaveChatRoom');
+      console.log(res.data);
+      dispatch({ type: SET_NO_ACTIVE_CHATROOM });
+      dispatch({ type: LEAVE_CHATROOM, payload: res.data });
+    })
+    .catch(err => {
+      console.log(err);
+    });
 };
 
 // Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE

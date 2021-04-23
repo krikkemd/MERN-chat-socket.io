@@ -70,7 +70,7 @@ const ChatFriendsList = props => {
   const checkIfContactHasChatRoom = async clickedContact => {
     // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
     const recoom = await props.getAllUserChatRooms(
-      `members[all]=${clickedContact._id}&members[all]=${props.user._id}&members[size]=2`,
+      `members[all]=${clickedContact._id}&members[all]=${props.user._id}&members[size]=2&name[exists]=false`,
     );
 
     console.log(recoom);
@@ -209,10 +209,11 @@ const ChatFriendsList = props => {
         <CreateGroupModal />
       </Grid>
 
-      {/* Render chats with messages with more than 2 members */}
+      {/* Render chats with messages with more than 2 members (groups always include a name, rooms dont) */}
+      {/* Render group chats dus */}
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
-            if (room.members.length > 2) {
+            if (room.members.length >= 1 && room.name) {
               return <GroupChat room={room} key={room._id} />;
             }
 
@@ -221,7 +222,7 @@ const ChatFriendsList = props => {
             return (
               room.chatMessages.length > 0 &&
               room.members.map(member => {
-                if (room.members.length === 2) {
+                if (room.members.length === 2 && !room.name) {
                   if (
                     Object.values(props.connectedUsers).includes(member._id) &&
                     member.username !== props.user.username

@@ -24,6 +24,33 @@ exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, {
 }); // Populate chatMessages in the room
 exports.createChatRoom = factoryController.createOne(ChatRoom);
 exports.updateChatRoom = factoryController.updateOne(ChatRoom);
+
+exports.leaveChatRoom = catchAsync(async (req, res, next) => {
+  console.log('running updateChatroom');
+  console.log(req.params);
+  console.log(req.body);
+  const docId = req.params.id;
+  const doc = await ChatRoom.findById(docId);
+
+  if (!doc) return next(new AppError('No document found with that ID', 404));
+
+  console.log('✅✅✅👍✅✅');
+  // console.log(doc.members);
+
+  const memberIndex = doc.members.findIndex(member => {
+    return member.id === req.user._id.toString();
+  });
+
+  doc.members.splice(memberIndex, 1);
+
+  console.log(doc);
+
+  const newDoc = await doc.save();
+
+  console.log(' ✅ document updated successfully');
+  return res.status(200).json({ status: 'succces', data: newDoc });
+});
+
 exports.deleteChatRoom = factoryController.deleteOne(ChatRoom);
 
 // exports.deleteChatRoom = catchAsync(async (req, res, next) => {
@@ -58,6 +85,7 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   // const chatRooms = await ChatRoom.find({ members: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }],})
   // const chatRooms = await ChatRoom.find({ members: { $in: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }] },})
   // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
+  // members[all]=6024eb027e691904f4b006e4&members[all]=603cede2e2d1512304ad4997&members[size]=2&name[exists]=false
   // marlies: 6033a9fae16ec73670656ba2
   // mickey:  6024eb027e691904f4b006e4
   // bobby:   603cede2e2d1512304ad4997
