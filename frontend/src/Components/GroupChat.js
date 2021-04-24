@@ -35,7 +35,7 @@ const GroupChat = props => {
 
       dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId } });
     });
-  }, props.chatRooms);
+  }, [props.chatRooms]);
 
   return (
     <ListItem
