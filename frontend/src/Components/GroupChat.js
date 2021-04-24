@@ -1,8 +1,12 @@
+import { useEffect } from 'react';
 // Redux
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 // Redux ChatMessage Actions
 import { getSingleChatRoom, markMessagesRead } from '../redux/actions/chatMessageActions';
+
+// Redux Types
+import { LEFT_CHATROOM } from '../redux/types';
 
 // MUI
 import ListItem from '@material-ui/core/ListItem';
@@ -13,8 +17,25 @@ import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 
 const GroupChat = props => {
-  console.log(props);
-  const { room } = props;
+  // console.log(props);
+  const { room, socket } = props;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (socket._callbacks !== undefined && socket._callbacks['$LEFT_CHATROOM']) {
+      socket._callbacks['$LEFT_CHATROOM'].length = 0;
+    }
+
+    socket.on(LEFT_CHATROOM, ({ roomId, leftUserId }) => {
+      console.log('👻🐒');
+      console.log(socket);
+      console.log(roomId);
+      console.log(leftUserId);
+
+      dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId } });
+    });
+  }, props.chatRooms);
 
   return (
     <ListItem

@@ -27,6 +27,8 @@ const {
   EMIT_CREATED_CHAT_ROOM,
   MEMBERS_JOIN_NEW_CHAT_ROOM,
   UPDATE_AVATAR,
+  LEAVE_CHATROOM,
+  LEFT_CHATROOM,
 } = require('../types/types');
 
 let connectedUsers = {};
@@ -142,6 +144,19 @@ module.exports = socket => {
     console.log('UPDATE_AVATAR');
     console.log('UPDATE_AVATAR');
     console.log(user);
+  });
+
+  socket.on(LEAVE_CHATROOM, (roomId, leftUserId) => {
+    console.log('SOCKET_ON_LEAVE_CHATROOM ❌');
+    socket.leave(roomId);
+
+    console.log(socket.rooms);
+    console.log(leftUserId);
+    console.log(roomId);
+
+    io.emit(LEFT_CHATROOM, { roomId, leftUserId });
+
+    // NU MOETEN WE EMITTEN NAAR ALLE CLIENTS IN DIE GROEP, EN VERTELLEN DAT DIE GEBRUIKER UIT DE ROOM IS, DUS DE STATE UPDATEN EN UI RERENDEREN
   });
 
   // let roomArray = [];

@@ -83,7 +83,9 @@ const ChatUserData = props => {
         interactive
         style={{ marginLeft: 'auto', marginTop: 'auto' }}>
         <IconButton>
-          <ExitToAppIcon onClick={logout}>logout</ExitToAppIcon>
+          <ExitToAppIcon onClick={logout} style={{ color: 'white' }}>
+            logout
+          </ExitToAppIcon>
         </IconButton>
       </Tooltip>
 

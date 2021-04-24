@@ -15,6 +15,9 @@ import { connect } from 'react-redux';
 // actions
 import { leaveChatRoom } from '../redux/actions/chatMessageActions';
 
+// Types
+import { LEAVE_CHATROOM } from '../redux/types';
+
 // Helper Functions
 import { firstCharUpperCase } from '../util/helperFunctions';
 
@@ -44,6 +47,8 @@ const ChatHeader = props => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const { user, activeChatRoom, leaveChatRoom, socket } = props;
+
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -52,13 +57,12 @@ const ChatHeader = props => {
     setAnchorEl(null);
   };
 
-  const { user, activeChatRoom, leaveChatRoom } = props;
-
   const handeLeaveChatRoom = roomId => {
     console.log('running handleLeaveChatRoom');
     console.log(roomId);
     leaveChatRoom(roomId);
     handleClose();
+    socket.emit(LEAVE_CHATROOM, roomId, user._id);
   };
 
   const contact = activeChatRoom.members?.filter(member =>
@@ -118,7 +122,7 @@ const ChatHeader = props => {
           {/* Leave Group Button */}
           <div style={{ marginLeft: 'auto', marginRight: 20, zIndex: 1 }}>
             <IconButton>
-              <SettingsIcon onClick={handleClick} />
+              <SettingsIcon onClick={handleClick} style={{ color: 'white' }} />
               <Menu
                 id='simple-menu'
                 style={{ zIndex: 2 }}
@@ -146,6 +150,7 @@ const mapStateToProps = state => {
   return {
     user: state.user.user,
     activeChatRoom: state.chat.activeChatRoom,
+    socket: state.socket.socket,
   };
 };
 

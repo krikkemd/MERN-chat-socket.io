@@ -210,7 +210,7 @@ const ChatFriendsList = props => {
       </Grid>
 
       {/* Render chats with messages with more than 2 members (groups always include a name, rooms dont) */}
-      {/* Render group chats dus */}
+      {/* Render group chats */}
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
             if (room.members.length >= 1 && room.name) {
