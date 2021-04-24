@@ -192,24 +192,29 @@ export default function chatMessageReducer(state = initialState, action) {
     }
     case LEFT_CHATROOM: {
       const newChatRooms = [...state.chatRooms];
+      const newActiveChatRoom = { ...state.activeChatRoom };
 
-      console.log(action.payload);
-      console.log(newChatRooms);
+      console.log(newActiveChatRoom);
+
+      // console.log(action.payload);
+      // console.log(newChatRooms);
 
       const { roomId, leftUserId } = action.payload;
 
       newChatRooms.map(room => {
         if (room._id === roomId) {
-          console.log(room);
+          // console.log(room);
           const leftUserIndex = room.members.findIndex(member => member._id === leftUserId);
           room.members.splice(leftUserIndex, 1);
-          console.log(room);
+          newActiveChatRoom.members.splice(leftUserIndex, 1);
+          // console.log(room);
         }
       });
-      console.log(newChatRooms);
+      // console.log(newChatRooms);
       return {
         ...state,
         chatRooms: newChatRooms,
+        activeChatRoom: newActiveChatRoom,
       };
     }
     case SET_NO_ACTIVE_CHATROOM: {

@@ -10,7 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 // Redux
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 
 // actions
 import { leaveChatRoom } from '../redux/actions/chatMessageActions';
@@ -49,8 +49,6 @@ const ChatHeader = props => {
 
   const { user, activeChatRoom, leaveChatRoom, socket } = props;
 
-  const dispatch = useDispatch();
-
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -65,7 +63,6 @@ const ChatHeader = props => {
     leaveChatRoom(roomId);
     handleClose();
     socket.emit(LEAVE_CHATROOM, roomId, user._id);
-    // dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId: user._id } });
   };
 
   const contact = activeChatRoom.members?.filter(member =>
