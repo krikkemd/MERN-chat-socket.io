@@ -210,37 +210,47 @@ const ChatMessageArea = props => {
     <>
       <List ref={scrollIntoLastMessage}>
         {props.activeChatRoom.chatMessages ? (
-          props.chatMessages.map(message => (
-            <ListItem key={message._id}>
-              <Grid container>
-                <Grid item xs={12}>
-                  {/* username */}
-                  <ListItemText
-                    align={props.user._id === message.userId ? 'right' : 'left'}
-                    secondary={message.username}></ListItemText>
+          props.chatMessages.map(message => {
+            if (message.leftGroupFlag) {
+              console.log(message);
+            }
 
-                  {/* chat message body */}
-                  <ListItemText align={props.user._id === message.userId ? 'right' : 'left'}>
+            return (
+              <ListItem key={message._id}>
+                <Grid container>
+                  <Grid item xs={12}>
+                    {/* username */}
                     <ListItemText
-                      className={classes.messageBody}
+                      style={{ display: message.leftGroupFlag === true && 'none' }}
                       align={props.user._id === message.userId ? 'right' : 'left'}
-                      style={{
-                        backgroundColor: props.user._id !== message.userId && '#9c27b0',
-                      }}>
-                      {message.body}
-                    </ListItemText>
-                  </ListItemText>
-                </Grid>
+                      secondary={message.username}></ListItemText>
 
-                {/* timestamp */}
-                <Grid item xs={12}>
-                  <ListItemText
-                    align={props.user._id === message.userId ? 'right' : 'left'}
-                    secondary={moment(message.createdAt).fromNow()}></ListItemText>
+                    {/* chat message body */}
+                    <ListItemText
+                      className={message.leftGroupFlag ? 'leftGroup' : ''}
+                      align={props.user._id === message.userId ? 'right' : 'left'}>
+                      <ListItemText
+                        className={classes.messageBody}
+                        align={props.user._id === message.userId ? 'right' : 'left'}
+                        style={{
+                          backgroundColor: props.user._id !== message.userId && '#9c27b0',
+                        }}>
+                        {message.body}
+                      </ListItemText>
+                    </ListItemText>
+                  </Grid>
+
+                  {/* timestamp */}
+                  <Grid item xs={12}>
+                    <ListItemText
+                      className={message.leftGroupFlag ? 'leftGroup-timestamp' : ''}
+                      align={props.user._id === message.userId ? 'right' : 'left'}
+                      secondary={moment(message.createdAt).fromNow()}></ListItemText>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </ListItem>
-          ))
+              </ListItem>
+            );
+          })
         ) : (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             Selecteer een gesprek

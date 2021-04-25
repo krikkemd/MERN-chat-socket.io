@@ -3,7 +3,11 @@ import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 
 // Redux ChatMessage Actions
-import { getSingleChatRoom, markMessagesRead } from '../redux/actions/chatMessageActions';
+import {
+  createChatMessage,
+  getSingleChatRoom,
+  markMessagesRead,
+} from '../redux/actions/chatMessageActions';
 
 // Redux Types
 import { LEFT_CHATROOM } from '../redux/types';
@@ -27,11 +31,17 @@ const GroupChat = props => {
       socket._callbacks['$LEFT_CHATROOM'].length = 0;
     }
 
-    socket.on(LEFT_CHATROOM, ({ roomId, leftUserId }) => {
+    socket.on(LEFT_CHATROOM, ({ roomId, leftUserId, username }) => {
       console.log('👻🐒');
       console.log(socket);
       console.log(roomId);
       console.log(leftUserId);
+
+      props.createChatMessage({
+        chatRoomId: roomId,
+        body: `${username} heeft de groep verlaten.`,
+        leftGroupFlag: true,
+      });
 
       dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId } });
     });
@@ -106,4 +116,6 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { getSingleChatRoom, markMessagesRead })(GroupChat);
+export default connect(mapStateToProps, { getSingleChatRoom, markMessagesRead, createChatMessage })(
+  GroupChat,
+);

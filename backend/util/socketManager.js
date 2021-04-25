@@ -146,17 +146,25 @@ module.exports = socket => {
     console.log(user);
   });
 
-  socket.on(LEAVE_CHATROOM, (roomId, leftUserId) => {
+  socket.on(LEAVE_CHATROOM, (roomId, user) => {
     console.log('SOCKET_ON_LEAVE_CHATROOM ❌');
     socket.leave(roomId);
+
+    const leftUserId = user._id;
+    const username = user.username;
 
     console.log(socket.rooms);
     console.log(leftUserId);
     console.log(roomId);
 
-    io.emit(LEFT_CHATROOM, { roomId, leftUserId });
+    io.in(roomId).emit(LEFT_CHATROOM, { roomId, leftUserId, username });
 
-    // NU MOETEN WE EMITTEN NAAR ALLE CLIENTS IN DIE GROEP, EN VERTELLEN DAT DIE GEBRUIKER UIT DE ROOM IS, DUS DE STATE UPDATEN EN UI RERENDEREN
+    // Emitten werkt, state update maar moet meer getest worden:
+    // Lukt berichten sturen nog naar de groep, en andere chats, wie krijgen de berichten. Updaten de berichten nog netjes overal waar het hoort etc.
+    // Een melding: "Username heeft de groep verlaten" -> dit kan ook emitted worden naar de RoomID
+
+    // to all clients in room1
+    // io.in("room1").emit(/* ... */);
   });
 
   // let roomArray = [];

@@ -34,6 +34,17 @@ body {
   /* background-color: #111118; */
 }
 
+.leftGroup {
+  text-align: center !important;
+}
+
+.leftGroup > span > div {
+  background-color: #757575 !important;
+}
+.leftGroup-timestamp > p {
+  text-align: center !important;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

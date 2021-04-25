@@ -62,7 +62,7 @@ const ChatHeader = props => {
     console.log(roomId);
     leaveChatRoom(roomId);
     handleClose();
-    socket.emit(LEAVE_CHATROOM, roomId, user._id);
+    socket.emit(LEAVE_CHATROOM, roomId, user);
   };
 
   const contact = activeChatRoom.members?.filter(member =>

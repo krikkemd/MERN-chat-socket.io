@@ -47,6 +47,7 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
     body: req.body.body,
     username: req.user.username,
     userId: req.user._id,
+    leftGroupFlag: req.body.leftGroupFlag,
   });
 
   console.log('✅ chat message created');
