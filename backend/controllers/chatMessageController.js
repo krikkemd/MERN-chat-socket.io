@@ -62,7 +62,7 @@ exports.createSystemMessage = catchAsync(async (req, res, next) => {
   console.log('running CreateSystemMessage');
   const newMessage = await ChatMessage.create({
     chatRoomId: req.body.chatRoomId,
-    body: `${req.body.username} heeft de groep verlaten.`,
+    body: req.body.body,
     username: 'system',
     userId: '6085719e7c9abb247891cde9',
     systemMessage: true,

@@ -209,7 +209,7 @@ const ChatFriendsList = props => {
         <CreateGroupModal />
       </Grid>
 
-      {/* Render chats with messages with more than 2 members (groups always include a name, rooms dont) */}
+      {/* Render chats with messages with more than 1 members (groups always include a name, rooms dont) */}
       {/* Render group chats */}
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {

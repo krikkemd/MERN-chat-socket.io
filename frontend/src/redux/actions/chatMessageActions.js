@@ -125,6 +125,8 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
       .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
       .then(res => {
         console.log(res.data);
+        createSystemMessage(res.data.doc._id, `Welkom in de chatgroep: '${newChatRoom.name}'`);
+
         socket.emit(CREATED_CHAT_ROOM, res.data.doc);
 
         dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
@@ -145,7 +147,7 @@ export const leaveChatRoom = (roomId, username) => dispatch => {
       dispatch({ type: SET_NO_ACTIVE_CHATROOM });
       dispatch({ type: LEAVE_CHATROOM, payload: res.data });
 
-      createSystemMessage(roomId, username);
+      createSystemMessage(roomId, `${username} heeft de groep verlaten.`);
     })
     .catch(err => {
       console.log(err.response);
@@ -176,10 +178,10 @@ export const createChatMessage = chatMessage => dispatch => {
     });
 };
 
-export const createSystemMessage = (roomId, username) => {
+export const createSystemMessage = (roomId, message) => {
   console.log('running create system message');
   axios
-    .post(`${baseUrl}/createSystemMessage`, { chatRoomId: roomId, username })
+    .post(`${baseUrl}/createSystemMessage`, { chatRoomId: roomId, body: message })
     .then(res => {
       console.log(res);
     })
