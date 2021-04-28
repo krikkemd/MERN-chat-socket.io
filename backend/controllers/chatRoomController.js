@@ -52,6 +52,42 @@ exports.leaveChatRoom = catchAsync(async (req, res, next) => {
   return res.status(200).json({ status: 'succces', data: newDoc });
 });
 
+exports.joinChatRoom = catchAsync(async (req, res, next) => {
+  console.log('running joinChatRoom');
+  console.log(req.params);
+  console.log(req.body);
+
+  const { userId } = req.body;
+  const docId = req.params.id;
+  const doc = await ChatRoom.findById(docId);
+
+  if (!doc) return next(new AppError('No document found with that ID', 404));
+
+  console.log('✅✅✅✅✅');
+  console.log(doc.members);
+
+  const memberIndex = doc.members.findIndex(member => {
+    return member.id === userId.toString();
+  });
+
+  console.log(memberIndex);
+
+  if (memberIndex === -1) {
+    doc.members.push(userId);
+  } else {
+    return res.status(401).json({ status: 'failed', message: 'User is already in the group.' });
+  }
+
+  console.log('document just before saving:');
+  console.log(doc);
+  console.log(doc.members);
+
+  const newDoc = await doc.save();
+
+  console.log(' ✅ user joined  successfully');
+  return res.status(200).json({ status: 'succces', data: newDoc });
+});
+
 exports.deleteChatRoom = factoryController.deleteOne(ChatRoom);
 
 // exports.deleteChatRoom = catchAsync(async (req, res, next) => {

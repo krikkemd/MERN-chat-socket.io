@@ -155,6 +155,7 @@ const CreateGroupModal = props => {
     props.createChatRoom(
       props.socket,
       groupName,
+      props.user._id,
       selectedUsers.map(user => user._id),
     );
 

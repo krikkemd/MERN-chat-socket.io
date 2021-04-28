@@ -72,9 +72,10 @@ export const getAllUserChatRooms = queryString => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const createChatRoom = (socket, name, ...members) => dispatch => {
+export const createChatRoom = (socket, name, moderator, ...members) => dispatch => {
   console.log(socket);
   let newChatRoom = {
+    moderator: moderator,
     members: members,
   };
 
@@ -113,9 +114,10 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
     }
 
     // members: ['60599e90e50ae834b8a4db37', '6059a170e50ae834b8a4db4c'];
-    // console.log(Object.values(...members));
+    console.log(Object.values(...members));
     newChatRoom = {
       name: name,
+      moderator: moderator,
       members: Object.values(...members),
     };
 

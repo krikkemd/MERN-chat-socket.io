@@ -10,6 +10,11 @@ const chatRoomSchema = new mongoose.Schema(
       minlength: [1, 'Groepsnaam te kort'],
       maxlength: [20, 'Groepsnaam te lang, maximaal 20 tekens'],
     },
+    moderator: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'a chatroom should have a moderator'],
+    },
     description: String,
     members: [
       {
