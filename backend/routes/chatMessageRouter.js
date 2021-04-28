@@ -13,6 +13,7 @@ const {
   // updateChatMessage,
   markMessagesRead,
   getSingleChatMessage,
+  createSystemMessage,
 } = require('../controllers/chatMessageController');
 
 // res.locals.user
@@ -28,5 +29,7 @@ router
   .get(protectRoute, getSingleChatMessage)
   // .patch(protectRoute, updateChatMessage)
   .delete(protectRoute, deleteChatMessage);
+
+router.route('/createSystemMessage').post(protectRoute, createSystemMessage);
 
 module.exports = router;

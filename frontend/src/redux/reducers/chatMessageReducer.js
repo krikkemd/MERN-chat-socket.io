@@ -203,11 +203,11 @@ export default function chatMessageReducer(state = initialState, action) {
 
       newChatRooms.map(room => {
         if (room._id === roomId) {
-          // console.log(room);
+          console.log(room);
           const leftUserIndex = room.members.findIndex(member => member._id === leftUserId);
           room.members.splice(leftUserIndex, 1);
           newActiveChatRoom.members.splice(leftUserIndex, 1);
-          // console.log(room);
+          console.log(room);
         }
       });
       // console.log(newChatRooms);

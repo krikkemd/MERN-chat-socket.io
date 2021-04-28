@@ -136,7 +136,7 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
   }
 };
 
-export const leaveChatRoom = roomId => dispatch => {
+export const leaveChatRoom = (roomId, username) => dispatch => {
   axios
     .patch(`/api/v1/rooms/${roomId}/leaveChatRoom`)
     .then(res => {
@@ -144,6 +144,8 @@ export const leaveChatRoom = roomId => dispatch => {
       console.log(res.data);
       dispatch({ type: SET_NO_ACTIVE_CHATROOM });
       dispatch({ type: LEAVE_CHATROOM, payload: res.data });
+
+      createSystemMessage(roomId, username);
     })
     .catch(err => {
       console.log(err);
@@ -168,6 +170,18 @@ export const createChatMessage = chatMessage => dispatch => {
       console.log(err.response);
       // Redirect to log in page when not logged in
       window.location.replace('/login');
+    });
+};
+
+export const createSystemMessage = (roomId, username) => {
+  console.log('running create system message');
+  axios
+    .post(`${baseUrl}/createSystemMessage`, { chatRoomId: roomId, username })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err);
     });
 };
 

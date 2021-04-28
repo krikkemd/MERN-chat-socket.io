@@ -211,7 +211,7 @@ const ChatMessageArea = props => {
       <List ref={scrollIntoLastMessage}>
         {props.activeChatRoom.chatMessages ? (
           props.chatMessages.map(message => {
-            if (message.leftGroupFlag) {
+            if (message.systemMessage) {
               console.log(message);
             }
 
@@ -221,13 +221,13 @@ const ChatMessageArea = props => {
                   <Grid item xs={12}>
                     {/* username */}
                     <ListItemText
-                      style={{ display: message.leftGroupFlag === true && 'none' }}
+                      style={{ display: message.systemMessage === true && 'none' }}
                       align={props.user._id === message.userId ? 'right' : 'left'}
                       secondary={message.username}></ListItemText>
 
                     {/* chat message body */}
                     <ListItemText
-                      className={message.leftGroupFlag ? 'leftGroup' : ''}
+                      className={message.systemMessage ? 'leftGroup' : ''}
                       align={props.user._id === message.userId ? 'right' : 'left'}>
                       <ListItemText
                         className={classes.messageBody}
@@ -243,7 +243,7 @@ const ChatMessageArea = props => {
                   {/* timestamp */}
                   <Grid item xs={12}>
                     <ListItemText
-                      className={message.leftGroupFlag ? 'leftGroup-timestamp' : ''}
+                      className={message.systemMessage ? 'leftGroup-timestamp' : ''}
                       align={props.user._id === message.userId ? 'right' : 'left'}
                       secondary={moment(message.createdAt).fromNow()}></ListItemText>
                   </Grid>

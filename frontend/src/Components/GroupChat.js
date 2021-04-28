@@ -37,13 +37,7 @@ const GroupChat = props => {
       console.log(roomId);
       console.log(leftUserId);
 
-      props.createChatMessage({
-        chatRoomId: roomId,
-        body: `${username} heeft de groep verlaten.`,
-        leftGroupFlag: true,
-      });
-
-      dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId } });
+      dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId, username } });
     });
   }, [props.chatRooms]);
 

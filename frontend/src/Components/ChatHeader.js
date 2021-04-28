@@ -60,9 +60,14 @@ const ChatHeader = props => {
   const handeLeaveChatRoom = roomId => {
     console.log('running handleLeaveChatRoom');
     console.log(roomId);
-    leaveChatRoom(roomId);
-    handleClose();
-    socket.emit(LEAVE_CHATROOM, roomId, user);
+
+    if (window.confirm('Weet u zeker dat u de groep wilt verlaten?')) {
+      leaveChatRoom(roomId, user.username);
+      handleClose();
+      socket.emit(LEAVE_CHATROOM, roomId, user);
+    } else {
+      handleClose();
+    }
   };
 
   const contact = activeChatRoom.members?.filter(member =>

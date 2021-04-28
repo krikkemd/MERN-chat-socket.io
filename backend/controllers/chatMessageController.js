@@ -47,7 +47,7 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
     body: req.body.body,
     username: req.user.username,
     userId: req.user._id,
-    leftGroupFlag: req.body.leftGroupFlag,
+    systemMessage: req.body.systemMessage,
   });
 
   console.log('✅ chat message created');
@@ -55,6 +55,24 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
   return res.status(201).json({
     status: 'success',
     chatMessage: newMessage,
+  });
+});
+
+exports.createSystemMessage = catchAsync(async (req, res, next) => {
+  console.log('running CreateSystemMessage');
+  const newMessage = await ChatMessage.create({
+    chatRoomId: req.body.chatRoomId,
+    body: `${req.body.username} heeft de groep verlaten.`,
+    username: 'system',
+    userId: '6085719e7c9abb247891cde9',
+    systemMessage: true,
+  });
+
+  console.log('✅ system message created');
+
+  return res.status(201).json({
+    status: 'success',
+    systemMessage: newMessage,
   });
 });
 

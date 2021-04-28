@@ -34,7 +34,7 @@ const messageSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    leftGroupFlag: {
+    systemMessage: {
       type: Boolean,
       default: false,
     },
