@@ -55,7 +55,8 @@ chatRoomSchema.pre('save', async function (next) {
   if (membersPromises.length > 10) {
     console.log('too many members selected');
     return next(new AppError('Groep heeft teveel leden (max 10)', 500));
-  } else if (membersPromises.length < 2) {
+  } else if (membersPromises.length < 1) {
+    // OG: < 2
     return next(new AppError('Groep heeft te weinig leden', 500));
   }
 

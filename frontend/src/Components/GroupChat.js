@@ -32,7 +32,6 @@ const GroupChat = props => {
     }
 
     socket.on(LEFT_CHATROOM, ({ roomId, leftUserId, username }) => {
-      console.log('👻🐒');
       console.log(socket);
       console.log(roomId);
       console.log(leftUserId);
@@ -60,6 +59,10 @@ const GroupChat = props => {
         <AvatarGroup max={2} spacing='medium'>
           {room.members.map(member => {
             if (member._id !== props.user._id) {
+              return <Avatar alt={member.username} src={member.avatar} key={member._id} />;
+
+              // Return own avatar if you are the only member
+            } else if (room.members.length === 1) {
               return <Avatar alt={member.username} src={member.avatar} key={member._id} />;
             }
             return null;

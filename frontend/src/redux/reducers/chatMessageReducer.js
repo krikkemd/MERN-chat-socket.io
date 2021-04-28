@@ -93,10 +93,7 @@ export default function chatMessageReducer(state = initialState, action) {
 
       // only return the chatrooms where there are chatmessages if there are 2 room members, also return groupchats // not sure if this works correctly
       sortedChatRooms = sortedChatRooms.filter(room => {
-        if (
-          (room.chatMessages.length > 0 && room.members.length === 2) ||
-          room.members.length > 2
-        ) {
+        if (room.chatMessages.length > 0 && room.members.length >= 1) {
           return room;
         }
         return null;
@@ -206,7 +203,11 @@ export default function chatMessageReducer(state = initialState, action) {
           console.log(room);
           const leftUserIndex = room.members.findIndex(member => member._id === leftUserId);
           room.members.splice(leftUserIndex, 1);
-          newActiveChatRoom.members.splice(leftUserIndex, 1);
+
+          // Check if there is an active chatroom
+          if (Object.keys(newActiveChatRoom).length !== 0) {
+            newActiveChatRoom.members.splice(leftUserIndex, 1);
+          }
           console.log(room);
         }
       });

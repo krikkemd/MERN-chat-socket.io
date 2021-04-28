@@ -211,10 +211,6 @@ const ChatMessageArea = props => {
       <List ref={scrollIntoLastMessage}>
         {props.activeChatRoom.chatMessages ? (
           props.chatMessages.map(message => {
-            if (message.systemMessage) {
-              console.log(message);
-            }
-
             return (
               <ListItem key={message._id}>
                 <Grid container>
