@@ -61,6 +61,8 @@ const ChatHeader = props => {
     console.log('running handleLeaveChatRoom');
     console.log(roomId);
 
+    console.log(activeChatRoom);
+
     if (window.confirm('Weet u zeker dat u de groep wilt verlaten?')) {
       leaveChatRoom(roomId, user.username);
       handleClose();
@@ -99,7 +101,7 @@ const ChatHeader = props => {
       )}
 
       {/* More than 2 chat room members */}
-      {contact && activeChatRoom.members.length >= 2 && activeChatRoom.name && (
+      {contact && activeChatRoom.members.length >= 1 && activeChatRoom.name && (
         <>
           <AvatarGroup max={5}>
             {activeChatRoom.members.map(member => {

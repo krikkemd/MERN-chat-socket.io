@@ -137,10 +137,10 @@ export const createChatRoom = (socket, name, ...members) => dispatch => {
 };
 
 export const leaveChatRoom = (roomId, username) => dispatch => {
+  console.log('running leaveChatRoom');
   axios
     .patch(`/api/v1/rooms/${roomId}/leaveChatRoom`)
     .then(res => {
-      console.log('running leaveChatRoom');
       console.log(res.data);
       dispatch({ type: SET_NO_ACTIVE_CHATROOM });
       dispatch({ type: LEAVE_CHATROOM, payload: res.data });
@@ -148,7 +148,10 @@ export const leaveChatRoom = (roomId, username) => dispatch => {
       createSystemMessage(roomId, username);
     })
     .catch(err => {
-      console.log(err);
+      console.log(err.response);
+      console.log(err.message);
+      dispatch({ type: SET_NO_ACTIVE_CHATROOM });
+      dispatch({ type: LEAVE_CHATROOM, payload: { data: { _id: roomId } } });
     });
 };
 

@@ -64,7 +64,8 @@ chatRoomSchema.pre('save', async function (next) {
       if (err) {
         console.log(err);
       } else {
-        console.log(result);
+        // console.log(result);
+        console.log('chatmessages deleted successfully deleted');
       }
     });
 

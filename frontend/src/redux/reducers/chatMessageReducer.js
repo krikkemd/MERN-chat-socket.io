@@ -169,6 +169,7 @@ export default function chatMessageReducer(state = initialState, action) {
     case LEAVE_CHATROOM: {
       const newChatRooms = [...state.chatRooms];
       console.log(newChatRooms);
+      console.log(action.payload);
       console.log(action.payload.data._id);
       let roomId = action.payload.data._id;
 

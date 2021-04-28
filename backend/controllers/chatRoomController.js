@@ -26,7 +26,7 @@ exports.createChatRoom = factoryController.createOne(ChatRoom);
 exports.updateChatRoom = factoryController.updateOne(ChatRoom);
 
 exports.leaveChatRoom = catchAsync(async (req, res, next) => {
-  console.log('running updateChatroom');
+  console.log('running leaveChatRoom');
   console.log(req.params);
   console.log(req.body);
   const docId = req.params.id;
@@ -43,6 +43,7 @@ exports.leaveChatRoom = catchAsync(async (req, res, next) => {
 
   doc.members.splice(memberIndex, 1);
 
+  console.log('doc leave chatroom before save:');
   console.log(doc);
 
   const newDoc = await doc.save();
