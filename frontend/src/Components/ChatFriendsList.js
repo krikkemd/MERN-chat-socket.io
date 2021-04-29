@@ -16,6 +16,8 @@ import {
 import { TOGGLE_CHAT, TOGGLE_CONTACTS, SET_NO_ACTIVE_CHATROOM } from '../redux/types';
 
 // Components
+import CreateGroupModal from '../util/CreateGroupModal';
+import GroupChat from './GroupChat';
 import { StyledBadge } from '../util/StyledBadge';
 
 // Helper functions
@@ -33,8 +35,6 @@ import Badge from '@material-ui/core/Badge';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
 import Tooltip from '@material-ui/core/Tooltip';
-import GroupChat from './GroupChat';
-import CreateGroupModal from '../util/CreateGroupModal';
 
 const useStyles = makeStyles(theme => ({
   chatButtons: {
@@ -114,8 +114,6 @@ const ChatFriendsList = props => {
       console.log('no chatroom');
 
       // TODO:
-      // ONCLICK CONTACT WHEN PAGE IS REFRESHED CREATES NEW CHAT ROOM
-      // Remove empty chatrooms
       // Add extra user to group
       // Close modal on created group
       // chat messages read by

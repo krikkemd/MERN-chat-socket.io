@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
@@ -5,7 +6,6 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import SettingsIcon from '@material-ui/icons/Settings';
 import IconButton from '@material-ui/core/IconButton';
 
-import { useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -17,6 +17,8 @@ import { leaveChatRoom } from '../redux/actions/chatMessageActions';
 
 // Types
 import { LEAVE_CHATROOM, LEFT_CHATROOM } from '../redux/types';
+
+import JoinChatRoomModal from '../util/joinChatRoomModal';
 
 // Helper Functions
 import { firstCharUpperCase } from '../util/helperFunctions';
@@ -143,10 +145,15 @@ const ChatHeader = props => {
                   }}>
                   Groep Verlaten
                 </MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  disabled={activeChatRoom.moderator !== user._id ? true : false}>
+                  Gebruiker toevoegen
+                </MenuItem>
               </Menu>
             </IconButton>
           </div>
+          <JoinChatRoomModal />
         </>
       )}
     </div>
