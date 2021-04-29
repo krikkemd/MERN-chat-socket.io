@@ -66,9 +66,10 @@ const ChatHeader = props => {
     console.log(activeChatRoom);
 
     if (window.confirm('Weet u zeker dat u de groep wilt verlaten?')) {
-      leaveChatRoom(roomId, user.username);
+      // leaveChatRoom(socket, roomId, user.username);
+      leaveChatRoom(socket, roomId, user);
       handleClose();
-      socket.emit(LEAVE_CHATROOM, roomId, user);
+      // socket.emit(LEAVE_CHATROOM, roomId, user);
     } else {
       handleClose();
     }
@@ -145,15 +146,10 @@ const ChatHeader = props => {
                   }}>
                   Groep Verlaten
                 </MenuItem>
-                <MenuItem
-                  onClick={handleClose}
-                  disabled={activeChatRoom.moderator !== user._id ? true : false}>
-                  Gebruiker toevoegen
-                </MenuItem>
+                <JoinChatRoomModal />
               </Menu>
             </IconButton>
           </div>
-          <JoinChatRoomModal />
         </>
       )}
     </div>

@@ -31,12 +31,13 @@ const GroupChat = props => {
       socket._callbacks['$LEFT_CHATROOM'].length = 0;
     }
 
-    socket.on(LEFT_CHATROOM, ({ roomId, leftUserId, username }) => {
+    socket.on(LEFT_CHATROOM, ({ roomId, leftUserId, username, leftRoom }) => {
       console.log(socket);
       console.log(roomId);
       console.log(leftUserId);
+      console.log(leftRoom);
 
-      dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId, username } });
+      dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId, username, leftRoom } });
     });
   }, [props.chatRooms]);
 

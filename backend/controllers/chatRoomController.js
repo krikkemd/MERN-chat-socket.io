@@ -23,7 +23,26 @@ exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, {
   options: { sort: { createdAt: 'desc' }, limit: 10 },
 }); // Populate chatMessages in the room
 exports.createChatRoom = factoryController.createOne(ChatRoom);
-exports.updateChatRoom = factoryController.updateOne(ChatRoom);
+// exports.updateChatRoom = factoryController.updateOne(ChatRoom);
+
+exports.updateChatRoom = catchAsync(async (req, res, next) => {
+  console.log('running updateChatRoom');
+  const docId = req.params.id;
+  const doc = await ChatRoom.findByIdAndUpdate(docId, req.body, { new: true, runValidators: true });
+  // const doc = await ChatRoom.findById(docId);
+
+  console.log('REQ.BODY:');
+  console.log(req.body);
+
+  console.log('doc');
+  console.log(doc);
+
+  if (!doc) return next(new AppError('No document found with that ID', 404));
+
+  console.log(' ✅ document updated successfully');
+
+  return res.status(200).json({ status: 'succces', data: doc });
+});
 
 exports.leaveChatRoom = catchAsync(async (req, res, next) => {
   console.log('running leaveChatRoom');
@@ -40,6 +59,19 @@ exports.leaveChatRoom = catchAsync(async (req, res, next) => {
   const memberIndex = doc.members.findIndex(member => {
     return member.id === req.user._id.toString();
   });
+
+  console.log(doc.members[memberIndex]._id);
+  console.log(doc.moderator);
+
+  // If the leaving member is the groupMod, pass the mod to another member
+  if (doc.members[memberIndex]._id.toString() === doc.moderator.toString()) {
+    console.log('Group moderator left, change moderator');
+    doc.members.map(member => {
+      if (doc.members[memberIndex]._id !== member._id) {
+        doc.moderator = member._id;
+      }
+    });
+  }
 
   doc.members.splice(memberIndex, 1);
 

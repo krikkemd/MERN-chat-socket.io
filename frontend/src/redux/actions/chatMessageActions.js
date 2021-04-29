@@ -140,7 +140,7 @@ export const createChatRoom = (socket, name, moderator, ...members) => dispatch 
   }
 };
 
-export const leaveChatRoom = (roomId, username) => dispatch => {
+export const leaveChatRoom = (socket, roomId, user) => dispatch => {
   console.log('running leaveChatRoom');
   axios
     .patch(`/api/v1/rooms/${roomId}/leaveChatRoom`)
@@ -148,8 +148,9 @@ export const leaveChatRoom = (roomId, username) => dispatch => {
       console.log(res.data);
       dispatch({ type: SET_NO_ACTIVE_CHATROOM });
       dispatch({ type: LEAVE_CHATROOM, payload: res.data });
+      socket.emit(LEAVE_CHATROOM, roomId, user, res.data);
 
-      createSystemMessage(roomId, `${username} heeft de groep verlaten.`);
+      createSystemMessage(roomId, `${user.username} heeft de groep verlaten.`);
     })
     .catch(err => {
       console.log(err.response);
@@ -157,6 +158,24 @@ export const leaveChatRoom = (roomId, username) => dispatch => {
       dispatch({ type: SET_NO_ACTIVE_CHATROOM });
       dispatch({ type: LEAVE_CHATROOM, payload: { data: { _id: roomId } } });
     });
+};
+
+// Update we use for adding new users to the chatroom from the joinChatRoomModal
+// TODO: EMIT UPDATE STATE FOR ALL USERS IN THE ROOM, TO SHOW THAT THE ACTIVECHATROOM, AND THE FRIENDSLIST REFLECTS THE ADDED USER
+// ERROR HANDLING ON TOO MANY OR NOT ENOUGH USERS ETC. IF THE USER IS ALREADY PRESENT
+export const updateChatRoom = (socket, roomId, ...members) => dispatch => {
+  console.log('running update chatroom');
+  let chatRoom = {
+    members: Object.values(...members),
+  };
+
+  console.log(chatRoom);
+  axios
+    .patch(`/api/v1/rooms/${roomId}`, chatRoom)
+    .then(res => {
+      console.log(res.data);
+    })
+    .catch(err => console.log(err));
 };
 
 // Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE

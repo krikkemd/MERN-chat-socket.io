@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 
 // Redux chatMessage actions
-import { createChatRoom } from '../redux/actions/chatMessageActions';
+import { updateChatRoom } from '../redux/actions/chatMessageActions';
 
 // Helper
 import { firstCharUpperCase } from '../util/helperFunctions';
@@ -26,6 +26,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import { CLEAR_ERRORS, SET_ERRORS } from '../redux/types';
 
 const useStyles = makeStyles(theme => ({
@@ -173,25 +175,23 @@ const JoinChatRoomModal = props => {
   //   Enable the submit button when 2 or more users are selected, + add current user
   const handleSubmit = (e, selectedUsers) => {
     e.preventDefault();
-    console.log(groupName);
-    selectedUsers = [...selectedUsers, props.user];
+    // console.log(groupName);
+    selectedUsers = [...props.activeChatRoom.members, ...selectedUsers];
 
-    if (selectedUsers.length <= 2)
+    console.log(selectedUsers);
+
+    if (selectedUsers.length < 1)
       return dispatch({ type: SET_ERRORS, payload: 'Groep heeft te weinig leden' });
 
     selectedUsers.forEach(user => {
       console.log(user._id);
     });
 
-    props.createChatRoom(
+    props.updateChatRoom(
       props.socket,
-      groupName,
-      props.user._id,
+      props.activeChatRoom._id,
       selectedUsers.map(user => user._id),
     );
-
-    // When ready
-    setGroupName('');
   };
 
   const customList = (title, items) => {
@@ -271,13 +271,13 @@ const JoinChatRoomModal = props => {
       {/* Form */}
       <form
         onSubmit={e => {
-          console.log('submit create group');
+          console.log('submit add users to group');
           handleSubmit(e, right);
         }}
         className={classes.input}
         noValidate
         autoComplete='off'>
-        <TextField
+        {/* <TextField
           value={groupName}
           onChange={e => {
             dispatch({ type: CLEAR_ERRORS });
@@ -289,16 +289,16 @@ const JoinChatRoomModal = props => {
           helperText={
             props.errors && props.errors.length > 0 ? props.errors[props.errors.length - 1] : ''
           }
-        />
+        /> */}
         <Button
-          disabled={right.length > 1 ? false : true}
+          disabled={right.length >= 1 ? false : true}
           onClick={e => {
-            console.log('submit create group');
+            console.log('submit add users to group');
             handleSubmit(e, right);
           }}
           variant='contained'
           color='primary'>
-          Groep Aanmaken
+          toevoegen
         </Button>
       </form>
     </>
@@ -306,25 +306,11 @@ const JoinChatRoomModal = props => {
 
   return (
     <>
-      <Grid item xs={4}>
-        <ListItem
-          button
-          onClick={e => {
-            console.log('createNewGroup Modal');
-            handleOpen();
-            // toggle open modal with transfer list
-            // Select users inside the transfer list (max?)
-            // createGroup.then(close modal)
-            // Render new group (for all members?)
-          }}>
-          <ListItemText style={{ textAlign: 'center' }}>
-            <Tooltip title='Nieuwe Groep Maken' placement='top-start' arrow interactive>
-              {/* Add Group */}
-              {props.theme === 'dark' ? <GroupAddIcon /> : <GroupAddIcon color='primary' />}
-            </Tooltip>
-          </ListItemText>
-        </ListItem>
-      </Grid>
+      <MenuItem
+        onClick={handleOpen}
+        disabled={props.activeChatRoom.moderator !== props.user._id ? true : false}>
+        Gebruiker toevoegen
+      </MenuItem>
 
       <div>
         <Modal
@@ -351,4 +337,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { createChatRoom })(JoinChatRoomModal);
+export default connect(mapStateToProps, { updateChatRoom })(JoinChatRoomModal);

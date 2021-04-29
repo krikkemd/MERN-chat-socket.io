@@ -146,7 +146,7 @@ module.exports = socket => {
     console.log(user);
   });
 
-  socket.on(LEAVE_CHATROOM, (roomId, user) => {
+  socket.on(LEAVE_CHATROOM, (roomId, user, leftRoom) => {
     console.log('SOCKET_ON_LEAVE_CHATROOM ❌');
     socket.leave(roomId);
 
@@ -157,7 +157,7 @@ module.exports = socket => {
     console.log(leftUserId);
     console.log(roomId);
 
-    io.in(roomId).emit(LEFT_CHATROOM, { roomId, leftUserId, username });
+    io.in(roomId).emit(LEFT_CHATROOM, { roomId, leftUserId, username, leftRoom });
 
     // Emitten werkt, state update maar moet meer getest worden:
     // Lukt berichten sturen nog naar de groep, en andere chats, wie krijgen de berichten. Updaten de berichten nog netjes overal waar het hoort etc.

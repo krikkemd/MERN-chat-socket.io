@@ -197,7 +197,9 @@ export default function chatMessageReducer(state = initialState, action) {
       // console.log(action.payload);
       // console.log(newChatRooms);
 
-      const { roomId, leftUserId } = action.payload;
+      const { roomId, leftUserId, leftRoom } = action.payload;
+
+      console.log(leftRoom);
 
       newChatRooms.map(room => {
         if (room._id === roomId) {
@@ -208,6 +210,7 @@ export default function chatMessageReducer(state = initialState, action) {
           // Check if there is an active chatroom
           if (Object.keys(newActiveChatRoom).length !== 0) {
             newActiveChatRoom.members.splice(leftUserIndex, 1);
+            newActiveChatRoom.moderator = leftRoom.data.moderator;
           }
           console.log(room);
         }
