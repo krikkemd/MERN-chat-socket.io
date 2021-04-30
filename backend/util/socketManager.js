@@ -31,9 +31,12 @@ const {
   LEFT_CHATROOM,
   ADD_USERS_TO_CHATROOM,
   ADDED_USERS_TO_CHATROOM,
+  SEND_USER_SOCKET,
+  SEND_BACK_USER_SOCKET,
 } = require('../types/types');
 
 let connectedUsers = {};
+let usersWithSocketsList = [];
 
 // Once the db is connected
 db.once('open', () => {
@@ -114,6 +117,27 @@ module.exports = socket => {
 
     console.log(connectedUsers);
     io.emit(USER_CONNECTED, connectedUsers);
+  });
+
+  socket.on(SEND_USER_SOCKET, userAndSocket => {
+    console.log('userAndSocket:');
+    console.log(userAndSocket);
+
+    let found = usersWithSocketsList.findIndex(user => {
+      return user.user._id === userAndSocket.user._id;
+    });
+
+    console.log(`found: ${found}`);
+
+    if (found === -1) {
+      console.log('user not found, add to array');
+      usersWithSocketsList.push(userAndSocket);
+    } else if (found > -1) {
+      console.log('user is already in array, dont add but update socketId');
+      usersWithSocketsList[found].user.socketId = userAndSocket.user.socketId;
+    }
+
+    io.emit(SEND_BACK_USER_SOCKET, usersWithSocketsList);
   });
 
   // Clients emits new created chatroom to the server.
@@ -213,12 +237,26 @@ module.exports = socket => {
   socket.on('disconnect', () => {
     console.log('👋 user disconnected');
     console.log(socket.user);
+    console.log(socket.id);
+
+    let found = usersWithSocketsList.findIndex(user => {
+      return user.user.socketId === socket.id;
+    });
+
+    console.log('user that left is present in usersWithSocketsList:');
+    console.log(`found ${found} 0 = true because > -1`);
+
+    if (found > -1) {
+      usersWithSocketsList.splice(found, 1);
+    }
+
     if (!!socket.user) {
       connectedUsers = removeUser(connectedUsers, socket.user);
 
       console.log(connectedUsers);
 
       io.emit(USER_DISCONNECTED, connectedUsers);
+      io.emit(SEND_BACK_USER_SOCKET, usersWithSocketsList);
     }
   });
 };

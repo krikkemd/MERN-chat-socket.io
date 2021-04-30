@@ -6,10 +6,12 @@ import {
   GET_ALL_USERS,
   UPDATE_CONNECTED_USERLIST,
   UPDATE_AVATAR,
+  UPDATE_USERS_WITH_SOCKETS,
 } from '../types';
 
 const initialState = {
   connectedUsers: {},
+  usersWithSockets: [],
   users: [],
   user: {},
   loading: true,
@@ -85,6 +87,12 @@ export default function userReducer(state = initialState, action) {
         users: sortedByOnlineUsers,
         connectedUsers: action.payload,
       };
+    case UPDATE_USERS_WITH_SOCKETS: {
+      return {
+        ...state,
+        usersWithSockets: [...action.payload],
+      };
+    }
     case UPDATE_AVATAR:
       console.log(action.payload);
       return {
