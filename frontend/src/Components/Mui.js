@@ -79,7 +79,7 @@ const Mui = props => {
           <ChatUserData />
         </Grid>
         <Grid item xs={9} className={classes.header}>
-          {/* <ChatHeader /> */}
+          <ChatHeader />
         </Grid>
       </Grid>
 

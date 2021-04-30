@@ -237,7 +237,10 @@ export default function chatMessageReducer(state = initialState, action) {
           console.log(action.payload.data);
           room.members = action.payload.data.members;
 
-          if (Object.keys(newActiveChatRoom).length !== 0) {
+          if (
+            Object.keys(newActiveChatRoom).length !== 0 &&
+            newActiveChatRoom._id === action.payload.data._id
+          ) {
             newActiveChatRoom.members = action.payload.data.members;
           }
         }
@@ -248,10 +251,11 @@ export default function chatMessageReducer(state = initialState, action) {
       return {
         ...state,
         chatrooms: newChatRooms,
-        activeChatRoom:
-          newActiveChatRoom._id === action.payload.data._id
-            ? newActiveChatRoom
-            : state.activeChatRoom,
+        // activeChatRoom:
+        //   newActiveChatRoom._id === action.payload.data._id
+        //     ? newActiveChatRoom
+        //     : state.activeChatRoom,
+        activeChatRoom: newActiveChatRoom,
       };
     }
 
