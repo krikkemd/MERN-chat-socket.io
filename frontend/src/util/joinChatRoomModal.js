@@ -6,6 +6,9 @@ import { connect, useDispatch } from 'react-redux';
 // Redux chatMessage actions
 import { updateChatRoom } from '../redux/actions/chatMessageActions';
 
+// Types
+import { CLEAR_ERRORS, SET_ERRORS, ADDED_USERS_TO_CHATROOM } from '../redux/types';
+
 // Helper
 import { firstCharUpperCase } from '../util/helperFunctions';
 
@@ -27,8 +30,6 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-
-import { CLEAR_ERRORS, SET_ERRORS } from '../redux/types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -85,6 +86,8 @@ const JoinChatRoomModal = props => {
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
+
+  const { socket } = props;
 
   const handleOpen = () => {
     setOpen(true);
@@ -180,19 +183,34 @@ const JoinChatRoomModal = props => {
 
     console.log(selectedUsers);
 
-    if (selectedUsers.length < 1)
-      return dispatch({ type: SET_ERRORS, payload: 'Groep heeft te weinig leden' });
+    if (selectedUsers.length > 10) {
+      alert('Groep heeft teveel leden (max 10)');
+      return dispatch({ type: SET_ERRORS, payload: 'Groep heeft teveel leden (max 10)' });
+    }
 
-    selectedUsers.forEach(user => {
-      console.log(user._id);
-    });
+    // selectedUsers.forEach(user => {
+    //   console.log(user._id);
+    // });
 
     props.updateChatRoom(
-      props.socket,
+      socket,
       props.activeChatRoom._id,
       selectedUsers.map(user => user._id),
     );
   };
+
+  useEffect(() => {
+    if (socket._callbacks !== undefined && socket._callbacks['$ADDED_USERS_TO_CHATROOM']) {
+      socket._callbacks['$ADDED_USERS_TO_CHATROOM'].length = 0;
+    }
+
+    socket.on(ADDED_USERS_TO_CHATROOM, data => {
+      console.log('ADDED_USERS_TO_CHATROOM');
+      console.log(data);
+      handleClose();
+      dispatch({ type: ADDED_USERS_TO_CHATROOM, payload: { data } });
+    });
+  }, [props.chatRooms]);
 
   const customList = (title, items) => {
     return (
@@ -242,7 +260,9 @@ const JoinChatRoomModal = props => {
   const modalBody = (
     <>
       <Grid container spacing={2} justify='center' alignItems='center' className={classes.root}>
-        <Grid item>{customList('Selecteer min 2 & max 9 leden', left)}</Grid>
+        <Grid item>
+          {customList(`Groep heeft ${props.activeChatRoom.members.length} leden (max 10)`, left)}
+        </Grid>
         <Grid item>
           <Grid container direction='column' alignItems='center'>
             <Button
@@ -265,7 +285,12 @@ const JoinChatRoomModal = props => {
             </Button>
           </Grid>
         </Grid>
-        <Grid item>{customList('Geselecteerd', right)}</Grid>
+        <Grid item>
+          {customList(
+            `selecteer maximaal ${10 - props.activeChatRoom.members.length} leden`,
+            right,
+          )}
+        </Grid>
       </Grid>
 
       {/* Form */}
@@ -309,7 +334,7 @@ const JoinChatRoomModal = props => {
       <MenuItem
         onClick={handleOpen}
         disabled={props.activeChatRoom.moderator !== props.user._id ? true : false}>
-        Gebruiker toevoegen
+        Gebruiker(s) toevoegen
       </MenuItem>
 
       <div>

@@ -11,6 +11,7 @@ import {
   TOGGLE_CHAT,
   TOGGLE_CONTACTS,
   SET_NO_ACTIVE_CHATROOM,
+  ADDED_USERS_TO_CHATROOM,
 } from '../types';
 
 const initialState = {
@@ -222,6 +223,38 @@ export default function chatMessageReducer(state = initialState, action) {
         activeChatRoom: newActiveChatRoom,
       };
     }
+    case ADDED_USERS_TO_CHATROOM: {
+      const newChatRooms = [...state.chatRooms];
+      const newActiveChatRoom = { ...state.activeChatRoom };
+      console.log(action.payload);
+      console.log(newChatRooms);
+      console.log(newActiveChatRoom);
+
+      newChatRooms.map(room => {
+        if (room._id === action.payload.data._id) {
+          console.log('update chatroom');
+          console.log(room);
+          console.log(action.payload.data);
+          room.members = action.payload.data.members;
+
+          if (Object.keys(newActiveChatRoom).length !== 0) {
+            newActiveChatRoom.members = action.payload.data.members;
+          }
+        }
+      });
+
+      console.log(newChatRooms);
+
+      return {
+        ...state,
+        chatrooms: newChatRooms,
+        activeChatRoom:
+          newActiveChatRoom._id === action.payload.data._id
+            ? newActiveChatRoom
+            : state.activeChatRoom,
+      };
+    }
+
     case SET_NO_ACTIVE_CHATROOM: {
       return {
         ...state,

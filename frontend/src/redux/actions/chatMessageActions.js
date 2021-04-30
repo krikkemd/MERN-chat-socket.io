@@ -8,6 +8,7 @@ import {
   CREATED_CHAT_ROOM,
   SET_ERRORS,
   LEAVE_CHATROOM,
+  ADD_USERS_TO_CHATROOM,
   SET_NO_ACTIVE_CHATROOM,
 } from '../types';
 import axios from '../../config/axios';
@@ -174,6 +175,9 @@ export const updateChatRoom = (socket, roomId, ...members) => dispatch => {
     .patch(`/api/v1/rooms/${roomId}`, chatRoom)
     .then(res => {
       console.log(res.data);
+
+      // socket.emit -> io.in.emit -> update state
+      socket.emit(ADD_USERS_TO_CHATROOM, res.data);
     })
     .catch(err => console.log(err));
 };

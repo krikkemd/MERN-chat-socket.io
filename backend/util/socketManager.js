@@ -29,6 +29,8 @@ const {
   UPDATE_AVATAR,
   LEAVE_CHATROOM,
   LEFT_CHATROOM,
+  ADD_USERS_TO_CHATROOM,
+  ADDED_USERS_TO_CHATROOM,
 } = require('../types/types');
 
 let connectedUsers = {};
@@ -165,6 +167,14 @@ module.exports = socket => {
 
     // to all clients in room1
     // io.in("room1").emit(/* ... */);
+  });
+
+  socket.on(ADD_USERS_TO_CHATROOM, ({ data }) => {
+    console.log('✅ ADD_USERS_TO_CHATROOM');
+    const roomId = data._id;
+    console.log(data);
+
+    io.in(roomId).emit(ADDED_USERS_TO_CHATROOM, data);
   });
 
   // let roomArray = [];
