@@ -38,16 +38,6 @@ const GroupChat = props => {
       console.log(leftUserId);
       console.log(leftRoom);
 
-      // Moet niet hier system message
-
-      // leftRoom.data.members.map(member => {
-      //   if (member._id === leftRoom.data.moderator) {
-      //     console.log(member._id);
-      //     console.log(leftRoom.data.moderator);
-      //     createSystemMessage(roomId, `${member.username} is de groepsbeheerder.`);
-      //   }
-      // });
-
       dispatch({ type: LEFT_CHATROOM, payload: { roomId, leftUserId, username, leftRoom } });
     });
   }, [props.chatRooms]);

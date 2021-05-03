@@ -15,9 +15,6 @@ import { connect } from 'react-redux';
 // actions
 import { leaveChatRoom } from '../redux/actions/chatMessageActions';
 
-// Types
-import { LEAVE_CHATROOM, LEFT_CHATROOM } from '../redux/types';
-
 import JoinChatRoomModal from '../util/joinChatRoomModal';
 
 // Helper Functions
