@@ -45,7 +45,7 @@ const ChatInput = props => {
             <form onSubmit={submitChatMessage}>
               <TextField
                 id='outlined-basic-email'
-                label='Type Something'
+                label='Typ hier uw bericht...'
                 fullWidth
                 autoFocus={true}
                 value={chatMessage}

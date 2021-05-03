@@ -88,7 +88,7 @@ const ChatHeader = props => {
           />
           <Typography variant='caption' className={classes.text}>
             <Typography variant='caption' className={classes.members}>
-              Members:
+              Leden:
             </Typography>
             {activeChatRoom.members.map(
               member =>
@@ -116,7 +116,7 @@ const ChatHeader = props => {
           </AvatarGroup>
           <Typography variant='caption' className={classes.text}>
             <Typography variant='caption' className={classes.members}>
-              Members:
+              Leden:
             </Typography>
             {activeChatRoom.members.map(
               member =>
