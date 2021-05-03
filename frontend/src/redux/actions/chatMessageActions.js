@@ -164,7 +164,7 @@ export const leaveChatRoom = (socket, roomId, user) => dispatch => {
 // Update we use for adding new users to the chatroom from the joinChatRoomModal
 // TODO: EMIT UPDATE STATE FOR ALL USERS IN THE ROOM, TO SHOW THAT THE ACTIVECHATROOM, AND THE FRIENDSLIST REFLECTS THE ADDED USER
 // ERROR HANDLING ON TOO MANY OR NOT ENOUGH USERS ETC. IF THE USER IS ALREADY PRESENT
-export const updateChatRoom = (socket, roomId, ...members) => dispatch => {
+export const updateChatRoom = (socket, roomId, socketIds, ...members) => dispatch => {
   console.log('running update chatroom');
   let chatRoom = {
     members: Object.values(...members),
@@ -176,8 +176,14 @@ export const updateChatRoom = (socket, roomId, ...members) => dispatch => {
     .then(res => {
       console.log(res.data);
 
+      // res.data.data.members.map(member => {
+      //   console.log(member);
+      // });
+
       // socket.emit -> io.in.emit -> update state
-      socket.emit(ADD_USERS_TO_CHATROOM, res.data);
+      socket.emit(ADD_USERS_TO_CHATROOM, res.data, socketIds);
+
+      // createSystemMessage here
     })
     .catch(err => console.log(err));
 };

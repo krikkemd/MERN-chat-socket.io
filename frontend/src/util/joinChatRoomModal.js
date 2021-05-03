@@ -179,9 +179,35 @@ const JoinChatRoomModal = props => {
   const handleSubmit = (e, selectedUsers) => {
     e.preventDefault();
     // console.log(groupName);
+    let socketIds = [];
+    let selectedUsersMinusMembers = [...selectedUsers];
     selectedUsers = [...props.activeChatRoom.members, ...selectedUsers];
 
-    console.log(selectedUsers);
+    // geselecteerde users zonder hudige members
+    console.log(selectedUsersMinusMembers);
+
+    // online users's objects containing their socket ids so we can add them to the socket.room on the server side
+    console.log(props.usersWithSockets);
+
+    props.usersWithSockets.map((user, i) => {
+      // console.log(user.user._id);
+      selectedUsersMinusMembers.findIndex((selUser, j) => {
+        // console.log(selUser);
+        if (user.user._id === selUser._id) {
+          console.log(user.user);
+          socketIds.push(user.user.socketId);
+        }
+      });
+    });
+
+    console.log('socketIds of online users added to the chatroom. add to socket.room on server');
+    console.log(socketIds);
+
+    // geselecteerde members inclusief huidige members
+    // console.log(selectedUsers);
+
+    // Huidige members already present in room
+    // console.log(props.activeChatRoom.members);
 
     if (selectedUsers.length > 10) {
       alert('Groep heeft teveel leden (max 10)');
@@ -195,6 +221,7 @@ const JoinChatRoomModal = props => {
     props.updateChatRoom(
       socket,
       props.activeChatRoom._id,
+      socketIds,
       selectedUsers.map(user => user._id),
     );
   };
@@ -356,6 +383,7 @@ const mapStateToProps = state => {
     socket: state.socket.socket,
     user: state.user.user,
     users: state.user.users,
+    usersWithSockets: state.user.usersWithSockets,
     activeChatRoom: state.chat.activeChatRoom,
     errors: state.user.errors,
     theme: state.theme.theme,

@@ -193,10 +193,59 @@ module.exports = socket => {
     // io.in("room1").emit(/* ... */);
   });
 
-  socket.on(ADD_USERS_TO_CHATROOM, ({ data }) => {
+  socket.on(ADD_USERS_TO_CHATROOM, ({ data }, socketIds) => {
     console.log('✅ ADD_USERS_TO_CHATROOM');
     const roomId = data._id;
     console.log(data);
+
+    console.log('roomId of the room where the socket ids need to be added:');
+    console.log(roomId);
+
+    console.log('incoming socket ids that are not yet in the room:');
+    console.log(socketIds); // al gefilterd, zitten nog niet in de room
+
+    console.log('Javascript map: https://javascript.info/map-set#iteration-over-map');
+    console.log('log the maps in original state:');
+    console.log(io.sockets.adapter.rooms);
+    console.log(
+      'Get the SET inside the MAP, the MAP is the roomId, the socketsIds are inside the SET',
+    );
+    console.log(io.sockets.adapter.rooms.get(roomId));
+
+    console.log('add the socket ids to the SET');
+    // io.sockets.adapter.rooms.get(roomId).add(socketIds[0]);
+    socketIds.map(socketId => {
+      return io.sockets.adapter.rooms.get(roomId).add(socketId);
+    });
+
+    console.log('log the maps with the added socketids');
+    console.log(io.sockets.adapter.rooms);
+
+    // iterate over [key, value] entries
+    // console.log('for');
+    // for (let entry of io.sockets.adapter.rooms) {
+    //   // the same as of recipeMap.entries()
+    //   console.log(entry); // cucumber,500 (and so on)
+
+    //   let room = entry.get(roomId)
+    // }
+
+    // io.sockets.connected[socketID].join(roomName);
+    // console.log(io.sockets.connected);
+    // console.log(io.sockets);
+
+    // console.log(io.sockets.sockets);
+    // console.log(socket.rooms);
+
+    // socketIds.map(socketID => {
+    //   console.log(socketID);
+    //   console.log(Object.keys(io.sockets.sockets));
+    //   if (Object.keys(io.sockets.sockets).includes(socketID)) {
+    //     console.log('work pls');
+    //     io.sockets.connected[socketID].join(roomId);
+    //   }
+    // });
+    // console.log(socket.rooms);
 
     io.in(roomId).emit(ADDED_USERS_TO_CHATROOM, data);
   });
