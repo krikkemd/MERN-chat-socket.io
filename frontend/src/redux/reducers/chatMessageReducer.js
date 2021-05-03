@@ -6,9 +6,12 @@ import {
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
   CREATE_CHAT_ROOM,
+  LEAVE_CHATROOM,
+  LEFT_CHATROOM,
   TOGGLE_CHAT,
   TOGGLE_CONTACTS,
   SET_NO_ACTIVE_CHATROOM,
+  ADDED_USERS_TO_CHATROOM,
 } from '../types';
 
 const initialState = {
@@ -28,12 +31,19 @@ export default function chatMessageReducer(state = initialState, action) {
       };
 
     case CREATE_CHAT_MESSAGE:
+      let chatMessages = [...state.chatMessages];
+      console.log(state.chatMessages.length);
+      // When a user has scrolled up to get older messages, shrink the array down to 10 again, so it scrolls into the created message
+      if (chatMessages.length > 10) {
+        chatMessages = chatMessages.slice(state.chatMessages.length - 10);
+      }
+      console.log(chatMessages);
       return {
         ...state,
         // lastMessages: newLastMessages,
         chatMessages:
-          state.chatMessages.length > 10
-            ? [...state.chatMessages, action.payload].slice(1) // keep the max size of chatMessages at 10
+          state.chatMessages.length > 9
+            ? [...chatMessages, action.payload].slice(1) // keep the max size of chatMessages at 10
             : [...state.chatMessages, action.payload],
       };
 
@@ -47,6 +57,7 @@ export default function chatMessageReducer(state = initialState, action) {
         if (message.chatRoomId === action.payload.chatRoomId) {
           return (newLastMessages[i] = { ...action.payload });
         }
+        return null;
       });
 
       return {
@@ -81,15 +92,20 @@ export default function chatMessageReducer(state = initialState, action) {
 
       let sortedChatRooms = [...action.payload];
 
-      // only return the chatrooms where there are chatmessages // not sure if this works correctly
-      sortedChatRooms = sortedChatRooms.filter(room => room.chatMessages.length > 0 && room);
+      // only return the chatrooms where there are chatmessages if there are 2 room members, also return groupchats // not sure if this works correctly
+      sortedChatRooms = sortedChatRooms.filter(room => {
+        if (room.chatMessages.length > 0 && room.members.length >= 1) {
+          return room;
+        }
+        return null;
+      });
 
       sortedChatRooms.sort((a, b) => {
         if (a.chatMessages[0] && b.chatMessages[0]) {
           return new Date(b.chatMessages[0].createdAt) - new Date(a.chatMessages[0].createdAt);
         } else {
           console.log('NO CHATMESSAGES TO SORT');
-          return;
+          return null;
         }
       });
 
@@ -99,14 +115,16 @@ export default function chatMessageReducer(state = initialState, action) {
       // Mark chatmessage as read if the user has the chatroom open (without having to click the chatroom )
       sortedChatRooms.map(room => {
         if (room._id === state.activeChatRoom._id) {
-          console.log('👻👻');
+          console.log('mark messages read');
           room.chatMessages.map(message => {
             if (message.read === false) {
-              console.log(message);
+              // console.log(message);
               message.read = true;
             }
+            return null;
           });
         }
+        return null;
       });
 
       return {
@@ -127,8 +145,10 @@ export default function chatMessageReducer(state = initialState, action) {
             if (message.read === false) {
               message.read = true;
             }
+            return null;
           });
         }
+        return null;
       });
       console.log(rooms);
 
@@ -147,6 +167,98 @@ export default function chatMessageReducer(state = initialState, action) {
         chatRooms: [...newChatRooms, action.payload],
       };
     }
+    case LEAVE_CHATROOM: {
+      const newChatRooms = [...state.chatRooms];
+      console.log(newChatRooms);
+      console.log(action.payload);
+      console.log(action.payload.data._id);
+      let roomId = action.payload.data._id;
+
+      const roomIndex = newChatRooms.findIndex(room => {
+        console.log(room);
+        return room.id === roomId;
+      });
+
+      console.log(roomIndex);
+
+      newChatRooms.splice(roomIndex, 1);
+      console.log(newChatRooms);
+
+      return {
+        ...state,
+        chatRooms: newChatRooms,
+      };
+    }
+    case LEFT_CHATROOM: {
+      const newChatRooms = [...state.chatRooms];
+      const newActiveChatRoom = { ...state.activeChatRoom };
+
+      console.log(newActiveChatRoom);
+
+      // console.log(action.payload);
+      // console.log(newChatRooms);
+
+      const { roomId, leftUserId, leftRoom } = action.payload;
+
+      console.log(leftRoom);
+
+      newChatRooms.map(room => {
+        if (room._id === roomId) {
+          console.log(room);
+          const leftUserIndex = room.members.findIndex(member => member._id === leftUserId);
+          room.members.splice(leftUserIndex, 1);
+
+          // Check if there is an active chatroom
+          if (Object.keys(newActiveChatRoom).length !== 0) {
+            newActiveChatRoom.members.splice(leftUserIndex, 1);
+            newActiveChatRoom.moderator = leftRoom.data.moderator;
+          }
+          console.log(room);
+        }
+      });
+      // console.log(newChatRooms);
+      return {
+        ...state,
+        chatRooms: newChatRooms,
+        activeChatRoom: newActiveChatRoom,
+      };
+    }
+    case ADDED_USERS_TO_CHATROOM: {
+      const newChatRooms = [...state.chatRooms];
+      const newActiveChatRoom = { ...state.activeChatRoom };
+      console.log(action.payload);
+      console.log(newChatRooms);
+      console.log(newActiveChatRoom);
+
+      newChatRooms.map(room => {
+        if (room._id === action.payload.data._id) {
+          console.log('update chatroom');
+          console.log(room);
+          console.log(action.payload.data);
+          room.members = action.payload.data.members;
+
+          if (
+            Object.keys(newActiveChatRoom).length !== 0 &&
+            newActiveChatRoom._id === action.payload.data._id
+          ) {
+            newActiveChatRoom.members = action.payload.data.members;
+          }
+        }
+      });
+
+      console.log(newChatRooms);
+
+      return {
+        ...state,
+        chatrooms: newChatRooms,
+        // activeChatRoom:
+        //   newActiveChatRoom._id === action.payload.data._id
+        //     ? newActiveChatRoom
+        //     : state.activeChatRoom,
+        activeChatRoom: newActiveChatRoom,
+      };
+    }
+
     case SET_NO_ACTIVE_CHATROOM: {
       return {
         ...state,

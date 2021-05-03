@@ -25,6 +25,18 @@ export const login = (email, password, history) => dispatch => {
     });
 };
 
+export const logout = async () => {
+  if (window.confirm('Weet u zeker dat u wilt uitloggen?')) {
+    try {
+      const res = await axios.get(`${baseUrl}/logout`);
+
+      if ((res.data.status = 'success')) window.location.replace('http://localhost:3000/login');
+    } catch (err) {
+      alert('Error logging out!, please try again.');
+    }
+  }
+};
+
 export const getAllUsers = () => dispatch => {
   return axios
     .get(`${baseUrl}`)

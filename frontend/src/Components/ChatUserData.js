@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 import { firstCharUpperCase } from '../util/helperFunctions';
 
+import { logout } from '../redux/actions/userActions';
+
 // MUI
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Avatar from '@material-ui/core/Avatar';
 import Tooltip from '@material-ui/core/Tooltip';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import IconButton from '@material-ui/core/IconButton';
 
 // Components
 import UploadAvatar from '../util/UploadAvatar';
@@ -59,8 +63,8 @@ const ChatUserData = props => {
   );
 
   return (
-    <>
-      <Tooltip title='Profiel' placement='bottom' arrow interactive>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <Tooltip title='Profiel' placement='bottom' arrow>
         <div key={props.user._id} className={classes.container} onClick={handleOpen}>
           <Avatar
             className={classes.avatar}
@@ -73,6 +77,18 @@ const ChatUserData = props => {
         </div>
       </Tooltip>
 
+      <Tooltip
+        title='Klik om uit te loggen'
+        arrow
+        interactive
+        style={{ marginLeft: 'auto', marginTop: 'auto' }}>
+        <IconButton>
+          <ExitToAppIcon onClick={logout} style={{ color: 'white' }}>
+            logout
+          </ExitToAppIcon>
+        </IconButton>
+      </Tooltip>
+
       <div>
         <Modal
           className={classes.modal}
@@ -83,7 +99,7 @@ const ChatUserData = props => {
           {modalBody}
         </Modal>
       </div>
-    </>
+    </div>
   );
 };
 

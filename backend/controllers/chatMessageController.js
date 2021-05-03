@@ -14,7 +14,7 @@ exports.getAllChatMessages = catchAsync(async (req, res, next) => {
   // req.user._id zodat alleen logged in user messages te zien krijgt, miss req.user._id sturen vanaf frontend en hier pakken in req.query.userId
   const chatMessages = await ChatMessage.find({ chatRoomId: req.query.chatRoomId }, undefined, {
     skip,
-    limit: 25,
+    limit: 10,
   }).sort({
     createdAt: 'desc',
   });
@@ -47,6 +47,7 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
     body: req.body.body,
     username: req.user.username,
     userId: req.user._id,
+    systemMessage: req.body.systemMessage,
   });
 
   console.log('✅ chat message created');
@@ -57,12 +58,31 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.createSystemMessage = catchAsync(async (req, res, next) => {
+  console.log('running CreateSystemMessage');
+  const newMessage = await ChatMessage.create({
+    chatRoomId: req.body.chatRoomId,
+    body: req.body.body,
+    username: 'system',
+    userId: '6085719e7c9abb247891cde9',
+    systemMessage: true,
+  });
+
+  console.log('✅ system message created');
+
+  return res.status(201).json({
+    status: 'success',
+    systemMessage: newMessage,
+  });
+});
+
 exports.markMessagesRead = catchAsync(async (req, res, next) => {
   const messages = await ChatMessage.updateMany(
     { read: false, chatRoomId: req.body.chatRoomId, userId: req.body.memberId },
     { read: true },
     (err, res) => {
       if (err) return next(new AppError('updateMany went wrong', 500));
+      console.log(req.body.memberId);
 
       console.log(req.body.chatRoomId);
 

@@ -49,7 +49,7 @@ exports.createOne = Model => {
 
 exports.updateOne = Model => {
   return catchAsync(async (req, res, next) => {
-    console.log('running deleteOne');
+    console.log('running updateOne');
     const docId = req.params.id;
     const doc = await Model.findByIdAndUpdate(docId, req.body, { new: true, runValidators: true });
 

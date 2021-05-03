@@ -6,6 +6,10 @@ import {
   SET_USER_CHATROOMS,
   SET_LAST_CHAT_MESSAGE,
   CREATED_CHAT_ROOM,
+  SET_ERRORS,
+  LEAVE_CHATROOM,
+  ADD_USERS_TO_CHATROOM,
+  SET_NO_ACTIVE_CHATROOM,
 } from '../types';
 import axios from '../../config/axios';
 
@@ -14,17 +18,21 @@ const baseUrl = 'http://localhost:1337/api/v1/chatMessages';
 // REDUX
 export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
   // dispatch({ type: LOADING_DATA });
+  if (!chatRoomId) return console.error('GEEN CHATROOMID');
+
   axios
     .get(`${baseUrl}?skip=${skip}&chatRoomId=${chatRoomId}`)
     .then(res => {
       console.log(res);
-      dispatch({
-        type: GET_ALL_CHAT_MESSAGES,
-        payload: res.data.chatMessages,
-      });
+      if (res.data.chatMessages.length > 0) {
+        dispatch({
+          type: GET_ALL_CHAT_MESSAGES,
+          payload: res.data.chatMessages,
+        });
+      }
     })
     .catch(err => {
-      console.log(err.response.data);
+      console.log(err);
       // dispatch({
       //   type: SET_ERRORS,
       //   payload: err.response.data,
@@ -46,31 +54,155 @@ export const getSingleChatRoom = roomId => dispatch => {
 };
 
 // GetAllRooms({members: "req.user._id"}) // gets all the chatrooms where the currentUser is a member
-export const getAllUserChatRooms = () => dispatch => {
+export const getAllUserChatRooms = queryString => dispatch => {
   console.log('running getAllUserChatRooms');
-  axios
-    .get('http://localhost:1337/api/v1/rooms')
+
+  console.log(queryString);
+
+  return axios
+    .get(`http://localhost:1337/api/v1/rooms?${queryString}`)
     .then(res => {
       console.log(res.data);
-      dispatch({ type: SET_USER_CHATROOMS, payload: res.data.chatRooms });
+
+      if (!queryString.includes('[all]')) {
+        console.log('query does not include [all], dispatch SET_USER_CHATROOMS');
+        dispatch({ type: SET_USER_CHATROOMS, payload: res.data.chatRooms });
+      }
+      return res.data;
     })
     .catch(err => console.log(err));
 };
 
-export const createChatRoom = (socket, ...members) => dispatch => {
+export const createChatRoom = (socket, name, moderator, ...members) => dispatch => {
   console.log(socket);
   let newChatRoom = {
+    moderator: moderator,
     members: members,
   };
-  console.log(newChatRoom);
 
+  console.log(newChatRoom);
+  console.log(members);
+  console.log(...members);
+
+  if (newChatRoom.members.length === 2) {
+    console.log('createChatRoom with 2 members');
+    axios
+      .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+      .then(res => {
+        console.log(res.data);
+
+        if (res.data) {
+          socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+          dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+        }
+      })
+      .catch(err => console.log(err));
+  } else {
+    console.log('create chatRoom with > 2 members');
+
+    if (name.length < 1) {
+      console.log('Groepsnaam is te kort');
+      return dispatch({
+        type: SET_ERRORS,
+        payload: 'Groepsnaam is te kort',
+      });
+    } else if (name.length > 25) {
+      console.log('Groepsnaam is te lang, gebruik maximaal 20 tekens.');
+      return dispatch({
+        type: SET_ERRORS,
+        payload: 'Groepsnaam is te lang, gebruik maximaal 20 tekens.',
+      });
+    }
+
+    // members: ['60599e90e50ae834b8a4db37', '6059a170e50ae834b8a4db4c'];
+    console.log(Object.values(...members));
+    newChatRoom = {
+      name: name,
+      moderator: moderator,
+      members: Object.values(...members),
+    };
+
+    console.log(newChatRoom);
+
+    axios
+      .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+      .then(res => {
+        console.log(res.data);
+        createSystemMessage(res.data.doc._id, `Welkom in de chatgroep: '${newChatRoom.name}'`);
+
+        socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+
+        dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+      })
+      .catch(err => {
+        console.log(err.response.data);
+        return dispatch({ type: SET_ERRORS, payload: err.response.data.message });
+      });
+  }
+};
+
+export const leaveChatRoom = (socket, roomId, user) => dispatch => {
+  console.log('running leaveChatRoom');
   axios
-    .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
+    .patch(`/api/v1/rooms/${roomId}/leaveChatRoom`)
     .then(res => {
       console.log(res.data);
-      socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+      dispatch({ type: SET_NO_ACTIVE_CHATROOM });
+      dispatch({ type: LEAVE_CHATROOM, payload: res.data });
+      socket.emit(LEAVE_CHATROOM, roomId, user, res.data);
 
-      dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+      createSystemMessage(roomId, `${user.username} heeft de groep verlaten.`);
+
+      // New moderator is "username" message:
+      res.data.data.members.map(member => {
+        if (member._id === res.data.data.moderator) {
+          createSystemMessage(roomId, `${member.username} is de groepsbeheerder.`);
+        }
+      });
+    })
+    .catch(err => {
+      console.log(err.response);
+      console.log(err.message);
+      dispatch({ type: SET_NO_ACTIVE_CHATROOM });
+      dispatch({ type: LEAVE_CHATROOM, payload: { data: { _id: roomId } } });
+    });
+};
+
+// Update we use for adding new users to the chatroom from the joinChatRoomModal
+// TODO: EMIT UPDATE STATE FOR ALL USERS IN THE ROOM, TO SHOW THAT THE ACTIVECHATROOM, AND THE FRIENDSLIST REFLECTS THE ADDED USER
+// ERROR HANDLING ON TOO MANY OR NOT ENOUGH USERS ETC. IF THE USER IS ALREADY PRESENT
+export const updateChatRoom = (socket, roomId, socketIds, ...members) => dispatch => {
+  console.log('running update chatroom');
+  let chatRoom = {
+    members: Object.values(...members),
+  };
+
+  console.log(chatRoom);
+  axios
+    .patch(`/api/v1/rooms/${roomId}`, chatRoom)
+    .then(res => {
+      console.log(res.data);
+
+      // send the new room and socket ids to the server
+      socket.emit(ADD_USERS_TO_CHATROOM, res.data, socketIds);
+
+      // Array of the newly added members
+      let welcomeUsers = res.data.data.members.slice(
+        res.data.data.members.length - socketIds.length,
+      );
+
+      console.log(welcomeUsers);
+
+      // Welcome the new members to the room with a message, also updating the state for the new users
+
+      if (welcomeUsers.length >= 1) {
+        createSystemMessage(
+          roomId,
+          `${welcomeUsers.map(user => user && ` ${user.username}`)} welkom in de chatgroep!`,
+        );
+      } else {
+        createSystemMessage(roomId, `Nieuwe leden, welkom in de chatgroep!`);
+      }
     })
     .catch(err => console.log(err));
 };
@@ -90,9 +222,21 @@ export const createChatMessage = chatMessage => dispatch => {
       // });
     })
     .catch(err => {
-      console.log(err.response.data);
+      console.log(err.response);
       // Redirect to log in page when not logged in
       window.location.replace('/login');
+    });
+};
+
+export const createSystemMessage = (roomId, message) => {
+  console.log('running create system message');
+  axios
+    .post(`${baseUrl}/createSystemMessage`, { chatRoomId: roomId, body: message })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err);
     });
 };
 

@@ -12,6 +12,8 @@ const {
   createChatRoom,
   updateChatRoom,
   deleteChatRoom,
+  leaveChatRoom,
+  joinChatRoom,
 } = require('../controllers/ChatRoomController');
 
 router.route('/').get(protectRoute, getAllChatRooms).post(protectRoute, createChatRoom);
@@ -19,7 +21,10 @@ router
   .route('/:id')
   .get(protectRoute, getSingleChatRoom)
   .patch(protectRoute, updateChatRoom)
-  .delete(deleteChatRoom);
+  .delete(protectRoute, deleteChatRoom);
+
+router.route('/:id/leaveChatRoom').patch(protectRoute, leaveChatRoom);
+router.route('/:id/joinChatRoom').patch(protectRoute, joinChatRoom);
 // .post(createChatMessage);
 // router.route('/:id').get(getSingleChatMessage).delete(deleteChatMessage);
 

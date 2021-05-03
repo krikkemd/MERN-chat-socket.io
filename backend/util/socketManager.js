@@ -27,9 +27,16 @@ const {
   EMIT_CREATED_CHAT_ROOM,
   MEMBERS_JOIN_NEW_CHAT_ROOM,
   UPDATE_AVATAR,
+  LEAVE_CHATROOM,
+  LEFT_CHATROOM,
+  ADD_USERS_TO_CHATROOM,
+  ADDED_USERS_TO_CHATROOM,
+  SEND_USER_SOCKET,
+  SEND_BACK_USER_SOCKET,
 } = require('../types/types');
 
 let connectedUsers = {};
+let usersWithSocketsList = [];
 
 // Once the db is connected
 db.once('open', () => {
@@ -112,6 +119,27 @@ module.exports = socket => {
     io.emit(USER_CONNECTED, connectedUsers);
   });
 
+  socket.on(SEND_USER_SOCKET, userAndSocket => {
+    console.log('userAndSocket:');
+    console.log(userAndSocket);
+
+    let found = usersWithSocketsList.findIndex(user => {
+      return user.user._id === userAndSocket.user._id;
+    });
+
+    console.log(`found: ${found}`);
+
+    if (found === -1) {
+      console.log('user not found, add to array');
+      usersWithSocketsList.push(userAndSocket);
+    } else if (found > -1) {
+      console.log('user is already in array, dont add but update socketId');
+      usersWithSocketsList[found].user.socketId = userAndSocket.user.socketId;
+    }
+
+    io.emit(SEND_BACK_USER_SOCKET, usersWithSocketsList);
+  });
+
   // Clients emits new created chatroom to the server.
   socket.on(CREATED_CHAT_ROOM, chatRoomFromClient => {
     // console.log('CREATED_CHAT_ROOM');
@@ -142,6 +170,59 @@ module.exports = socket => {
     console.log('UPDATE_AVATAR');
     console.log('UPDATE_AVATAR');
     console.log(user);
+  });
+
+  socket.on(LEAVE_CHATROOM, (roomId, user, leftRoom) => {
+    console.log('SOCKET_ON_LEAVE_CHATROOM ❌');
+    socket.leave(roomId);
+
+    const leftUserId = user._id;
+    const username = user.username;
+
+    console.log(socket.rooms);
+    console.log(leftUserId);
+    console.log(roomId);
+
+    io.in(roomId).emit(LEFT_CHATROOM, { roomId, leftUserId, username, leftRoom });
+
+    // Emitten werkt, state update maar moet meer getest worden:
+    // Lukt berichten sturen nog naar de groep, en andere chats, wie krijgen de berichten. Updaten de berichten nog netjes overal waar het hoort etc.
+    // Een melding: "Username heeft de groep verlaten" -> dit kan ook emitted worden naar de RoomID
+
+    // to all clients in room1
+    // io.in("room1").emit(/* ... */);
+  });
+
+  socket.on(ADD_USERS_TO_CHATROOM, ({ data }, socketIds) => {
+    console.log('✅ ADD_USERS_TO_CHATROOM');
+    const roomId = data._id;
+    console.log(data);
+
+    console.log('roomId of the room where the socket ids need to be added:');
+    console.log(roomId);
+
+    console.log('incoming socket ids that are not yet in the room:');
+    console.log(socketIds); // al gefilterd, zitten nog niet in de room
+
+    console.log('Javascript map: https://javascript.info/map-set#iteration-over-map');
+    console.log('log the maps in original state:');
+    console.log(io.sockets.adapter.rooms);
+    console.log(
+      'Get the SET inside the MAP, the MAP is the roomId, the socketsIds are inside the SET',
+    );
+    console.log(io.sockets.adapter.rooms.get(roomId));
+
+    console.log('add the socket ids to the SET');
+    // io.sockets.adapter.rooms.get(roomId).add(socketIds[0]);
+
+    socketIds.map(socketId => {
+      return io.sockets.adapter.rooms.get(roomId).add(socketId);
+    });
+
+    console.log('log the maps with the added socketids');
+    console.log(io.sockets.adapter.rooms);
+
+    io.in(roomId).emit(ADDED_USERS_TO_CHATROOM, data);
   });
 
   // let roomArray = [];
@@ -180,12 +261,26 @@ module.exports = socket => {
   socket.on('disconnect', () => {
     console.log('👋 user disconnected');
     console.log(socket.user);
+    console.log(socket.id);
+
+    let found = usersWithSocketsList.findIndex(user => {
+      return user.user.socketId === socket.id;
+    });
+
+    console.log('user that left is present in usersWithSocketsList:');
+    console.log(`found ${found} 0 = true because > -1`);
+
+    if (found > -1) {
+      usersWithSocketsList.splice(found, 1);
+    }
+
     if (!!socket.user) {
       connectedUsers = removeUser(connectedUsers, socket.user);
 
       console.log(connectedUsers);
 
       io.emit(USER_DISCONNECTED, connectedUsers);
+      io.emit(SEND_BACK_USER_SOCKET, usersWithSocketsList);
     }
   });
 };

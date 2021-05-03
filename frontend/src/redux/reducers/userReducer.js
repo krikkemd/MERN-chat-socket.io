@@ -1,14 +1,17 @@
 import {
   SET_ERRORS,
+  CLEAR_ERRORS,
   LOGIN_USER,
   SET_CURRENT_USER,
   GET_ALL_USERS,
   UPDATE_CONNECTED_USERLIST,
   UPDATE_AVATAR,
+  UPDATE_USERS_WITH_SOCKETS,
 } from '../types';
 
 const initialState = {
   connectedUsers: {},
+  usersWithSockets: [],
   users: [],
   user: {},
   loading: true,
@@ -50,7 +53,7 @@ export default function userReducer(state = initialState, action) {
       const sortedByOnlineUsers = [...state.users];
 
       // Display online users on top in the contacts friendlist
-      sortedByOnlineUsers.map(user => {
+      sortedByOnlineUsers.forEach(user => {
         if (Object.values(onlineUsers).includes(user._id)) {
           console.log(user);
           user.online = true;
@@ -84,6 +87,12 @@ export default function userReducer(state = initialState, action) {
         users: sortedByOnlineUsers,
         connectedUsers: action.payload,
       };
+    case UPDATE_USERS_WITH_SOCKETS: {
+      return {
+        ...state,
+        usersWithSockets: [...action.payload],
+      };
+    }
     case UPDATE_AVATAR:
       console.log(action.payload);
       return {
@@ -94,7 +103,13 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        errors: action.payload,
+        errors: [...state.errors, action.payload],
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        errors: [],
       };
 
     default:

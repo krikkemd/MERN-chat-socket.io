@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Redux
 import { connect, useDispatch } from 'react-redux';
@@ -12,6 +12,7 @@ import {
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
   getAllUserChatRooms,
+  markMessagesRead,
 } from '../redux/actions/chatMessageActions';
 
 import {
@@ -26,14 +27,35 @@ import {
 import moment from 'moment';
 
 // MUI
+import { makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Chip from '@material-ui/core/Chip';
+
+const useStyles = makeStyles(theme => {
+  console.log(theme);
+  return {
+    messageBody: {
+      backgroundColor: theme.palette.primary.main,
+      color: '#fff',
+      paddingTop: 12.5,
+      paddingBottom: 12.5,
+      paddingLeft: 20,
+      paddingRight: 20,
+      borderRadius: 100 / 2,
+      boxShadow:
+        '0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%)',
+      display: 'inline-flex',
+    },
+  };
+});
 
 const ChatMessageArea = props => {
   const dispatch = useDispatch();
+  const classes = useStyles();
+
+  console.log(classes);
 
   const {
     user,
@@ -43,6 +65,7 @@ const ChatMessageArea = props => {
     emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
     getAllUserChatRooms,
+    markMessagesRead,
   } = props;
 
   //   On changes to the chatMessages in the state
@@ -80,14 +103,32 @@ const ChatMessageArea = props => {
       emitLastChatMessage(messageFromBackend);
 
       // Reorder friendList to show latest conversation on top (SENDER)
-      getAllUserChatRooms();
+      getAllUserChatRooms(`members=${user._id}`);
 
+      // toggle chat for the message sender
       if (user._id === messageFromBackend.userId) dispatch({ type: TOGGLE_CHAT });
 
       // Dispatch from here, so that the redux state is updated for all clients in the room.
       if (messageFromBackend.chatRoomId === props.activeChatRoom._id) {
         console.log('only runs when activeChatRoom === messageFromBackend.chatRoomId');
         emitCreateChatMessageFromServerToAllClients(messageFromBackend);
+
+        // Scroll to bottom on send and receive message when the activeChatRoom === room that message is send to
+        // chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+        console.log(props.chatMessages.length);
+        if (props.chatMessages.length >= 10) {
+          scrollIntoLastMessage.current.childNodes[9].scrollIntoView({
+            behavior: 'smooth',
+          });
+        } else if (props.chatMessages.length > 0) {
+          scrollIntoLastMessage.current.childNodes[props.chatMessages.length - 1].scrollIntoView({
+            behavior: 'smooth',
+          });
+        }
+
+        // When the received message is in the activeChatRoom, mark the message as read
+        let memberId = props.activeChatRoom.members.filter(member => member._id !== user._id);
+        markMessagesRead(props.activeChatRoom._id, memberId);
       }
     });
 
@@ -101,7 +142,7 @@ const ChatMessageArea = props => {
       console.log(createdChatRoom);
 
       // if the the current logged in user is a member of the new created chatroom, dispatch add the chatroom to the state. emit the chatroom to the server from all members, so they can all socket.join(theNewChatRoom) serverside
-      createdChatRoom.members.map(member => {
+      createdChatRoom.members.forEach(member => {
         if (member._id === user._id) {
           console.log(member);
           dispatch({ type: CREATE_CHAT_ROOM, payload: createdChatRoom });
@@ -110,6 +151,7 @@ const ChatMessageArea = props => {
       });
     });
   }, [
+    props.chatMessages.length,
     socket,
     activeChatRoom,
     emitCreateChatMessageFromServerToAllClients,
@@ -123,15 +165,43 @@ const ChatMessageArea = props => {
     chatEnd.current.scrollIntoView({ behavior: 'smooth' });
   }, [activeChatRoom]);
 
+  // Gewoon omhoog scrollen werkt perfect
+  // Typen zonder omhoog te scrollen werkt perfect
+  // Eerst scrollen dan typen, werkt
+  // Eerst typen, dan scrollen, dan typen werkt
+
   const scrollIntoLastMessage = useRef(null);
+
   useEffect(() => {
+    // childTen === pos 9, arrays 0 based
+    let childTen = scrollIntoLastMessage.current.childNodes[9]?.innerText.split(/\r?\n/)[2];
+    console.log(scrollIntoLastMessage.current.childNodes);
+    // let childTen = scrollIntoLastMessage.current.childNodes[props.chatMessages.length - 1]?.innerText.split(/\r?\n/)[2];
+    let lastMessage = props.chatMessages[props.chatMessages.length - 1]?.body;
+
+    console.log(childTen);
+    console.log(lastMessage);
     if (props.chatMessages.length > 10) {
-      if (scrollIntoLastMessage.current.childNodes[20]) {
-        scrollIntoLastMessage.current.childNodes[20].scrollIntoView({
-          behavior: 'smooth',
-        });
+      // if the chatMessages array length is divisible by exactly 10, scroll into the new 10th which is the top message
+      if (scrollIntoLastMessage.current.childNodes[10] && props.chatMessages.length % 10 === 0) {
+        scrollIntoLastMessage.current.childNodes[10].scrollIntoView();
+        console.log('if');
+        // if the chatMessages array length is not divisible by exactly 10, e.g. 26, substract the array length (20) of the 26, and scroll into the 6
+
+        // Not divisible by 10 === end of messages
+      } else if (
+        scrollIntoLastMessage.current.childNodes[10] &&
+        props.chatMessages.length % 10 !== 0
+      ) {
+        console.log('not divisible by 10');
+        console.log(props.chatMessages.length);
+        let scrollLength =
+          props.chatMessages.length - Math.floor(props.chatMessages.length / 10) * 10;
+        console.log(scrollLength);
+        scrollIntoLastMessage.current.childNodes[scrollLength].scrollIntoView();
       } else {
-        chatEnd.current.scrollIntoView({ behavior: 'smooth' });
+        console.log('else');
+        // chatEnd.current.scrollIntoView({ behavior: 'smooth' });
       }
     }
   });
@@ -140,41 +210,50 @@ const ChatMessageArea = props => {
     <>
       <List ref={scrollIntoLastMessage}>
         {props.activeChatRoom.chatMessages ? (
-          props.chatMessages.map(message => (
-            <ListItem key={message._id}>
-              <Grid container>
-                <Grid item xs={12}>
-                  {/* username */}
-                  <ListItemText
-                    align={props.user._id === message.userId ? 'right' : 'left'}
-                    secondary={message.username}></ListItemText>
-
-                  {/* chat message body */}
-                  <ListItemText align={props.user._id === message.userId ? 'right' : 'left'}>
-                    <Chip
-                      label={message.body}
+          props.chatMessages.map(message => {
+            return (
+              <ListItem key={message._id}>
+                <Grid container>
+                  <Grid item xs={12}>
+                    {/* username */}
+                    <ListItemText
+                      style={{ display: message.systemMessage === true && 'none' }}
                       align={props.user._id === message.userId ? 'right' : 'left'}
-                      color={props.user._id === message.userId ? 'primary' : 'secondary'}
-                    />
-                  </ListItemText>
-                </Grid>
+                      secondary={message.username}></ListItemText>
 
-                {/* timestamp */}
-                <Grid item xs={12}>
-                  <ListItemText
-                    align={props.user._id === message.userId ? 'right' : 'left'}
-                    secondary={moment(message.createdAt).fromNow()}></ListItemText>
+                    {/* chat message body */}
+                    <ListItemText
+                      className={message.systemMessage ? 'leftGroup' : ''}
+                      align={props.user._id === message.userId ? 'right' : 'left'}>
+                      <ListItemText
+                        className={classes.messageBody}
+                        align={props.user._id === message.userId ? 'right' : 'left'}
+                        style={{
+                          backgroundColor: props.user._id !== message.userId && '#9c27b0',
+                        }}>
+                        {message.body}
+                      </ListItemText>
+                    </ListItemText>
+                  </Grid>
+
+                  {/* timestamp */}
+                  <Grid item xs={12}>
+                    <ListItemText
+                      className={message.systemMessage ? 'leftGroup-timestamp' : ''}
+                      align={props.user._id === message.userId ? 'right' : 'left'}
+                      secondary={moment(message.createdAt).fromNow()}></ListItemText>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </ListItem>
-          ))
+              </ListItem>
+            );
+          })
         ) : (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             Selecteer een gesprek
           </div>
         )}
 
-        <div ref={chatEnd} />
+        <div className={'test'} ref={chatEnd} />
       </List>
     </>
   );
@@ -186,6 +265,7 @@ const mapStateToProps = state => {
     chatMessages: state.chat.chatMessages,
     user: state.user.user,
     activeChatRoom: state.chat.activeChatRoom,
+    theme: state.theme.theme,
   };
 };
 
@@ -196,4 +276,5 @@ export default connect(mapStateToProps, {
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
   getAllUserChatRooms,
+  markMessagesRead,
 })(ChatMessageArea);

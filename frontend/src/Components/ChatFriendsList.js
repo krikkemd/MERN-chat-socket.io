@@ -7,6 +7,7 @@ import { connect, useDispatch } from 'react-redux';
 import { getAllUsers } from '../redux/actions/userActions';
 import {
   getSingleChatRoom,
+  getAllUserChatRooms,
   createChatRoom,
   markMessagesRead,
 } from '../redux/actions/chatMessageActions';
@@ -14,11 +15,16 @@ import {
 // Types
 import { TOGGLE_CHAT, TOGGLE_CONTACTS, SET_NO_ACTIVE_CHATROOM } from '../redux/types';
 
+// Components
+import CreateGroupModal from '../util/CreateGroupModal';
+import GroupChat from './GroupChat';
+import { StyledBadge } from '../util/StyledBadge';
+
 // Helper functions
 import { firstCharUpperCase } from '../util/helperFunctions';
 
 // MUI
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -30,33 +36,19 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import MessageIcon from '@material-ui/icons/Message';
 import Tooltip from '@material-ui/core/Tooltip';
 
-// online badge icon
-const StyledBadge = withStyles(theme => ({
-  badge: {
-    backgroundColor: '#44b700',
-    color: '#44b700',
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    '&::after': {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      borderRadius: '50%',
-      animation: '$ripple 1.2s infinite ease-in-out',
-      border: '1px solid currentColor',
-      content: '""',
-    },
+const useStyles = makeStyles(theme => ({
+  chatButtons: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000,
+    backgroundColor: theme.palette.background.paper,
+    justify: 'space-between',
   },
-  '@keyframes ripple': {
-    '0%': {
-      transform: 'scale(.8)',
-      opacity: 1,
-    },
-    '100%': {
-      transform: 'scale(2.4)',
-      opacity: 0,
-    },
+  noMessages: {
+    paddingTop: 30,
+    justifyContent: 'center',
   },
-}))(Badge);
+}));
 
 const ChatFriendsList = props => {
   // authroute calls getsAllUserRooms, which queries the chatrooms with {req.user._id} where the current logged in user is a member of.
@@ -65,6 +57,7 @@ const ChatFriendsList = props => {
   // onCLick => getChatMessages from that room with the room._id + we socket.join('clickedRoom') server side, and leave all other rooms. (SERVER SIDE: NO LONGER TRUE)
   // in socketManager we query the chatRooms where the user is a member, we loop through the rooms and socket.join them all.
 
+  const classes = useStyles();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -74,27 +67,58 @@ const ChatFriendsList = props => {
   const { toggleFriendList } = props;
 
   // check if there is a chatroom with the clicked on contact. create one if there is not.
-  const checkIfContactHasChatRoom = clickedContact => {
-    let chatroom;
-    props.chatRooms.map(room => {
-      room.members.map(member => {
-        if (clickedContact._id === member._id && room.members.length <= 2) {
-          chatroom = room;
-        }
-      });
-    });
-    console.log(chatroom);
+  const checkIfContactHasChatRoom = async clickedContact => {
+    // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
+    const recoom = await props.getAllUserChatRooms(
+      `members[all]=${clickedContact._id}&members[all]=${props.user._id}&members[size]=2&name[exists]=false`,
+    );
+
+    console.log(recoom);
+    console.log(recoom.chatRooms.length);
+
+    // let chatroom;
+    // props.chatRooms.forEach(room => {
+    //   room.members.forEach(member => {
+    //     if (clickedContact._id === member._id && room.members.length <= 2) {
+    //       chatroom = room;
+    //     }
+    //   });
+    // });
+    // console.log(chatroom);
 
     // If there is a chatroom, set it as the activeChatRoom
-    if (chatroom) {
-      props.getSingleChatRoom(chatroom._id);
+    if (recoom.chatRooms.length) {
+      props.getSingleChatRoom(recoom.chatRooms[0]._id);
+
+      // Origineel:
+      // props.getSingleChatRoom(chatroom._id);
 
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
-      chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
+      // chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
+
+      if (recoom.chatRooms[0].chatMessages.length > 0) {
+        dispatch({ type: TOGGLE_CHAT });
+        let memberId = recoom.chatRooms[0].members.filter(member => member._id !== props.user._id);
+        props.markMessagesRead(recoom.chatRooms[0]._id, memberId);
+      }
+
+      // Origineel:
+      // if (chatroom.chatMessages.length > 0) {
+      //   dispatch({ type: TOGGLE_CHAT });
+      //   let memberId = chatroom.members.filter(member => member._id !== props.user._id);
+      //   props.markMessagesRead(chatroom._id, memberId);
+      // }
     } else {
       // There is no chatRoom, stay in 'contacts'
       dispatch({ type: TOGGLE_CONTACTS });
       console.log('no chatroom');
+
+      // TODO:
+      // Add extra user to group
+      // Close modal on created group
+      // chat messages read by
+      // Group images?
+      // Secure API routes + register users + close registration
 
       // chatmessages: [] at chatroomModel?
       // If there is no chatroom found, create a new chatroom.
@@ -107,7 +131,7 @@ const ChatFriendsList = props => {
       // TODO: Notification on unread messages
       // TODO: set an expiry time on the chatRoom if no messages are sent within one hour/day?
       // TODO: process nog een x doorlopen, misschien kan er wel een emit of dispatch tussen uit. bijvoorbeeld na onchange, als we toch emitten naar iedereen, en dan pas de members filteren.
-      props.createChatRoom(props.socket, clickedContact._id, props.user._id);
+      props.createChatRoom(props.socket, null, props.user._id, clickedContact._id, props.user._id);
     }
   };
 
@@ -125,8 +149,8 @@ const ChatFriendsList = props => {
 
   return (
     <List>
-      <Grid container justify='space-between'>
-        <Grid item xs={6} style={{ borderRight: '1px solid lightgrey' }}>
+      <Grid container className={classes.chatButtons}>
+        <Grid item xs={4} style={{ borderRight: '1px solid lightgrey' }}>
           <ListItem
             button
             onClick={e => {
@@ -142,7 +166,7 @@ const ChatFriendsList = props => {
             </ListItemText>
           </ListItem>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4} style={{ borderRight: '1px solid lightgrey' }}>
           <ListItem
             style={{ justifyContent: 'center' }}
             button
@@ -178,115 +202,140 @@ const ChatFriendsList = props => {
             )}
           </ListItem>
         </Grid>
+
+        {/* Add Group */}
+        <CreateGroupModal />
       </Grid>
 
-      {/* Render chats with messages */}
+      {/* Render chats with messages with more than 1 members (groups always include a name, rooms dont) */}
+      {/* Render group chats */}
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
+            if (room.members.length >= 1 && room.name) {
+              return <GroupChat room={room} key={room._id} />;
+            }
+
+            // Render chats with messages with max 2 members
             // Render ONLINE CHAT users: sorted: chat with last received message on top
             return (
               room.chatMessages.length > 0 &&
               room.members.map(member => {
-                if (
-                  Object.values(props.connectedUsers).includes(member._id) &&
-                  member.username !== props.user.username
-                ) {
-                  return (
-                    <ListItem
-                      button
-                      key={room._id}
-                      onClick={e => {
-                        console.log('click');
-                        console.log(`Room Id: ${room._id}`);
-                        props.getSingleChatRoom(room._id);
+                if (room.members.length === 2 && !room.name) {
+                  if (
+                    Object.values(props.connectedUsers).includes(member._id) &&
+                    member.username !== props.user.username
+                  ) {
+                    return (
+                      <ListItem
+                        button
+                        key={room._id}
+                        onClick={e => {
+                          console.log('click');
+                          console.log(`Room Id: ${room._id}`);
+                          props.getSingleChatRoom(room._id);
 
-                        let memberId = room.members.filter(member => member._id !== props.user._id);
+                          let memberId = room.members.filter(
+                            member => member._id !== props.user._id,
+                          );
 
-                        props.markMessagesRead(room._id, memberId);
+                          props.markMessagesRead(room._id, memberId);
 
-                        // props.socket.emit('roomId', room._id);
-                      }}>
-                      <ListItemIcon>
-                        <StyledBadge
-                          overlap='circle'
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                          }}
-                          variant='dot'>
+                          // props.socket.emit('roomId', room._id);
+                        }}>
+                        <ListItemIcon>
+                          <StyledBadge
+                            overlap='circle'
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'right',
+                            }}
+                            variant='dot'>
+                            <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
+                          </StyledBadge>
+                        </ListItemIcon>
+                        <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
+                        <Badge
+                          badgeContent={
+                            room._id !== props.activeChatRoom._id
+                              ? room.chatMessages.filter(message => {
+                                  return (
+                                    message.username !== props.user.username &&
+                                    message.read === false
+                                  );
+                                }).length
+                              : 0
+                          }
+                          color='secondary'
+                          max={9}>
+                          <ListItemText
+                            secondary={props.lastMessages.map(lastMessage => {
+                              if (lastMessage && lastMessage.chatRoomId === room._id) {
+                                return lastMessage.body;
+                              }
+                              return null;
+                            })}
+                            align='right'></ListItemText>
+                        </Badge>
+                      </ListItem>
+                    );
+                    // Render OFFLINE CHAT users
+                  } else if (member.username !== props.user.username) {
+                    return (
+                      <ListItem
+                        button
+                        key={room._id}
+                        onClick={e => {
+                          console.log('click');
+                          console.log(`Room Id: ${room._id}`);
+                          props.getSingleChatRoom(room._id);
+
+                          let memberId = room.members.filter(
+                            member => member._id !== props.user._id,
+                          );
+
+                          props.markMessagesRead(room._id, memberId);
+                          // props.socket.emit('roomId', room._id);
+                        }}>
+                        <ListItemIcon>
                           <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
-                        </StyledBadge>
-                      </ListItemIcon>
-                      <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
-                      <Badge
-                        badgeContent={
-                          room._id !== props.activeChatRoom._id
-                            ? room.chatMessages.filter(message => {
-                                return (
-                                  message.username !== props.user.username && message.read === false
-                                );
-                              }).length
-                            : 0
-                        }
-                        color='secondary'
-                        max={9}>
+                        </ListItemIcon>
                         <ListItemText
-                          secondary={props.lastMessages.map(lastMessage => {
-                            if (lastMessage && lastMessage.chatRoomId === room._id) {
-                              return lastMessage.body;
-                            }
-                          })}
-                          align='right'></ListItemText>
-                      </Badge>
-                    </ListItem>
-                  );
-                  // Render OFFLINE CHAT users
-                } else if (member.username !== props.user.username) {
-                  return (
-                    <ListItem
-                      button
-                      key={room._id}
-                      onClick={e => {
-                        console.log('click');
-                        console.log(`Room Id: ${room._id}`);
-                        props.getSingleChatRoom(room._id);
+                          style={{
+                            marginRight: 10,
+                            minWidth: 213.52,
+                          }}
+                          primary={firstCharUpperCase(member.username)}>
+                          {firstCharUpperCase(member.username)}
+                        </ListItemText>
 
-                        let memberId = room.members.filter(member => member._id !== props.user._id);
-
-                        props.markMessagesRead(room._id, memberId);
-                        // props.socket.emit('roomId', room._id);
-                      }}>
-                      <ListItemIcon>
-                        <Avatar alt={member.username.toUpperCase()} src={member.avatar} />
-                      </ListItemIcon>
-                      <ListItemText primary={firstCharUpperCase(member.username)}>
-                        {firstCharUpperCase(member.username)}
-                      </ListItemText>
-
-                      <Badge
-                        badgeContent={
-                          room._id !== props.activeChatRoom._id
-                            ? room.chatMessages.filter(message => {
-                                return (
-                                  message.username !== props.user.username && message.read === false
-                                );
-                              }).length
-                            : 0
-                        }
-                        color='secondary'
-                        max={9}>
-                        <ListItemText
-                          secondary={props.lastMessages.map(lastMessage => {
-                            if (lastMessage && lastMessage.chatRoomId === room._id) {
-                              return lastMessage.body;
-                            }
-                          })}
-                          align='right'
-                        />
-                      </Badge>
-                    </ListItem>
-                  );
+                        <Badge
+                          badgeContent={
+                            room._id !== props.activeChatRoom._id
+                              ? room.chatMessages.filter(message => {
+                                  return (
+                                    message.username !== props.user.username &&
+                                    message.read === false
+                                  );
+                                }).length
+                              : 0
+                          }
+                          color='secondary'
+                          max={9}>
+                          <ListItemText
+                            secondary={props.lastMessages.map(lastMessage => {
+                              if (lastMessage && lastMessage.chatRoomId === room._id) {
+                                return lastMessage.body;
+                              }
+                              return null;
+                            })}
+                            align='right'
+                          />
+                        </Badge>
+                      </ListItem>
+                    );
+                  }
                 }
+                return null;
               })
             );
           })
@@ -354,7 +403,11 @@ const ChatFriendsList = props => {
                 </ListItem>
               );
             }
+            return null;
           })}
+      {props.chatRooms.length === 0 && toggleFriendList === 'chats' && (
+        <ListItem className={classes.noMessages}>Geen berichten gevonden...</ListItem>
+      )}
     </List>
   );
 };
@@ -375,6 +428,7 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   getSingleChatRoom,
+  getAllUserChatRooms,
   getAllUsers,
   createChatRoom,
   markMessagesRead,

@@ -1,5 +1,5 @@
 // Redux
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 // Actions
 import { getCurrentLoggedInUser } from '../redux/actions/authActions';
@@ -15,7 +15,13 @@ import Spinner from './Spinner';
 import { useEffect } from 'react';
 
 // Socket io
-import { USER_CONNECTED, USER_DISCONNECTED } from '../redux/types';
+import {
+  USER_CONNECTED,
+  USER_DISCONNECTED,
+  SEND_USER_SOCKET,
+  SEND_BACK_USER_SOCKET,
+  UPDATE_USERS_WITH_SOCKETS,
+} from '../redux/types';
 
 // When we specify an Authroute:
 //  - getCurrentLoggedInUser checks if the user is logged in. (componentDidMount)
@@ -33,6 +39,8 @@ const AuthRoute = props => {
     user,
   } = props;
 
+  const dispatch = useDispatch();
+
   // componentDidMount
   useEffect(() => {
     getCurrentLoggedInUser();
@@ -43,9 +51,11 @@ const AuthRoute = props => {
     // When the user is set, emit the user to the backend, where the user is added to the connected userList.
     if (user._id) {
       // Get all the chatRooms the user is a member of when the user is set
-      getAllUserChatRooms();
+      getAllUserChatRooms(`members=${user._id}`);
 
       socket.emit(USER_CONNECTED, user);
+      console.log(socket.id);
+      // socket.emit(SEND_USER_SOCKET, { user: { ...user, socketId: socket.id } });
       console.log('user is set');
 
       // Receive the connected users userList from the backend
@@ -54,6 +64,7 @@ const AuthRoute = props => {
         console.log(userListFromBackend);
         // TODO dispatch action to update props.connectedUsers
         updateConnectedUserList(userListFromBackend);
+        socket.emit(SEND_USER_SOCKET, { user: { ...user, socketId: socket.id } });
       });
 
       // Receive the updated connected users userList from the backend
@@ -61,6 +72,16 @@ const AuthRoute = props => {
         console.log(userListFromBackend);
         // TODO dispatch action to update props.connectedUsers
         updateConnectedUserList(userListFromBackend);
+      });
+
+      if (socket._callbacks !== undefined && socket._callbacks['$SEND_BACK_USER_SOCKET']) {
+        socket._callbacks['$SEND_BACK_USER_SOCKET'].length = 0;
+      }
+
+      socket.on(SEND_BACK_USER_SOCKET, userAndSocket => {
+        console.log(socket);
+        console.log(userAndSocket);
+        dispatch({ type: UPDATE_USERS_WITH_SOCKETS, payload: userAndSocket });
       });
     }
   }, [updateConnectedUserList, socket, user, getAllUserChatRooms]);

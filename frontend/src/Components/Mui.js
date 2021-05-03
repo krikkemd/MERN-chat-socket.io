@@ -28,6 +28,9 @@ const useStyles = makeStyles(theme => ({
   },
   list: {
     minHeight: '85vh',
+    height: '821px',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     borderRight: '1px solid lightgrey',
     borderBottom: '1px solid lightgrey',
   },
@@ -47,19 +50,23 @@ const Mui = props => {
   console.log(props);
   const theme = useTheme();
   const classes = useStyles(theme);
-  const [skip, setSkip] = useState(10);
+  const [skip, setSkip] = useState(props.chatMessages.length);
 
   useEffect(() => {
-    setSkip(10);
+    setSkip(props.chatMessages.length);
+    console.log(props.chatMessages.length);
     console.log(skip);
-  }, [props.activeChatRoom]);
+  }, [props.activeChatRoom, props.chatMessages.length]);
 
   const handleScroll = e => {
     let { scrollTop } = e.target;
-    if (scrollTop === 0) {
+
+    // ALs de result meer dan 0 is
+    if (scrollTop === 0 && props.chatMessages.length >= 10) {
       console.log('setSkip');
       console.log(skip);
-      setSkip(skip + 25);
+      console.log(props.chatMessages.length);
+      setSkip(props.chatMessages.length);
       props.getAllChatMessages(props.activeChatRoom._id, skip);
     }
   };
@@ -77,13 +84,13 @@ const Mui = props => {
       </Grid>
 
       {/* Friends list */}
-      <Grid container xs={12}>
+      <Grid item container xs={12}>
         <Grid item xs={3} className={classes.list}>
           <ChatFriendList />
         </Grid>
 
         {/* Chat Messages */}
-        <Grid container xs={9} md={9}>
+        <Grid item container xs={9} md={9}>
           <Grid item xs={12} className={classes.chatMessages} onScroll={handleScroll}>
             <ChatMessageArea />
           </Grid>
