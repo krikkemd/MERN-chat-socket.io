@@ -176,14 +176,22 @@ export const updateChatRoom = (socket, roomId, socketIds, ...members) => dispatc
     .then(res => {
       console.log(res.data);
 
-      // res.data.data.members.map(member => {
-      //   console.log(member);
-      // });
-
-      // socket.emit -> io.in.emit -> update state
+      // send the new room and socket ids to the server
       socket.emit(ADD_USERS_TO_CHATROOM, res.data, socketIds);
 
-      // createSystemMessage here
+      // Array of the newly added members
+      let welcomeUsers = res.data.data.members.slice(
+        res.data.data.members.length - socketIds.length,
+      );
+
+      console.log(welcomeUsers);
+
+      // Welcome the new members to the room with a message, also updating the state for the new users
+      // Split / join for the commas
+      createSystemMessage(
+        roomId,
+        `${welcomeUsers.map(user => user && `${user.username}, `)} Welkom in de chat!`,
+      );
     })
     .catch(err => console.log(err));
 };

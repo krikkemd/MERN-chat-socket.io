@@ -214,38 +214,13 @@ module.exports = socket => {
 
     console.log('add the socket ids to the SET');
     // io.sockets.adapter.rooms.get(roomId).add(socketIds[0]);
+
     socketIds.map(socketId => {
       return io.sockets.adapter.rooms.get(roomId).add(socketId);
     });
 
     console.log('log the maps with the added socketids');
     console.log(io.sockets.adapter.rooms);
-
-    // iterate over [key, value] entries
-    // console.log('for');
-    // for (let entry of io.sockets.adapter.rooms) {
-    //   // the same as of recipeMap.entries()
-    //   console.log(entry); // cucumber,500 (and so on)
-
-    //   let room = entry.get(roomId)
-    // }
-
-    // io.sockets.connected[socketID].join(roomName);
-    // console.log(io.sockets.connected);
-    // console.log(io.sockets);
-
-    // console.log(io.sockets.sockets);
-    // console.log(socket.rooms);
-
-    // socketIds.map(socketID => {
-    //   console.log(socketID);
-    //   console.log(Object.keys(io.sockets.sockets));
-    //   if (Object.keys(io.sockets.sockets).includes(socketID)) {
-    //     console.log('work pls');
-    //     io.sockets.connected[socketID].join(roomId);
-    //   }
-    // });
-    // console.log(socket.rooms);
 
     io.in(roomId).emit(ADDED_USERS_TO_CHATROOM, data);
   });
