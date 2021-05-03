@@ -152,6 +152,13 @@ export const leaveChatRoom = (socket, roomId, user) => dispatch => {
       socket.emit(LEAVE_CHATROOM, roomId, user, res.data);
 
       createSystemMessage(roomId, `${user.username} heeft de groep verlaten.`);
+
+      // New moderator is "username" message:
+      res.data.data.members.map(member => {
+        if (member._id === res.data.data.moderator) {
+          createSystemMessage(roomId, `${member.username} is de groepsbeheerder.`);
+        }
+      });
     })
     .catch(err => {
       console.log(err.response);
@@ -187,11 +194,15 @@ export const updateChatRoom = (socket, roomId, socketIds, ...members) => dispatc
       console.log(welcomeUsers);
 
       // Welcome the new members to the room with a message, also updating the state for the new users
-      // Split / join for the commas
-      createSystemMessage(
-        roomId,
-        `${welcomeUsers.map(user => user && `${user.username}, `)} Welkom in de chat!`,
-      );
+
+      if (welcomeUsers.length >= 1) {
+        createSystemMessage(
+          roomId,
+          `${welcomeUsers.map(user => user && ` ${user.username}`)} welkom in de chatgroep!`,
+        );
+      } else {
+        createSystemMessage(roomId, `Nieuwe leden, welkom in de chatgroep!`);
+      }
     })
     .catch(err => console.log(err));
 };
