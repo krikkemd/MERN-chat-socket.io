@@ -55,7 +55,7 @@ const GroupChat = props => {
         let memberId = room.members.filter(member => member._id !== props.user._id);
 
         //   messageReadBy =  read
-        props.markMessagesRead(room._id, memberId);
+        // props.markMessagesRead(room._id, memberId);
       }}>
       <ListItemIcon>
         <AvatarGroup max={2} spacing='medium'>

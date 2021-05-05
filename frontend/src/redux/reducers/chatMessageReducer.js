@@ -119,7 +119,7 @@ export default function chatMessageReducer(state = initialState, action) {
           room.chatMessages.map(message => {
             if (message.read === false) {
               // console.log(message);
-              message.read = true;
+              // message.read = true;
             }
             return null;
           });
@@ -143,7 +143,7 @@ export default function chatMessageReducer(state = initialState, action) {
         if (action.payload._id === room._id) {
           room.chatMessages?.filter(message => {
             if (message.read === false) {
-              message.read = true;
+              // message.read = true;
             }
             return null;
           });

@@ -69,12 +69,12 @@ const ChatFriendsList = props => {
   // check if there is a chatroom with the clicked on contact. create one if there is not.
   const checkIfContactHasChatRoom = async clickedContact => {
     // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
-    const recoom = await props.getAllUserChatRooms(
+    const chatRoomQuery = await props.getAllUserChatRooms(
       `members[all]=${clickedContact._id}&members[all]=${props.user._id}&members[size]=2&name[exists]=false`,
     );
 
-    console.log(recoom);
-    console.log(recoom.chatRooms.length);
+    console.log(chatRoomQuery);
+    console.log(chatRoomQuery.chatRooms.length);
 
     // let chatroom;
     // props.chatRooms.forEach(room => {
@@ -87,8 +87,8 @@ const ChatFriendsList = props => {
     // console.log(chatroom);
 
     // If there is a chatroom, set it as the activeChatRoom
-    if (recoom.chatRooms.length) {
-      props.getSingleChatRoom(recoom.chatRooms[0]._id);
+    if (chatRoomQuery.chatRooms.length) {
+      props.getSingleChatRoom(chatRoomQuery.chatRooms[0]._id);
 
       // Origineel:
       // props.getSingleChatRoom(chatroom._id);
@@ -96,10 +96,12 @@ const ChatFriendsList = props => {
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
       // chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
 
-      if (recoom.chatRooms[0].chatMessages.length > 0) {
+      if (chatRoomQuery.chatRooms[0].chatMessages.length > 0) {
         dispatch({ type: TOGGLE_CHAT });
-        let memberId = recoom.chatRooms[0].members.filter(member => member._id !== props.user._id);
-        props.markMessagesRead(recoom.chatRooms[0]._id, memberId);
+        let memberId = chatRoomQuery.chatRooms[0].members.filter(
+          member => member._id !== props.user._id,
+        );
+        // props.markMessagesRead(chatRoomQuery.chatRooms[0]._id, memberId);
       }
 
       // Origineel:
@@ -238,7 +240,7 @@ const ChatFriendsList = props => {
                             member => member._id !== props.user._id,
                           );
 
-                          props.markMessagesRead(room._id, memberId);
+                          // props.markMessagesRead(room._id, memberId);
 
                           // props.socket.emit('roomId', room._id);
                         }}>
@@ -293,7 +295,7 @@ const ChatFriendsList = props => {
                             member => member._id !== props.user._id,
                           );
 
-                          props.markMessagesRead(room._id, memberId);
+                          // props.markMessagesRead(room._id, memberId);
                           // props.socket.emit('roomId', room._id);
                         }}>
                         <ListItemIcon>
