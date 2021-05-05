@@ -258,7 +258,7 @@ const ChatFriendsList = props => {
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
             if (room.members.length >= 1 && room.name) {
-              return <GroupChat room={room} key={room._id} />;
+              return <GroupChat room={room} key={room._id} unreadMessages={unreadMessages} />;
             }
 
             // Render chats with messages with max 2 members
@@ -303,16 +303,13 @@ const ChatFriendsList = props => {
                         <Badge
                           badgeContent={
                             room._id !== props.activeChatRoom._id
-                              ? room.chatMessages.filter(message => {
-                                  return (
-                                    message.username !== props.user.username &&
-                                    message.read === false
-                                  );
-                                }).length
+                              ? unreadMessages.map(item => {
+                                  return item.room === room._id && item.count;
+                                })
                               : 0
                           }
                           color='secondary'
-                          max={9}>
+                          max={3}>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {
@@ -357,16 +354,13 @@ const ChatFriendsList = props => {
                         <Badge
                           badgeContent={
                             room._id !== props.activeChatRoom._id
-                              ? room.chatMessages.filter(message => {
-                                  return (
-                                    message.username !== props.user.username &&
-                                    message.read === false
-                                  );
-                                }).length
+                              ? unreadMessages.map(item => {
+                                  return item.room === room._id && item.count;
+                                })
                               : 0
                           }
                           color='secondary'
-                          max={9}>
+                          max={3}>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {

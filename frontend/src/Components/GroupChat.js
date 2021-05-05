@@ -22,8 +22,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 
 const GroupChat = props => {
-  // console.log(props);
-  const { room, socket } = props;
+  console.log(props);
+  const { room, socket, unreadMessages } = props;
 
   const dispatch = useDispatch();
 
@@ -81,13 +81,13 @@ const GroupChat = props => {
       <Badge
         badgeContent={
           room._id !== props.activeChatRoom._id
-            ? room.chatMessages.filter(message => {
-                return message.username !== props.user.username && message.read === false;
-              }).length
+            ? unreadMessages.map(item => {
+                return item.room === room._id && item.count;
+              })
             : 0
         }
         color='secondary'
-        max={9}>
+        max={3}>
         <ListItemText
           secondary={props.lastMessages.map(lastMessage => {
             if (lastMessage && lastMessage.chatRoomId === room._id) {
