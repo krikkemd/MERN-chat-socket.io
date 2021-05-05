@@ -30,10 +30,12 @@ const messageSchema = new mongoose.Schema(
       required: [true, 'Message should have a userId'],
     }, // mongoose.ObjectId
     // sender: Boolean,
-    read: {
-      type: Boolean,
-      default: false,
-    },
+    read: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
     systemMessage: {
       type: Boolean,
       default: false,
