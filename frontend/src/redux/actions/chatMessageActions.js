@@ -241,9 +241,9 @@ export const createSystemMessage = (roomId, message) => {
 };
 
 // MemberId is the OTHER member in the room, not you. only set messages to read you've received
-export const markMessagesRead = (roomId, memberId) => dispatch => {
+export const markMessagesRead = roomId => dispatch => {
   axios
-    .patch(baseUrl, { chatRoomId: roomId, memberId: memberId })
+    .patch(baseUrl, { chatRoomId: roomId })
     .then(res => {
       console.log(res);
     })

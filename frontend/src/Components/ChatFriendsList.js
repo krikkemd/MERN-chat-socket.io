@@ -116,7 +116,6 @@ const ChatFriendsList = props => {
       console.log('no chatroom');
 
       // TODO:
-      // Add extra user to group
       // Close modal on created group
       // chat messages read by
       // Group images?
@@ -131,23 +130,68 @@ const ChatFriendsList = props => {
       // dispatch CREATE_CHAT_ROOM which updates the props.chatrooms of the chatRoomsMembers, updating the state. can't create 2 rooms ✅
       // socket.emit(MEMBERS_JOIN_CHAT_ROOMS, newCreatedChatRoomId) to the server, so all connected members join the new chat room.
       // TODO: Notification on unread messages
-      // TODO: set an expiry time on the chatRoom if no messages are sent within one hour/day?
-      // TODO: process nog een x doorlopen, misschien kan er wel een emit of dispatch tussen uit. bijvoorbeeld na onchange, als we toch emitten naar iedereen, en dan pas de members filteren.
       props.createChatRoom(props.socket, null, props.user._id, clickedContact._id, props.user._id);
     }
   };
 
-  const countTotalUnreadMessages = props.chatRooms.map(room => {
-    return room.chatMessages.filter(message => {
-      return message.read === false && message.userId !== props.user._id;
-    }).length;
+  // const countTotalUnreadMessages = props.chatRooms.map(room => {
+  //   return room.chatMessages.filter(message => {
+  //     return message.read === false && message.userId !== props.user._id;
+  //   }).length;
+  // });
+
+  let totalUnreadMessages = [];
+  let unreadMessages = [];
+
+  // Map through the chat room array
+  const countTotalUnreadMessages = props.chatRooms.map((room, i) => {
+    // Reset counter for the current room
+    let counter = 0;
+
+    // Push in the room id, and a count of 0 to the unread messages array
+    unreadMessages.push({ room: room._id, count: 0 });
+
+    // Map through the chatMessages of the current props.chatroom
+    room.chatMessages.map(message => {
+      // return message.read === false && message.userId !== props.user._id;
+
+      // map through the message.read array and try to find the userId of the current logged in user. save the value to the userIndex var (0, 1, -1)
+      let userIndex = message.read.findIndex(user => {
+        // console.log(message);
+        if (user === props.user._id) {
+          return true;
+        }
+      });
+      console.log(userIndex);
+
+      // Whenever the userIndex is -1, the message is unread
+      if (userIndex === -1) {
+        // push the userindex to the TOTAL unreadMessages array.
+        totalUnreadMessages.push(userIndex);
+
+        // Update the counter for the current unread message in the current room
+        counter++;
+
+        // map through the unreadmessages array where the roomId is called item.room
+        unreadMessages.map(item => {
+          // if the item.room === message.chatRoomId update item.count to the total count for this room
+          if (item.room === message.chatRoomId) {
+            item.count = counter;
+          }
+        });
+      }
+    });
   });
 
-  let totalUnreadMessages;
-  if (countTotalUnreadMessages[0]) {
-    totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
-  }
+  // console.log(Object.values(unreadMessages.room));
+
+  console.log(unreadMessages);
   console.log(totalUnreadMessages);
+  console.log(totalUnreadMessages.length);
+
+  // if (countTotalUnreadMessages[0]) {
+  //   totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
+  // }
 
   return (
     <List>
@@ -177,14 +221,14 @@ const ChatFriendsList = props => {
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            {toggleFriendList === 'contacts' && totalUnreadMessages > 0 ? (
-              <Badge badgeContent={totalUnreadMessages} max={9} color='secondary'>
+            {toggleFriendList === 'contacts' && totalUnreadMessages.length > 0 ? (
+              <Badge badgeContent={totalUnreadMessages.length} max={99} color='secondary'>
                 <ListItemText style={{ textAlign: 'center' }}>
                   <Tooltip
                     title={
-                      totalUnreadMessages > 1
-                        ? `${totalUnreadMessages} nieuwe berichten`
-                        : `${totalUnreadMessages} nieuw bericht`
+                      totalUnreadMessages.length > 1
+                        ? `${totalUnreadMessages.length} nieuwe berichten`
+                        : `${totalUnreadMessages.length} nieuw bericht`
                     }
                     placement='top-start'
                     arrow

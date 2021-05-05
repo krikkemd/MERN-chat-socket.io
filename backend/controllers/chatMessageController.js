@@ -105,7 +105,9 @@ exports.markMessagesRead = catchAsync(async (req, res, next) => {
   });
 
   // return an empty array if all the messages are read (markedAsRead)
-  return res.status(200).json({ status: 'success', data: unreadMessages });
+  return res
+    .status(200)
+    .json({ status: 'success', results: unreadMessages.length, data: unreadMessages });
 });
 
 exports.deleteChatMessage = catchAsync(async (req, res, next) => {
