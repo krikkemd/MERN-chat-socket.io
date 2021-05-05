@@ -128,7 +128,7 @@ const ChatMessageArea = props => {
 
         // When the received message is in the activeChatRoom, mark the message as read
         let memberId = props.activeChatRoom.members.filter(member => member._id !== user._id);
-        // markMessagesRead(props.activeChatRoom._id, memberId);
+        markMessagesRead(props.activeChatRoom._id);
       }
     });
 

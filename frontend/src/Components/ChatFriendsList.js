@@ -101,7 +101,7 @@ const ChatFriendsList = props => {
         let memberId = chatRoomQuery.chatRooms[0].members.filter(
           member => member._id !== props.user._id,
         );
-        // props.markMessagesRead(chatRoomQuery.chatRooms[0]._id, memberId);
+        props.markMessagesRead(chatRoomQuery.chatRooms[0]._id);
       }
 
       // Origineel:
@@ -284,7 +284,7 @@ const ChatFriendsList = props => {
                             member => member._id !== props.user._id,
                           );
 
-                          // props.markMessagesRead(room._id, memberId);
+                          props.markMessagesRead(room._id);
 
                           // props.socket.emit('roomId', room._id);
                         }}>
@@ -301,6 +301,7 @@ const ChatFriendsList = props => {
                         </ListItemIcon>
                         <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
                         <Badge
+                          max={9}
                           badgeContent={
                             room._id !== props.activeChatRoom._id
                               ? unreadMessages.map(item => {
@@ -308,8 +309,7 @@ const ChatFriendsList = props => {
                                 })
                               : 0
                           }
-                          color='secondary'
-                          max={3}>
+                          color='secondary'>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {
@@ -336,7 +336,7 @@ const ChatFriendsList = props => {
                             member => member._id !== props.user._id,
                           );
 
-                          // props.markMessagesRead(room._id, memberId);
+                          props.markMessagesRead(room._id);
                           // props.socket.emit('roomId', room._id);
                         }}>
                         <ListItemIcon>
@@ -352,6 +352,7 @@ const ChatFriendsList = props => {
                         </ListItemText>
 
                         <Badge
+                          max={9}
                           badgeContent={
                             room._id !== props.activeChatRoom._id
                               ? unreadMessages.map(item => {
@@ -359,8 +360,7 @@ const ChatFriendsList = props => {
                                 })
                               : 0
                           }
-                          color='secondary'
-                          max={3}>
+                          color='secondary'>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {

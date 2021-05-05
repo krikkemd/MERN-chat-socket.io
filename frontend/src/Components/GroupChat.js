@@ -55,7 +55,7 @@ const GroupChat = props => {
         let memberId = room.members.filter(member => member._id !== props.user._id);
 
         //   messageReadBy =  read
-        // props.markMessagesRead(room._id, memberId);
+        props.markMessagesRead(room._id);
       }}>
       <ListItemIcon>
         <AvatarGroup max={2} spacing='medium'>
@@ -79,6 +79,7 @@ const GroupChat = props => {
           marginRight: 10,
         }}></ListItemText>
       <Badge
+        max={9}
         badgeContent={
           room._id !== props.activeChatRoom._id
             ? unreadMessages.map(item => {
@@ -86,8 +87,7 @@ const GroupChat = props => {
               })
             : 0
         }
-        color='secondary'
-        max={3}>
+        color='secondary'>
         <ListItemText
           secondary={props.lastMessages.map(lastMessage => {
             if (lastMessage && lastMessage.chatRoomId === room._id) {
