@@ -11,7 +11,7 @@ const {
   createChatMessage,
   deleteChatMessage,
   // updateChatMessage,
-  // markMessagesRead,
+  markMessagesRead,
   getSingleChatMessage,
   createSystemMessage,
 } = require('../controllers/chatMessageController');
@@ -19,8 +19,11 @@ const {
 // res.locals.user
 // router.use(isLoggedIn);
 
-router.route('/').get(protectRoute, getAllChatMessages).post(protectRoute, createChatMessage);
-// .patch(protectRoute, markMessagesRead);
+router
+  .route('/')
+  .get(protectRoute, getAllChatMessages)
+  .post(protectRoute, createChatMessage)
+  .patch(protectRoute, markMessagesRead);
 router
   .route('/:id')
   .get(protectRoute, getSingleChatMessage)

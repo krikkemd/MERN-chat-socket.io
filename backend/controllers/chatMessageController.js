@@ -46,6 +46,7 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
     chatRoomId: req.body.chatRoomId,
     body: req.body.body,
     username: req.user.username,
+    read: req.user._id,
     userId: req.user._id,
     systemMessage: req.body.systemMessage,
   });
@@ -77,19 +78,34 @@ exports.createSystemMessage = catchAsync(async (req, res, next) => {
 });
 
 exports.markMessagesRead = catchAsync(async (req, res, next) => {
-  const messages = await ChatMessage.updateMany(
-    { read: false, chatRoomId: req.body.chatRoomId, userId: req.body.memberId },
-    { read: true },
-    (err, res) => {
-      if (err) return next(new AppError('updateMany went wrong', 500));
-      console.log(req.body.memberId);
+  // const messages = await ChatMessage.updateMany(
+  //   { read: false, chatRoomId: req.body.chatRoomId, userId: req.body.memberId },
+  //   { read: true },
+  //   (err, res) => {
+  //     if (err) return next(new AppError('updateMany went wrong', 500));
+  //     console.log(req.body.memberId);
 
-      console.log(req.body.chatRoomId);
+  //     console.log(req.body.chatRoomId);
 
-      console.log('✅ chat messages marked as read');
-    },
-  );
-  return res.status(200).json({ status: 'success', data: messages });
+  //     console.log('✅ chat messages marked as read');
+  //   },
+  // );
+  console.log('running markMessagesRead');
+  // The message sender is automatically included in the read array, so you've always read your own messages
+  // Find all the messages in the chatroom where the req.user._id is not present.
+  let unreadMessages = await ChatMessage.find({
+    read: { $ne: req.user._id },
+    chatRoomId: req.body.chatRoomId,
+  });
+
+  // Push the req.user._id to the read array, and await saving the message
+  unreadMessages.map(async message => {
+    message.read.push(req.user._id);
+    await message.save();
+  });
+
+  // return an empty array if all the messages are read (markedAsRead)
+  return res.status(200).json({ status: 'success', data: unreadMessages });
 });
 
 exports.deleteChatMessage = catchAsync(async (req, res, next) => {
