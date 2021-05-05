@@ -23,7 +23,7 @@ import Badge from '@material-ui/core/Badge';
 
 const GroupChat = props => {
   console.log(props);
-  const { room, socket, unreadMessages } = props;
+  const { room, socket } = props;
 
   const dispatch = useDispatch();
 
@@ -80,13 +80,7 @@ const GroupChat = props => {
         }}></ListItemText>
       <Badge
         max={9}
-        badgeContent={
-          room._id !== props.activeChatRoom._id
-            ? unreadMessages.map(item => {
-                return item.room === room._id && item.count;
-              })
-            : 0
-        }
+        badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
         color='secondary'>
         <ListItemText
           secondary={props.lastMessages.map(lastMessage => {

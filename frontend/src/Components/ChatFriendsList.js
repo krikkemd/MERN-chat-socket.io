@@ -177,10 +177,12 @@ const ChatFriendsList = props => {
           // if the item.room === message.chatRoomId update item.count to the total count for this room
           if (item.room === message.chatRoomId) {
             item.count = counter;
+            room.unread = counter;
           }
         });
       }
     });
+    console.log(room);
   });
 
   // console.log(Object.values(unreadMessages.room));
@@ -258,7 +260,7 @@ const ChatFriendsList = props => {
       {props.chatRooms && toggleFriendList === 'chats'
         ? props.chatRooms.map(room => {
             if (room.members.length >= 1 && room.name) {
-              return <GroupChat room={room} key={room._id} unreadMessages={unreadMessages} />;
+              return <GroupChat room={room} key={room._id} />;
             }
 
             // Render chats with messages with max 2 members
@@ -302,13 +304,7 @@ const ChatFriendsList = props => {
                         <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
                         <Badge
                           max={9}
-                          badgeContent={
-                            room._id !== props.activeChatRoom._id
-                              ? unreadMessages.map(item => {
-                                  return item.room === room._id && item.count;
-                                })
-                              : 0
-                          }
+                          badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
                           color='secondary'>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
@@ -353,13 +349,7 @@ const ChatFriendsList = props => {
 
                         <Badge
                           max={9}
-                          badgeContent={
-                            room._id !== props.activeChatRoom._id
-                              ? unreadMessages.map(item => {
-                                  return item.room === room._id && item.count;
-                                })
-                              : 0
-                          }
+                          badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
                           color='secondary'>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
