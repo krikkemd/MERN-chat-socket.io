@@ -240,6 +240,19 @@ export const createSystemMessage = (roomId, message) => {
     });
 };
 
+// Get single chatRoom which include a virtual populate of the chatMessages
+export const getAllUnreadMessages = userId => dispatch => {
+  console.log('running getAllUnreadMessages');
+  axios
+    .get(`http://localhost:1337/api/v1/rooms/getAllUnreadMessages?[members]=${userId}`)
+    .then(res => {
+      console.log(res.data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 // MemberId is the OTHER member in the room, not you. only set messages to read you've received
 export const markMessagesRead = roomId => dispatch => {
   axios

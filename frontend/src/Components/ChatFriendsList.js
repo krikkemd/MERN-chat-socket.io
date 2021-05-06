@@ -10,6 +10,7 @@ import {
   getAllUserChatRooms,
   createChatRoom,
   markMessagesRead,
+  getAllUnreadMessages,
 } from '../redux/actions/chatMessageActions';
 
 // Types
@@ -62,6 +63,7 @@ const ChatFriendsList = props => {
 
   useEffect(() => {
     props.getAllUsers();
+    props.getAllUnreadMessages(props.user._id);
   }, []);
 
   const { toggleFriendList } = props;
@@ -462,4 +464,5 @@ export default connect(mapStateToProps, {
   getAllUsers,
   createChatRoom,
   markMessagesRead,
+  getAllUnreadMessages,
 })(ChatFriendsList);
