@@ -180,3 +180,33 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   });
   res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
 });
+
+exports.getAllUnreadMessages = catchAsync(async (req, res, next) => {
+  console.log('running getAllUnreadMessages');
+
+  console.log(req.query);
+
+  const queryObj = { ...req.query };
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = JSON.parse(
+    queryStr.replace(/\b(gte|gt|lte|lt|exists|size|all)\b/g, match => `$${match}`),
+  );
+
+  console.log(queryStr);
+
+  // Postman: {{URL}}/api/v1/rooms/getAllUnreadMessages?[members]=6033a9fae16ec73670656ba2 (req.user._id)
+  // Frontend: {{URL}}/api/v1/rooms/getAllUnreadMessages?[members]=`${user._id}`
+
+  const chatRooms = await ChatRoom.find(queryStr).populate({
+    path: 'chatMessages',
+    match: { read: { $ne: req.user._id } },
+    options: { sort: { createdAt: 'desc' }, perDocumentLimit: 100 },
+  });
+
+  let roomsWithUnreadMessages = chatRooms.map(room => {
+    // console.log(room.chatMessages.length);
+    return { roomid: room._id, unreadMessages: room.chatMessages.length };
+  });
+
+  res.status(200).json({ status: 'success', results: roomsWithUnreadMessages });
+});
