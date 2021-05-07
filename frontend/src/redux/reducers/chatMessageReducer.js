@@ -3,6 +3,7 @@ import {
   CREATE_CHAT_MESSAGE,
   SET_LAST_CHAT_MESSAGE,
   SET_UNREAD_MESSAGES,
+  MARK_MESSAGES_READ,
   DELETE_CHAT_MESSAGE,
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
@@ -265,11 +266,36 @@ export default function chatMessageReducer(state = initialState, action) {
     case SET_UNREAD_MESSAGES: {
       console.log(action.payload);
 
+      console.log(state);
+
       // Of ik moet unread messages in de room pleuren van de props.chatRooms waar de render plaatsvind weet je wel. bij de object indrukken
       return {
         ...state,
         unreadMessages: [...action.payload.newUnreadMessages],
         totalUnread: action.payload.totalUnread,
+      };
+    }
+
+    case MARK_MESSAGES_READ: {
+      console.log(' MARK_MESSAGES_READ');
+      console.log(action.payload);
+      console.log(state);
+      let unreadMessages = [...state.unreadMessages];
+      let totalUnread = [state.totalUnread];
+
+      let roomIndex = unreadMessages.findIndex(
+        message => message.roomId === action.payload.chatRoomId && message,
+      );
+
+      totalUnread = totalUnread - unreadMessages[roomIndex].unreadMessages;
+
+      unreadMessages[roomIndex].unreadMessages = 0;
+
+      console.log(roomIndex);
+      return {
+        ...state,
+        unreadMessages: unreadMessages,
+        totalUnread: totalUnread,
       };
     }
 

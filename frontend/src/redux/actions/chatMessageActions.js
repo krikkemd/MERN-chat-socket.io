@@ -6,6 +6,7 @@ import {
   SET_USER_CHATROOMS,
   SET_LAST_CHAT_MESSAGE,
   SET_UNREAD_MESSAGES,
+  MARK_MESSAGES_READ,
   CREATED_CHAT_ROOM,
   SET_ERRORS,
   LEAVE_CHATROOM,
@@ -285,6 +286,8 @@ export const markMessagesRead = roomId => dispatch => {
     .patch(baseUrl, { chatRoomId: roomId })
     .then(res => {
       console.log(res);
+
+      dispatch({ type: MARK_MESSAGES_READ, payload: res.data });
     })
     .catch(err => console.log(err));
 };

@@ -365,7 +365,7 @@ const ChatFriendsList = props => {
                         </ListItemText>
 
                         <Badge
-                          max={99}
+                          max={9}
                           badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
                           color='secondary'>
                           <ListItemText
