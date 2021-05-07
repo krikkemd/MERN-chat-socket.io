@@ -12,6 +12,7 @@ import {
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
   getAllUserChatRooms,
+  getAllUnreadMessages,
   markMessagesRead,
 } from '../redux/actions/chatMessageActions';
 
@@ -65,6 +66,7 @@ const ChatMessageArea = props => {
     emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
     getAllUserChatRooms,
+    getAllUnreadMessages,
     markMessagesRead,
   } = props;
 
@@ -104,6 +106,7 @@ const ChatMessageArea = props => {
 
       // Reorder friendList to show latest conversation on top (SENDER)
       getAllUserChatRooms(`members=${user._id}`);
+      getAllUnreadMessages(user._id);
 
       // toggle chat for the message sender
       if (user._id === messageFromBackend.userId) dispatch({ type: TOGGLE_CHAT });
@@ -276,5 +279,6 @@ export default connect(mapStateToProps, {
   emitLastChatMessage,
   emitDeleteChatMessageFromServerToAllClients,
   getAllUserChatRooms,
+  getAllUnreadMessages,
   markMessagesRead,
 })(ChatMessageArea);

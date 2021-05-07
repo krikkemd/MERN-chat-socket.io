@@ -79,7 +79,7 @@ const GroupChat = props => {
           marginRight: 10,
         }}></ListItemText>
       <Badge
-        max={9}
+        max={99}
         badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
         color='secondary'>
         <ListItemText
