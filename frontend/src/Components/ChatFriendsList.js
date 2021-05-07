@@ -66,6 +66,8 @@ const ChatFriendsList = props => {
     props.getAllUnreadMessages(props.user._id);
   }, []);
 
+  console.log(props);
+
   const { toggleFriendList } = props;
 
   // check if there is a chatroom with the clicked on contact. create one if there is not.
@@ -146,45 +148,58 @@ const ChatFriendsList = props => {
   let unreadMessages = [];
 
   // Map through the chat room array
-  const countTotalUnreadMessages = props.chatRooms.map((room, i) => {
-    // Reset counter for the current room
-    let counter = 0;
+  // const countTotalUnreadMessages = props.chatRooms.map((room, i) => {
+  //   // Reset counter for the current room
+  //   let counter = 0;
 
-    // Push in the room id, and a count of 0 to the unread messages array
-    unreadMessages.push({ room: room._id, count: 0 });
+  //   // Push in the room id, and a count of 0 to the unread messages array
+  //   unreadMessages.push({ room: room._id, count: 0 });
 
-    // Map through the chatMessages of the current props.chatroom
+  //   // Map through the chatMessages of the current props.chatroom
+  //   room.chatMessages.map(message => {
+  //     // return message.read === false && message.userId !== props.user._id;
+
+  //     // map through the message.read array and try to find the userId of the current logged in user. save the value to the userIndex var (0, 1, -1)
+  //     let userIndex = message.read.findIndex(user => {
+  //       // console.log(message);
+  //       if (user === props.user._id) {
+  //         return true;
+  //       }
+  //     });
+  //     // console.log(userIndex);
+
+  //     // Whenever the userIndex is -1, the message is unread
+  //     if (userIndex === -1) {
+  //       // push the userindex to the TOTAL unreadMessages array.
+  //       totalUnreadMessages.push(userIndex);
+
+  //       // Update the counter for the current unread message in the current room
+  //       counter++;
+
+  //       // map through the unreadmessages array where the roomId is called item.room
+  //       props.unreadMessages.map(item => {
+  //         // if the item.room === message.chatRoomId update item.count to the total count for this room
+  //         if (item.roomId === message.chatRoomId) {
+  //           console.log(item);
+  //           item.count = item.unreadMessages;
+  //           room.unread = counter;
+  //           room.unread = item.unreadMessages;
+  //         }
+  //       });
+  //     }
+  //   });
+  //   // console.log(room);
+  // });
+
+  // unread fucking messages
+  props.chatRooms.map(room => {
     room.chatMessages.map(message => {
-      // return message.read === false && message.userId !== props.user._id;
-
-      // map through the message.read array and try to find the userId of the current logged in user. save the value to the userIndex var (0, 1, -1)
-      let userIndex = message.read.findIndex(user => {
-        // console.log(message);
-        if (user === props.user._id) {
-          return true;
+      props.unreadMessages.map(unreadMessage => {
+        if (unreadMessage.roomId === message.chatRoomId) {
+          room.unread = unreadMessage.unreadMessages;
         }
       });
-      // console.log(userIndex);
-
-      // Whenever the userIndex is -1, the message is unread
-      if (userIndex === -1) {
-        // push the userindex to the TOTAL unreadMessages array.
-        totalUnreadMessages.push(userIndex);
-
-        // Update the counter for the current unread message in the current room
-        counter++;
-
-        // map through the unreadmessages array where the roomId is called item.room
-        unreadMessages.map(item => {
-          // if the item.room === message.chatRoomId update item.count to the total count for this room
-          if (item.room === message.chatRoomId) {
-            item.count = counter;
-            room.unread = counter;
-          }
-        });
-      }
     });
-    // console.log(room);
   });
 
   // console.log(Object.values(unreadMessages.room));
@@ -225,14 +240,14 @@ const ChatFriendsList = props => {
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            {toggleFriendList === 'contacts' && totalUnreadMessages.length > 0 ? (
-              <Badge badgeContent={totalUnreadMessages.length} max={99} color='secondary'>
+            {toggleFriendList === 'contacts' && props.totalUnread > 0 ? (
+              <Badge badgeContent={props.totalUnread} max={99} color='secondary'>
                 <ListItemText style={{ textAlign: 'center' }}>
                   <Tooltip
                     title={
-                      totalUnreadMessages.length > 1
-                        ? `${totalUnreadMessages.length} nieuwe berichten`
-                        : `${totalUnreadMessages.length} nieuw bericht`
+                      props.totalUnread > 1
+                        ? `${props.totalUnread} nieuwe berichten`
+                        : `${props.totalUnread} nieuw bericht`
                     }
                     placement='top-start'
                     arrow
@@ -450,6 +465,8 @@ const mapStateToProps = state => {
     user: state.user.user,
     toggleFriendList: state.chat.toggleFriendList,
     chatRooms: state.chat.chatRooms,
+    totalUnread: state.chat.totalUnread,
+    unreadMessages: state.chat.unreadMessages,
     lastMessages: state.chat.lastMessages,
     activeChatRoom: state.chat.activeChatRoom,
     connectedUsers: state.user.connectedUsers,

@@ -254,13 +254,21 @@ export const getAllUnreadMessages = userId => dispatch => {
 
       console.log(newUnreadMessages);
 
-      newUnreadMessages.map((room, i) => {
-        i = room.roomId;
-        room[i] = i;
+      // let array = [];
 
-        delete room.roomId;
-        console.log(room);
-      });
+      // newUnreadMessages.map((room, i) => {
+      //   i = room.roomId;
+      //   room[i] = i;
+
+      //   array[i] = room.unreadMessages;
+
+      //   newUnreadMessages[i] = room.unreadMessages;
+
+      //   // delete room.roomId;
+      //   console.log(room);
+      // });
+
+      // console.log(array);
 
       console.log(newUnreadMessages);
 

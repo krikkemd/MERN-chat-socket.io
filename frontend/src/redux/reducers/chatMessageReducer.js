@@ -264,6 +264,8 @@ export default function chatMessageReducer(state = initialState, action) {
 
     case SET_UNREAD_MESSAGES: {
       console.log(action.payload);
+
+      // Of ik moet unread messages in de room pleuren van de props.chatRooms waar de render plaatsvind weet je wel. bij de object indrukken
       return {
         ...state,
         unreadMessages: [...action.payload.newUnreadMessages],
