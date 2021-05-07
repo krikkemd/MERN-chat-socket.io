@@ -192,15 +192,19 @@ const ChatFriendsList = props => {
   // });
 
   // unread fucking messages
-  props.chatRooms.map(room => {
-    room.chatMessages.map(message => {
-      props.unreadMessages.map(unreadMessage => {
-        if (unreadMessage.roomId === message.chatRoomId) {
-          room.unread = unreadMessage.unreadMessages;
-        }
+
+  useEffect(() => {
+    props.chatRooms.map(room => {
+      console.log('code runs hereee');
+      room.chatMessages.map(message => {
+        props.unreadMessages.map(unreadMessage => {
+          if (unreadMessage.roomId === message.chatRoomId) {
+            room.unread = unreadMessage.unreadMessages;
+          }
+        });
       });
     });
-  });
+  }, [props.unreadMessages, props.totalUnread]);
 
   // console.log(Object.values(unreadMessages.room));
 
