@@ -164,7 +164,7 @@ const ChatFriendsList = props => {
           return true;
         }
       });
-      console.log(userIndex);
+      // console.log(userIndex);
 
       // Whenever the userIndex is -1, the message is unread
       if (userIndex === -1) {
@@ -184,14 +184,14 @@ const ChatFriendsList = props => {
         });
       }
     });
-    console.log(room);
+    // console.log(room);
   });
 
   // console.log(Object.values(unreadMessages.room));
 
-  console.log(unreadMessages);
-  console.log(totalUnreadMessages);
-  console.log(totalUnreadMessages.length);
+  // console.log(unreadMessages);
+  // console.log(totalUnreadMessages);
+  // console.log(totalUnreadMessages.length);
 
   // if (countTotalUnreadMessages[0]) {
   //   totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);

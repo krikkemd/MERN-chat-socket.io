@@ -5,6 +5,7 @@ import {
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
   SET_LAST_CHAT_MESSAGE,
+  SET_UNREAD_MESSAGES,
   CREATED_CHAT_ROOM,
   SET_ERRORS,
   LEAVE_CHATROOM,
@@ -246,7 +247,24 @@ export const getAllUnreadMessages = userId => dispatch => {
   axios
     .get(`http://localhost:1337/api/v1/rooms/getAllUnreadMessages?[members]=${userId}`)
     .then(res => {
-      console.log(res.data);
+      console.log(res.data.results);
+
+      let newUnreadMessages = [...res.data.results.roomsWithUnreadMessages];
+      const { totalUnread } = res.data.results;
+
+      console.log(newUnreadMessages);
+
+      newUnreadMessages.map((room, i) => {
+        i = room.roomId;
+        room[i] = i;
+
+        delete room.roomId;
+        console.log(room);
+      });
+
+      console.log(newUnreadMessages);
+
+      dispatch({ type: SET_UNREAD_MESSAGES, payload: { newUnreadMessages, totalUnread } });
     })
     .catch(err => {
       console.log(err);

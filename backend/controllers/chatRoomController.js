@@ -205,13 +205,30 @@ exports.getAllUnreadMessages = catchAsync(async (req, res, next) => {
   });
 
   let totalUnread = 0;
+  // let map = new Map();
 
   let roomsWithUnreadMessages = chatRooms.map(room => {
     // console.log(room.chatMessages.length);
     totalUnread = totalUnread + room.chatMessages.length;
 
+    // map.set(room._id, room.chatMessages.length);
+
     return { roomId: room._id, unreadMessages: room.chatMessages.length };
   });
+  // console.log(map);
+
+  // let array = Array.from(map, ([value]) => ({ value }));
+
+  let str = JSON.stringify(roomsWithUnreadMessages);
+
+  // str = JSON.parse(str.replace(/^roomId: $/g, match => `$${match}`));
+
+  str = str.replace(/\b(\w*roomId\w*)\b/g, match => {
+    console.log(match);
+    return 'lol';
+  });
+
+  console.log(str);
 
   res.status(200).json({ status: 'success', results: { roomsWithUnreadMessages, totalUnread } });
 });

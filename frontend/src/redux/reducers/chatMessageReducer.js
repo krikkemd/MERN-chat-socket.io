@@ -2,6 +2,7 @@ import {
   GET_ALL_CHAT_MESSAGES,
   CREATE_CHAT_MESSAGE,
   SET_LAST_CHAT_MESSAGE,
+  SET_UNREAD_MESSAGES,
   DELETE_CHAT_MESSAGE,
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
@@ -19,6 +20,8 @@ const initialState = {
   chatRooms: [],
   lastMessages: [],
   activeChatRoom: [],
+  unreadMessages: [],
+  totalUnread: 0,
   toggleFriendList: 'contacts',
   // loading: true,
 };
@@ -256,6 +259,15 @@ export default function chatMessageReducer(state = initialState, action) {
         //     ? newActiveChatRoom
         //     : state.activeChatRoom,
         activeChatRoom: newActiveChatRoom,
+      };
+    }
+
+    case SET_UNREAD_MESSAGES: {
+      console.log(action.payload);
+      return {
+        ...state,
+        unreadMessages: [...action.payload.newUnreadMessages],
+        totalUnread: action.payload.totalUnread,
       };
     }
 
