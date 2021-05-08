@@ -106,7 +106,7 @@ const ChatMessageArea = props => {
 
       // Reorder friendList to show latest conversation on top (SENDER)
       getAllUserChatRooms(`members=${user._id}`);
-      getAllUnreadMessages(user._id);
+      // getAllUnreadMessages(user._id);
 
       // toggle chat for the message sender
       if (user._id === messageFromBackend.userId) dispatch({ type: TOGGLE_CHAT });
