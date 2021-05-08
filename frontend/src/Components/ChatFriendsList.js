@@ -67,7 +67,7 @@ const ChatFriendsList = props => {
 
   useEffect(() => {
     props.getAllUnreadMessages(props.user._id);
-  }, [props.chatRooms]);
+  }, [props.lastMessages]);
 
   console.log(props);
 
