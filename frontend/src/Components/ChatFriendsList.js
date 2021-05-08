@@ -63,8 +63,11 @@ const ChatFriendsList = props => {
 
   useEffect(() => {
     props.getAllUsers();
-    props.getAllUnreadMessages(props.user._id);
   }, []);
+
+  useEffect(() => {
+    props.getAllUnreadMessages(props.user._id);
+  }, [props.chatRooms]);
 
   console.log(props);
 
@@ -193,18 +196,16 @@ const ChatFriendsList = props => {
 
   // unread fucking messages
 
-  useEffect(() => {
-    props.chatRooms.map(room => {
-      console.log('code runs hereee');
-      room.chatMessages.map(message => {
-        props.unreadMessages.map(unreadMessage => {
-          if (unreadMessage.roomId === message.chatRoomId) {
-            room.unread = unreadMessage.unreadMessages;
-          }
-        });
+  props.chatRooms.map(room => {
+    console.log('code runs hereee');
+    room.chatMessages.map(message => {
+      props.unreadMessages.map(unreadMessage => {
+        if (unreadMessage.roomId === message.chatRoomId) {
+          room.unread = unreadMessage.unreadMessages;
+        }
       });
     });
-  }, [props.unreadMessages, props.totalUnread]);
+  });
 
   // console.log(Object.values(unreadMessages.room));
 
