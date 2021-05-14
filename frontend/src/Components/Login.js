@@ -17,7 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-import { CLEAR_ERRORS, SET_ERRORS } from '../redux/types';
+import { CLEAR_ERRORS } from '../redux/types';
 
 const Copyright = () => {
   return (
@@ -70,6 +70,7 @@ const SignIn = props => {
 
   // Local functions
   const handleChange = e => {
+    dispatch({ type: CLEAR_ERRORS });
     setFields({
       ...fields,
       [e.target.id]: e.target.value,
@@ -108,6 +109,10 @@ const SignIn = props => {
             value={fields.email}
             onChange={handleChange}
             autoFocus
+            error={props.errors && props.errors.length > 0 ? true : false}
+            helperText={
+              props.errors && props.errors.length > 0 ? props.errors[props.errors.length - 1] : ''
+            }
           />
           <TextField
             variant='outlined'
@@ -121,6 +126,10 @@ const SignIn = props => {
             autoComplete='current-password'
             value={fields.password}
             onChange={handleChange}
+            error={props.errors && props.errors.length > 0 ? true : false}
+            helperText={
+              props.errors && props.errors.length > 0 ? props.errors[props.errors.length - 1] : ''
+            }
           />
 
           <Button
@@ -134,7 +143,7 @@ const SignIn = props => {
           <Grid container>
             <Grid item xs>
               <Link href='#' variant='body2'>
-                Forgot password?
+                Wachtwoord vergeten?
               </Link>
             </Grid>
           </Grid>

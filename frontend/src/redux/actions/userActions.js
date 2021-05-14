@@ -1,4 +1,4 @@
-import { LOGIN_USER, GET_ALL_USERS, UPDATE_CONNECTED_USERLIST } from '../types';
+import { LOGIN_USER, GET_ALL_USERS, UPDATE_CONNECTED_USERLIST, SET_ERRORS } from '../types';
 import axios from '../../config/axios';
 
 const baseUrl = 'http://localhost:1337/api/v1/users';
@@ -22,6 +22,7 @@ export const login = (email, password, history) => dispatch => {
     .catch(err => {
       console.log(err);
       console.log(err.response.data);
+      dispatch({ type: SET_ERRORS, payload: err.response.data.message });
     });
 };
 
