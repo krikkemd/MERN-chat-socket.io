@@ -180,3 +180,55 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   });
   res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
 });
+
+exports.getAllUnreadMessages = catchAsync(async (req, res, next) => {
+  console.log('running getAllUnreadMessages');
+
+  console.log(req.query);
+
+  const queryObj = { ...req.query };
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = JSON.parse(
+    queryStr.replace(/\b(gte|gt|lte|lt|exists|size|all)\b/g, match => `$${match}`),
+  );
+
+  console.log(queryStr);
+
+  // Postman: {{URL}}/api/v1/rooms/getAllUnreadMessages?[members]=6033a9fae16ec73670656ba2 (req.user._id)
+  // Frontend: {{URL}}/api/v1/rooms/getAllUnreadMessages?[members]=`${user._id}`
+
+  // Get the chatrooms where the req.user._id is not found in the members array
+  const chatRooms = await ChatRoom.find(queryStr).populate({
+    path: 'chatMessages',
+    match: { read: { $ne: req.user._id } },
+    options: { sort: { createdAt: 'desc' }, perDocumentLimit: 100 },
+  });
+
+  let totalUnread = 0;
+  // let map = new Map();
+
+  let roomsWithUnreadMessages = chatRooms.map(room => {
+    // console.log(room.chatMessages.length);
+    totalUnread = totalUnread + room.chatMessages.length;
+
+    // map.set(room._id, room.chatMessages.length);
+
+    return { roomId: room._id, unreadMessages: room.chatMessages.length };
+  });
+  // console.log(map);
+
+  // let array = Array.from(map, ([value]) => ({ value }));
+
+  let str = JSON.stringify(roomsWithUnreadMessages);
+
+  // str = JSON.parse(str.replace(/^roomId: $/g, match => `$${match}`));
+
+  str = str.replace(/\b(\w*roomId\w*)\b/g, match => {
+    console.log(match);
+    return 'lol';
+  });
+
+  console.log(str);
+
+  res.status(200).json({ status: 'success', results: { roomsWithUnreadMessages, totalUnread } });
+});

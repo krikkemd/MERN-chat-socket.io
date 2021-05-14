@@ -92,8 +92,8 @@ const ChatHeader = props => {
             </Typography>
             {activeChatRoom.members.map(
               member =>
-                `${firstCharUpperCase(member.username)} ${
-                  member !== activeChatRoom.members[activeChatRoom.members.length - 1] ? '&' : ''
+                `${firstCharUpperCase(member.username)}${
+                  member !== activeChatRoom.members[activeChatRoom.members.length - 1] ? ',' : ''
                 } `,
             )}
           </Typography>
@@ -120,8 +120,8 @@ const ChatHeader = props => {
             </Typography>
             {activeChatRoom.members.map(
               member =>
-                `${firstCharUpperCase(member.username)} ${
-                  member !== activeChatRoom.members[activeChatRoom.members.length - 1] ? '&' : ''
+                `${firstCharUpperCase(member.username)}${
+                  member !== activeChatRoom.members[activeChatRoom.members.length - 1] ? ',' : ''
                 } `,
             )}
           </Typography>

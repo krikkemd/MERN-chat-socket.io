@@ -13,10 +13,12 @@ const {
   updateChatRoom,
   deleteChatRoom,
   leaveChatRoom,
+  getAllUnreadMessages,
   joinChatRoom,
 } = require('../controllers/ChatRoomController');
 
 router.route('/').get(protectRoute, getAllChatRooms).post(protectRoute, createChatRoom);
+router.route('/getAllUnreadMessages').get(protectRoute, getAllUnreadMessages);
 router
   .route('/:id')
   .get(protectRoute, getSingleChatRoom)

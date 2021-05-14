@@ -5,6 +5,8 @@ import {
   SET_ACTIVE_CHATROOM,
   SET_USER_CHATROOMS,
   SET_LAST_CHAT_MESSAGE,
+  SET_UNREAD_MESSAGES,
+  MARK_MESSAGES_READ,
   CREATED_CHAT_ROOM,
   SET_ERRORS,
   LEAVE_CHATROOM,
@@ -240,12 +242,52 @@ export const createSystemMessage = (roomId, message) => {
     });
 };
 
-// MemberId is the OTHER member in the room, not you. only set messages to read you've received
-export const markMessagesRead = (roomId, memberId) => dispatch => {
+// Get single chatRoom which include a virtual populate of the chatMessages
+export const getAllUnreadMessages = userId => dispatch => {
+  console.log('running getAllUnreadMessages');
   axios
-    .patch(baseUrl, { chatRoomId: roomId, memberId: memberId })
+    .get(`http://localhost:1337/api/v1/rooms/getAllUnreadMessages?[members]=${userId}`)
+    .then(res => {
+      console.log(res.data.results);
+
+      let newUnreadMessages = [...res.data.results.roomsWithUnreadMessages];
+      const { totalUnread } = res.data.results;
+
+      console.log(newUnreadMessages);
+
+      // let array = [];
+
+      // newUnreadMessages.map((room, i) => {
+      //   i = room.roomId;
+      //   room[i] = i;
+
+      //   array[i] = room.unreadMessages;
+
+      //   newUnreadMessages[i] = room.unreadMessages;
+
+      //   // delete room.roomId;
+      //   console.log(room);
+      // });
+
+      // console.log(array);
+
+      console.log(newUnreadMessages);
+
+      dispatch({ type: SET_UNREAD_MESSAGES, payload: { newUnreadMessages, totalUnread } });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+// MemberId is the OTHER member in the room, not you. only set messages to read you've received
+export const markMessagesRead = roomId => dispatch => {
+  axios
+    .patch(baseUrl, { chatRoomId: roomId })
     .then(res => {
       console.log(res);
+
+      dispatch({ type: MARK_MESSAGES_READ, payload: res.data });
     })
     .catch(err => console.log(err));
 };

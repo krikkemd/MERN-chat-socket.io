@@ -96,6 +96,7 @@ chatRoomSchema.virtual('chatMessages', {
   ref: 'ChatMessage',
   foreignField: 'chatRoomId',
   localField: '_id',
+  // count: true,
 });
 
 // chatRoomSchema.post('find', async function (doc, next) {

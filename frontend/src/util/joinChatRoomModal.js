@@ -7,7 +7,7 @@ import { connect, useDispatch } from 'react-redux';
 import { updateChatRoom } from '../redux/actions/chatMessageActions';
 
 // Types
-import { CLEAR_ERRORS, SET_ERRORS, ADDED_USERS_TO_CHATROOM } from '../redux/types';
+import { SET_ERRORS, ADDED_USERS_TO_CHATROOM } from '../redux/types';
 
 // Helper
 import { firstCharUpperCase } from '../util/helperFunctions';
@@ -16,19 +16,16 @@ import { firstCharUpperCase } from '../util/helperFunctions';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Avatar from '@material-ui/core/Avatar';
-import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles(theme => ({
@@ -82,7 +79,6 @@ const JoinChatRoomModal = props => {
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState([]);
   const [right, setRight] = useState([]);
-  const [groupName, setGroupName] = useState('');
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);

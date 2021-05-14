@@ -29,7 +29,7 @@ const sendErrorsInProduction = (err, res) => {
   }
 };
 
-// Helper function in PROD, make it an operational easy to read message for the client.
+// Helper function in PROD, make it an operational error easy to read message for the client.
 const handleCastError = err => {
   const message = `Invalid ${err.path}: ${err.value._id}, `;
   return new AppError(message, 400);

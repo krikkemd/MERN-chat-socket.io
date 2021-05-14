@@ -22,7 +22,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 
 const GroupChat = props => {
-  // console.log(props);
+  console.log(props);
   const { room, socket } = props;
 
   const dispatch = useDispatch();
@@ -55,7 +55,7 @@ const GroupChat = props => {
         let memberId = room.members.filter(member => member._id !== props.user._id);
 
         //   messageReadBy =  read
-        props.markMessagesRead(room._id, memberId);
+        props.markMessagesRead(room._id);
       }}>
       <ListItemIcon>
         <AvatarGroup max={2} spacing='medium'>
@@ -79,15 +79,9 @@ const GroupChat = props => {
           marginRight: 10,
         }}></ListItemText>
       <Badge
-        badgeContent={
-          room._id !== props.activeChatRoom._id
-            ? room.chatMessages.filter(message => {
-                return message.username !== props.user.username && message.read === false;
-              }).length
-            : 0
-        }
-        color='secondary'
-        max={9}>
+        max={99}
+        badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
+        color='secondary'>
         <ListItemText
           secondary={props.lastMessages.map(lastMessage => {
             if (lastMessage && lastMessage.chatRoomId === room._id) {

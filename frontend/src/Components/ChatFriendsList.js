@@ -10,6 +10,7 @@ import {
   getAllUserChatRooms,
   createChatRoom,
   markMessagesRead,
+  getAllUnreadMessages,
 } from '../redux/actions/chatMessageActions';
 
 // Types
@@ -64,17 +65,23 @@ const ChatFriendsList = props => {
     props.getAllUsers();
   }, []);
 
+  useEffect(() => {
+    props.getAllUnreadMessages(props.user._id);
+  }, [props.lastMessages]);
+
+  console.log(props);
+
   const { toggleFriendList } = props;
 
   // check if there is a chatroom with the clicked on contact. create one if there is not.
   const checkIfContactHasChatRoom = async clickedContact => {
     // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
-    const recoom = await props.getAllUserChatRooms(
+    const chatRoomQuery = await props.getAllUserChatRooms(
       `members[all]=${clickedContact._id}&members[all]=${props.user._id}&members[size]=2&name[exists]=false`,
     );
 
-    console.log(recoom);
-    console.log(recoom.chatRooms.length);
+    console.log(chatRoomQuery);
+    console.log(chatRoomQuery.chatRooms.length);
 
     // let chatroom;
     // props.chatRooms.forEach(room => {
@@ -87,8 +94,8 @@ const ChatFriendsList = props => {
     // console.log(chatroom);
 
     // If there is a chatroom, set it as the activeChatRoom
-    if (recoom.chatRooms.length) {
-      props.getSingleChatRoom(recoom.chatRooms[0]._id);
+    if (chatRoomQuery.chatRooms.length) {
+      props.getSingleChatRoom(chatRoomQuery.chatRooms[0]._id);
 
       // Origineel:
       // props.getSingleChatRoom(chatroom._id);
@@ -96,10 +103,12 @@ const ChatFriendsList = props => {
       // If the chatroom contains chatMessages, render 'chats'. If the chatroom does not contain chatMessages, stay in 'contacts'.
       // chatroom.chatMessages.length > 0 && dispatch({ type: TOGGLE_CHAT });
 
-      if (recoom.chatRooms[0].chatMessages.length > 0) {
+      if (chatRoomQuery.chatRooms[0].chatMessages.length > 0) {
         dispatch({ type: TOGGLE_CHAT });
-        let memberId = recoom.chatRooms[0].members.filter(member => member._id !== props.user._id);
-        props.markMessagesRead(recoom.chatRooms[0]._id, memberId);
+        let memberId = chatRoomQuery.chatRooms[0].members.filter(
+          member => member._id !== props.user._id,
+        );
+        props.markMessagesRead(chatRoomQuery.chatRooms[0]._id);
       }
 
       // Origineel:
@@ -114,7 +123,6 @@ const ChatFriendsList = props => {
       console.log('no chatroom');
 
       // TODO:
-      // Add extra user to group
       // Close modal on created group
       // chat messages read by
       // Group images?
@@ -129,23 +137,85 @@ const ChatFriendsList = props => {
       // dispatch CREATE_CHAT_ROOM which updates the props.chatrooms of the chatRoomsMembers, updating the state. can't create 2 rooms ✅
       // socket.emit(MEMBERS_JOIN_CHAT_ROOMS, newCreatedChatRoomId) to the server, so all connected members join the new chat room.
       // TODO: Notification on unread messages
-      // TODO: set an expiry time on the chatRoom if no messages are sent within one hour/day?
-      // TODO: process nog een x doorlopen, misschien kan er wel een emit of dispatch tussen uit. bijvoorbeeld na onchange, als we toch emitten naar iedereen, en dan pas de members filteren.
       props.createChatRoom(props.socket, null, props.user._id, clickedContact._id, props.user._id);
     }
   };
 
-  const countTotalUnreadMessages = props.chatRooms.map(room => {
-    return room.chatMessages.filter(message => {
-      return message.read === false && message.userId !== props.user._id;
-    }).length;
+  // const countTotalUnreadMessages = props.chatRooms.map(room => {
+  //   return room.chatMessages.filter(message => {
+  //     return message.read === false && message.userId !== props.user._id;
+  //   }).length;
+  // });
+
+  let totalUnreadMessages = [];
+  let unreadMessages = [];
+
+  // Map through the chat room array
+  // const countTotalUnreadMessages = props.chatRooms.map((room, i) => {
+  //   // Reset counter for the current room
+  //   let counter = 0;
+
+  //   // Push in the room id, and a count of 0 to the unread messages array
+  //   unreadMessages.push({ room: room._id, count: 0 });
+
+  //   // Map through the chatMessages of the current props.chatroom
+  //   room.chatMessages.map(message => {
+  //     // return message.read === false && message.userId !== props.user._id;
+
+  //     // map through the message.read array and try to find the userId of the current logged in user. save the value to the userIndex var (0, 1, -1)
+  //     let userIndex = message.read.findIndex(user => {
+  //       // console.log(message);
+  //       if (user === props.user._id) {
+  //         return true;
+  //       }
+  //     });
+  //     // console.log(userIndex);
+
+  //     // Whenever the userIndex is -1, the message is unread
+  //     if (userIndex === -1) {
+  //       // push the userindex to the TOTAL unreadMessages array.
+  //       totalUnreadMessages.push(userIndex);
+
+  //       // Update the counter for the current unread message in the current room
+  //       counter++;
+
+  //       // map through the unreadmessages array where the roomId is called item.room
+  //       props.unreadMessages.map(item => {
+  //         // if the item.room === message.chatRoomId update item.count to the total count for this room
+  //         if (item.roomId === message.chatRoomId) {
+  //           console.log(item);
+  //           item.count = item.unreadMessages;
+  //           room.unread = counter;
+  //           room.unread = item.unreadMessages;
+  //         }
+  //       });
+  //     }
+  //   });
+  //   // console.log(room);
+  // });
+
+  // unread fucking messages
+
+  props.chatRooms.map(room => {
+    console.log('code runs hereee');
+    room.chatMessages.map(message => {
+      props.unreadMessages.map(unreadMessage => {
+        if (unreadMessage.roomId === message.chatRoomId) {
+          room.unread = unreadMessage.unreadMessages;
+        }
+      });
+    });
   });
 
-  let totalUnreadMessages;
-  if (countTotalUnreadMessages[0]) {
-    totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
-  }
-  console.log(totalUnreadMessages);
+  // console.log(Object.values(unreadMessages.room));
+
+  // console.log(unreadMessages);
+  // console.log(totalUnreadMessages);
+  // console.log(totalUnreadMessages.length);
+
+  // if (countTotalUnreadMessages[0]) {
+  //   totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
+  // }
 
   return (
     <List>
@@ -175,14 +245,14 @@ const ChatFriendsList = props => {
               dispatch({ type: SET_NO_ACTIVE_CHATROOM });
               console.log(toggleFriendList);
             }}>
-            {toggleFriendList === 'contacts' && totalUnreadMessages > 0 ? (
-              <Badge badgeContent={totalUnreadMessages} max={9} color='secondary'>
+            {toggleFriendList === 'contacts' && props.totalUnread > 0 ? (
+              <Badge badgeContent={props.totalUnread} max={99} color='secondary'>
                 <ListItemText style={{ textAlign: 'center' }}>
                   <Tooltip
                     title={
-                      totalUnreadMessages > 1
-                        ? `${totalUnreadMessages} nieuwe berichten`
-                        : `${totalUnreadMessages} nieuw bericht`
+                      props.totalUnread > 1
+                        ? `${props.totalUnread} nieuwe berichten`
+                        : `${props.totalUnread} nieuw bericht`
                     }
                     placement='top-start'
                     arrow
@@ -238,7 +308,7 @@ const ChatFriendsList = props => {
                             member => member._id !== props.user._id,
                           );
 
-                          props.markMessagesRead(room._id, memberId);
+                          props.markMessagesRead(room._id);
 
                           // props.socket.emit('roomId', room._id);
                         }}>
@@ -255,18 +325,9 @@ const ChatFriendsList = props => {
                         </ListItemIcon>
                         <ListItemText primary={firstCharUpperCase(member.username)}></ListItemText>
                         <Badge
-                          badgeContent={
-                            room._id !== props.activeChatRoom._id
-                              ? room.chatMessages.filter(message => {
-                                  return (
-                                    message.username !== props.user.username &&
-                                    message.read === false
-                                  );
-                                }).length
-                              : 0
-                          }
-                          color='secondary'
-                          max={9}>
+                          max={99}
+                          badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
+                          color='secondary'>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {
@@ -293,7 +354,7 @@ const ChatFriendsList = props => {
                             member => member._id !== props.user._id,
                           );
 
-                          props.markMessagesRead(room._id, memberId);
+                          props.markMessagesRead(room._id);
                           // props.socket.emit('roomId', room._id);
                         }}>
                         <ListItemIcon>
@@ -309,18 +370,9 @@ const ChatFriendsList = props => {
                         </ListItemText>
 
                         <Badge
-                          badgeContent={
-                            room._id !== props.activeChatRoom._id
-                              ? room.chatMessages.filter(message => {
-                                  return (
-                                    message.username !== props.user.username &&
-                                    message.read === false
-                                  );
-                                }).length
-                              : 0
-                          }
-                          color='secondary'
-                          max={9}>
+                          max={9}
+                          badgeContent={room._id !== props.activeChatRoom._id ? room.unread : 0}
+                          color='secondary'>
                           <ListItemText
                             secondary={props.lastMessages.map(lastMessage => {
                               if (lastMessage && lastMessage.chatRoomId === room._id) {
@@ -418,6 +470,8 @@ const mapStateToProps = state => {
     user: state.user.user,
     toggleFriendList: state.chat.toggleFriendList,
     chatRooms: state.chat.chatRooms,
+    totalUnread: state.chat.totalUnread,
+    unreadMessages: state.chat.unreadMessages,
     lastMessages: state.chat.lastMessages,
     activeChatRoom: state.chat.activeChatRoom,
     connectedUsers: state.user.connectedUsers,
@@ -432,4 +486,5 @@ export default connect(mapStateToProps, {
   getAllUsers,
   createChatRoom,
   markMessagesRead,
+  getAllUnreadMessages,
 })(ChatFriendsList);
