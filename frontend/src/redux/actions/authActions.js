@@ -26,7 +26,7 @@ export const getCurrentLoggedInUser = () => dispatch => {
       console.log(err.response.data);
       dispatch({
         type: SET_ERRORS,
-        payload: err.response.data,
+        payload: err.response.data.message,
       });
     });
 };

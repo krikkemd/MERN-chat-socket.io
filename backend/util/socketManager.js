@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 
 // Connect to the DB
 // TODO PERCONA FOR MONGODB SUPPORTS LDAP!!!
-mongoose.connect(process.env.LOCAL_DB, {
+mongoose.connect(process.env.CONNECTION_URL, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
