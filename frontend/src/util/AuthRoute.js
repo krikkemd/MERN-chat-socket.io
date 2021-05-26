@@ -31,13 +31,8 @@ import {
 //  - When props.user._id === false, it means the user is not logged in. redirect to /login
 
 const AuthRoute = props => {
-  const {
-    getCurrentLoggedInUser,
-    getAllUserChatRooms,
-    updateConnectedUserList,
-    socket,
-    user,
-  } = props;
+  const { getCurrentLoggedInUser, getAllUserChatRooms, updateConnectedUserList, socket, user } =
+    props;
 
   const dispatch = useDispatch();
 

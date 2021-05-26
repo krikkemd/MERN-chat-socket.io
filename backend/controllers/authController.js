@@ -60,7 +60,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 1) Check if there are an email and password provided
   if (!email || !password) {
-    return next(new AppError('Please provide an email and password.', 400));
+    return next(new AppError('Vul een geldig email adres en wachtwoord in.', 400));
   }
 
   // Try to find the user in the DB, and manually get the password
@@ -70,7 +70,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // if there is no user, or the password is incorrect return a general error. (checkpassword is an instance method in the USERMODEL)
   if (!user || !(await user.checkIfPasswordsMatch(req.body.password, user.password))) {
-    return next(new AppError('Incorrect email or password', 401));
+    return next(new AppError('Ingevulde gegevens zijn onjuist.', 401));
   }
 
   // When everything is OK create token

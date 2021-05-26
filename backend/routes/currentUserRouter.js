@@ -17,7 +17,7 @@ router.route('/').get(async (req, res, next) => {
       currentUser: req.user,
     });
   } else {
-    return next(new AppError('No current user found', 401));
+    return next(new AppError('Niet ingelogd, log opnieuw in alstublieft', 401));
     // return next();
   }
 });
