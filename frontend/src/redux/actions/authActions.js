@@ -23,10 +23,12 @@ export const getCurrentLoggedInUser = () => dispatch => {
     })
     // no current user
     .catch(err => {
-      console.log(err.response.data);
-      dispatch({
-        type: SET_ERRORS,
-        payload: err.response.data.message,
-      });
+      if (err.response.data) {
+        console.log(err.response.data);
+        dispatch({
+          type: SET_ERRORS,
+          payload: err.response.data.message,
+        });
+      }
     });
 };
