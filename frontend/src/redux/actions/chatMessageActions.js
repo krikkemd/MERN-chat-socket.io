@@ -15,7 +15,7 @@ import {
 } from '../types';
 import axios from '../../config/axios';
 
-const baseUrl = 'http://localhost:1337/api/v1/chatMessages';
+const baseUrl = `${process.env.REACT_APP_API_URL}/api/v1/chatMessages`;
 
 // REDUX
 export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
@@ -45,7 +45,7 @@ export const getAllChatMessages = (chatRoomId, skip) => dispatch => {
 // Get single chatRoom which include a virtual populate of the chatMessages
 export const getSingleChatRoom = roomId => dispatch => {
   axios
-    .get(`http://localhost:1337/api/v1/rooms/${roomId}`)
+    .get(`${process.env.REACT_APP_API_URL}/api/v1/rooms/${roomId}`)
     .then(res => {
       console.log(res.data.doc.chatMessages);
       dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
@@ -62,7 +62,7 @@ export const getAllUserChatRooms = queryString => dispatch => {
   console.log(queryString);
 
   return axios
-    .get(`http://localhost:1337/api/v1/rooms?${queryString}`)
+    .get(`${process.env.REACT_APP_API_URL}/api/v1/rooms?${queryString}`)
     .then(res => {
       console.log(res.data);
 
@@ -75,73 +75,75 @@ export const getAllUserChatRooms = queryString => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const createChatRoom = (socket, name, moderator, ...members) => dispatch => {
-  console.log(socket);
-  let newChatRoom = {
-    moderator: moderator,
-    members: members,
-  };
-
-  console.log(newChatRoom);
-  console.log(members);
-  console.log(...members);
-
-  if (newChatRoom.members.length === 2) {
-    console.log('createChatRoom with 2 members');
-    axios
-      .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
-      .then(res => {
-        console.log(res.data);
-
-        if (res.data) {
-          socket.emit(CREATED_CHAT_ROOM, res.data.doc);
-          dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
-        }
-      })
-      .catch(err => console.log(err));
-  } else {
-    console.log('create chatRoom with > 2 members');
-
-    if (name.length < 1) {
-      console.log('Groepsnaam is te kort');
-      return dispatch({
-        type: SET_ERRORS,
-        payload: 'Groepsnaam is te kort',
-      });
-    } else if (name.length > 25) {
-      console.log('Groepsnaam is te lang, gebruik maximaal 20 tekens.');
-      return dispatch({
-        type: SET_ERRORS,
-        payload: 'Groepsnaam is te lang, gebruik maximaal 20 tekens.',
-      });
-    }
-
-    // members: ['60599e90e50ae834b8a4db37', '6059a170e50ae834b8a4db4c'];
-    console.log(Object.values(...members));
-    newChatRoom = {
-      name: name,
+export const createChatRoom =
+  (socket, name, moderator, ...members) =>
+  dispatch => {
+    console.log(socket);
+    let newChatRoom = {
       moderator: moderator,
-      members: Object.values(...members),
+      members: members,
     };
 
     console.log(newChatRoom);
+    console.log(members);
+    console.log(...members);
 
-    axios
-      .post(`http://localhost:1337/api/v1/rooms`, newChatRoom)
-      .then(res => {
-        console.log(res.data);
-        createSystemMessage(res.data.doc._id, `Welkom in de chatgroep: '${newChatRoom.name}'`);
+    if (newChatRoom.members.length === 2) {
+      console.log('createChatRoom with 2 members');
+      axios
+        .post(`${process.env.REACT_APP_API_URL}/api/v1/rooms`, newChatRoom)
+        .then(res => {
+          console.log(res.data);
 
-        socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+          if (res.data) {
+            socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+            dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+          }
+        })
+        .catch(err => console.log(err));
+    } else {
+      console.log('create chatRoom with > 2 members');
 
-        dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
-      })
-      .catch(err => {
-        console.log(err.response.data);
-        return dispatch({ type: SET_ERRORS, payload: err.response.data.message });
-      });
-  }
-};
+      if (name.length < 1) {
+        console.log('Groepsnaam is te kort');
+        return dispatch({
+          type: SET_ERRORS,
+          payload: 'Groepsnaam is te kort',
+        });
+      } else if (name.length > 25) {
+        console.log('Groepsnaam is te lang, gebruik maximaal 20 tekens.');
+        return dispatch({
+          type: SET_ERRORS,
+          payload: 'Groepsnaam is te lang, gebruik maximaal 20 tekens.',
+        });
+      }
+
+      // members: ['60599e90e50ae834b8a4db37', '6059a170e50ae834b8a4db4c'];
+      console.log(Object.values(...members));
+      newChatRoom = {
+        name: name,
+        moderator: moderator,
+        members: Object.values(...members),
+      };
+
+      console.log(newChatRoom);
+
+      axios
+        .post(`${process.env.REACT_APP_API_URL}/api/v1/rooms`, newChatRoom)
+        .then(res => {
+          console.log(res.data);
+          createSystemMessage(res.data.doc._id, `Welkom in de chatgroep: '${newChatRoom.name}'`);
+
+          socket.emit(CREATED_CHAT_ROOM, res.data.doc);
+
+          dispatch({ type: SET_ACTIVE_CHATROOM, payload: res.data.doc });
+        })
+        .catch(err => {
+          console.log(err.response.data);
+          return dispatch({ type: SET_ERRORS, payload: err.response.data.message });
+        });
+    }
+  };
 
 export const leaveChatRoom = (socket, roomId, user) => dispatch => {
   console.log('running leaveChatRoom');
@@ -173,41 +175,43 @@ export const leaveChatRoom = (socket, roomId, user) => dispatch => {
 // Update we use for adding new users to the chatroom from the joinChatRoomModal
 // TODO: EMIT UPDATE STATE FOR ALL USERS IN THE ROOM, TO SHOW THAT THE ACTIVECHATROOM, AND THE FRIENDSLIST REFLECTS THE ADDED USER
 // ERROR HANDLING ON TOO MANY OR NOT ENOUGH USERS ETC. IF THE USER IS ALREADY PRESENT
-export const updateChatRoom = (socket, roomId, socketIds, ...members) => dispatch => {
-  console.log('running update chatroom');
-  let chatRoom = {
-    members: Object.values(...members),
-  };
+export const updateChatRoom =
+  (socket, roomId, socketIds, ...members) =>
+  dispatch => {
+    console.log('running update chatroom');
+    let chatRoom = {
+      members: Object.values(...members),
+    };
 
-  console.log(chatRoom);
-  axios
-    .patch(`/api/v1/rooms/${roomId}`, chatRoom)
-    .then(res => {
-      console.log(res.data);
+    console.log(chatRoom);
+    axios
+      .patch(`/api/v1/rooms/${roomId}`, chatRoom)
+      .then(res => {
+        console.log(res.data);
 
-      // send the new room and socket ids to the server
-      socket.emit(ADD_USERS_TO_CHATROOM, res.data, socketIds);
+        // send the new room and socket ids to the server
+        socket.emit(ADD_USERS_TO_CHATROOM, res.data, socketIds);
 
-      // Array of the newly added members
-      let welcomeUsers = res.data.data.members.slice(
-        res.data.data.members.length - socketIds.length,
-      );
-
-      console.log(welcomeUsers);
-
-      // Welcome the new members to the room with a message, also updating the state for the new users
-
-      if (welcomeUsers.length >= 1) {
-        createSystemMessage(
-          roomId,
-          `${welcomeUsers.map(user => user && ` ${user.username}`)} welkom in de chatgroep!`,
+        // Array of the newly added members
+        let welcomeUsers = res.data.data.members.slice(
+          res.data.data.members.length - socketIds.length,
         );
-      } else {
-        createSystemMessage(roomId, `Nieuwe leden, welkom in de chatgroep!`);
-      }
-    })
-    .catch(err => console.log(err));
-};
+
+        console.log(welcomeUsers);
+
+        // Welcome the new members to the room with a message, also updating the state for the new users
+
+        if (welcomeUsers.length >= 1) {
+          createSystemMessage(
+            roomId,
+            `${welcomeUsers.map(user => user && ` ${user.username}`)} welkom in de chatgroep!`,
+          );
+        } else {
+          createSystemMessage(roomId, `Nieuwe leden, welkom in de chatgroep!`);
+        }
+      })
+      .catch(err => console.log(err));
+  };
 
 // Create Single Chat Message SEND ALONG COOKIE PROTECT ROUTE
 export const createChatMessage = chatMessage => dispatch => {
@@ -246,7 +250,7 @@ export const createSystemMessage = (roomId, message) => {
 export const getAllUnreadMessages = userId => dispatch => {
   console.log('running getAllUnreadMessages');
   axios
-    .get(`http://localhost:1337/api/v1/rooms/getAllUnreadMessages?[members]=${userId}`)
+    .get(`${process.env.REACT_APP_API_URL}/api/v1/rooms/getAllUnreadMessages?[members]=${userId}`)
     .then(res => {
       console.log(res.data.results);
 

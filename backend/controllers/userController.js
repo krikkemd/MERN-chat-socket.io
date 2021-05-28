@@ -77,7 +77,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // Only Username and Email are allowed here. can add more if needed.
   const cleanedReqBody = cleanReqBody(req.body, 'username', 'email');
-  if (req.file) cleanedReqBody.avatar = `http://localhost:1337/${req.file.filename}`;
+  if (req.file) cleanedReqBody.avatar = `https://chat.dnk.nl:1337/${req.file.filename}`;
 
   // 2) update user data with the cleaned req.body object
   const user = await User.findByIdAndUpdate(req.user._id, cleanedReqBody, {

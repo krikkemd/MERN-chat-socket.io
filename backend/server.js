@@ -5,9 +5,18 @@ process.on('uncaughtException', err => {
   process.exit(1);
 });
 
+// disable this in development
+const fs = require('fs');
+let options = {
+  key: fs.readFileSync('/etc/ssl/private/wildcard_dnk_nl_2021.key'),
+  cert: fs.readFileSync('/etc/ssl/certs/wildcard_dnk_nl_2021.crt'),
+  requestCert: false,
+};
+
 const express = require('express');
 const app = express();
-const server = require('http').createServer(app);
+const server = require('https').createServer(options, app); // https
+// const server = require('http').createServer(app); // http (development)
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');

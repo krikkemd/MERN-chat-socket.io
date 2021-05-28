@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-let server = 'http://localhost:1337';
+let server = `${process.env.REACT_APP_API_URL}`;
 const socket = io(server);
 
 const initialState = {

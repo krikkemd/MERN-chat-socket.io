@@ -1,7 +1,7 @@
 import { LOGIN_USER, GET_ALL_USERS, UPDATE_CONNECTED_USERLIST, SET_ERRORS } from '../types';
 import axios from '../../config/axios';
 
-const baseUrl = 'http://localhost:1337/api/v1/users';
+const baseUrl = `${process.env.REACT_APP_API_URL}/api/v1/users`;
 
 export const login = (email, password, history) => dispatch => {
   console.log(history);
@@ -31,7 +31,8 @@ export const logout = async () => {
     try {
       const res = await axios.get(`${baseUrl}/logout`);
 
-      if ((res.data.status = 'success')) window.location.replace('http://localhost:3000/login');
+      if ((res.data.status = 'success'))
+        window.location.replace(`${process.env.REACT_APP_FRONTEND_URL}/login`);
     } catch (err) {
       alert('Error logging out!, please try again.');
     }

@@ -1,7 +1,7 @@
 import { SET_ERRORS, CLEAR_ERRORS, SET_CURRENT_USER } from '../types';
 import axios from '../../config/axios';
 
-const baseUrl = 'http://localhost:1337/api/v1/getCurrentLoggedInUser';
+const baseUrl = `${process.env.REACT_APP_API_URL}/api/v1/getCurrentLoggedInUser`;
 
 // REDUX
 export const getCurrentLoggedInUser = () => dispatch => {

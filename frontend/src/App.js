@@ -25,6 +25,8 @@ import moment from 'moment';
 import 'moment/locale/nl';
 moment.locale('nl');
 
+console.log(process.env.REACT_APP_API_URL);
+
 function App(props) {
   return (
     <Router>

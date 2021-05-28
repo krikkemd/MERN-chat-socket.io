@@ -15,7 +15,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 
 import { UPDATE_AVATAR } from '../redux/types';
 
-const url = `http://localhost:1337/api/v1/users/updateMe`;
+const url = `${process.env.REACT_APP_API_URL}/api/v1/users/updateMe`;
 
 const useStyles = makeStyles(theme => theme.UploadAvatar);
 
