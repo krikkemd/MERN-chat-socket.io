@@ -217,6 +217,16 @@ const ChatFriendsList = props => {
   //   totalUnreadMessages = countTotalUnreadMessages.reduce((a, b) => a + b);
   // }
 
+  useEffect(() => {
+    if (props.totalUnread === 0) {
+      document.title = `DNK Chat`;
+    } else if (props.totalUnread === 1) {
+      document.title = `DNK Chat | ${props.totalUnread} nieuw bericht`;
+    } else if (props.totalUnread > 1) {
+      document.title = `DNK Chat | ${props.totalUnread} nieuwe berichten`;
+    }
+  }, [props.totalUnread]);
+
   return (
     <List>
       <Grid container className={classes.chatButtons}>
