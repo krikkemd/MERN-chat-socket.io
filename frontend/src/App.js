@@ -13,6 +13,8 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 // Components
 import Login from './Components/Login';
 import Mui from './Components/Mui';
+import ForgotPassword from './Components/ForgotPassword';
+import ResetPassword from './Components/ResetPassword';
 
 // Util components
 import AuthRoute from './util/AuthRoute';
@@ -38,6 +40,8 @@ function App(props) {
               <AuthRoute exact path='/' component={Mui} />
               <AuthRoute exact path='/upload' component={UploadAvatar} />
               <Route exact path='/login' component={Login} />
+              <Route exact path='/forgot-password' component={ForgotPassword} />
+              <Route exact path='/reset-password' component={ResetPassword} />
               <Route exact path='/spin' component={Spinner} />
             </Switch>
           </div>

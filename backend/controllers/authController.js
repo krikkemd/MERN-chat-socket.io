@@ -187,7 +187,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 3) email unencrypted token to the user, we will compare it later with the encrypted one in the db (see resetPassword below)
   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-  const emailBody = `Wachtwoord vergeten? submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\n If you didn't forget your password, please ignore this email.`;
+  const emailBody = `Beste ${
+    user.email
+  }, \n\n Bent u uw wachtwoord niet vergeten, negeer dan deze email! .\n Hieronder vind u uw reset token, plak deze in het "Reset Token veld", en verzin een nieuw wachtwoord van minimaal 10 karakters op de pagina: ${
+    req.protocol
+  }://${req.get('host')}/api/v1/users/reset-password/. \n
+  Reset Token: ${resetToken}  (verloopt binnen 10 minuten)
+  `;
 
   // 4) try to send the email with the resetURL and the emailBody
   try {

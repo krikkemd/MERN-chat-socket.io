@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 // Redux
 import { connect, useDispatch } from 'react-redux';
-import { login } from '../redux/actions/userActions';
+import { resetPassword } from '../redux/actions/userActions';
 
 // MUI
 import Avatar from '@material-ui/core/Avatar';
@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // Render
-const SignIn = props => {
+const ResetPassword = props => {
   // Props
   // console.log(props.user);
 
@@ -61,8 +61,9 @@ const SignIn = props => {
 
   // Local State
   const [fields, setFields] = useState({
-    email: '',
+    token: '',
     password: '',
+    passwordConfirm: '',
   });
 
   // Mui
@@ -77,12 +78,12 @@ const SignIn = props => {
     });
   };
 
-  const { email, password } = fields;
+  const { token, password, passwordConfirm } = fields;
 
   const handleSubmit = e => {
     e.preventDefault();
     console.log(fields);
-    props.login(email, password, props.history);
+    props.resetPassword(token, password, passwordConfirm, props.history);
     setFields({ ...fields, password: '' });
   };
 
@@ -102,11 +103,11 @@ const SignIn = props => {
             margin='normal'
             required
             fullWidth
-            id='email'
-            label='Email Address'
-            name='email'
-            autoComplete='email'
-            value={fields.email}
+            id='token'
+            label='Reset Token'
+            name='token'
+            autoComplete='token'
+            value={fields.token}
             onChange={handleChange}
             autoFocus
             error={props.errors && props.errors.length > 0 ? true : false}
@@ -120,11 +121,29 @@ const SignIn = props => {
             required
             fullWidth
             name='password'
-            label='Password'
+            label='Wachtwoord'
             type='password'
             id='password'
             autoComplete='current-password'
             value={fields.password}
+            onChange={handleChange}
+            error={props.errors && props.errors.length > 0 ? true : false}
+            helperText={
+              props.errors && props.errors.length > 0 ? props.errors[props.errors.length - 1] : ''
+            }
+          />
+
+          <TextField
+            variant='outlined'
+            margin='normal'
+            required
+            fullWidth
+            name='passwordConfirm'
+            label='Confirmatie Wachtwoord'
+            type='passwordConfirm'
+            id='passwordConfirm'
+            autoComplete='current-passwordConfirm'
+            value={fields.passwordConfirm}
             onChange={handleChange}
             error={props.errors && props.errors.length > 0 ? true : false}
             helperText={
@@ -138,12 +157,12 @@ const SignIn = props => {
             variant='contained'
             color='primary'
             className={classes.submit}>
-            Inloggen
+            Wachtwoord Resetten
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href='/forgot-password' variant='body2'>
-                Wachtwoord vergeten?
+              <Link href='/' variant='body2'>
+                Home
               </Link>
             </Grid>
           </Grid>
@@ -164,4 +183,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { login })(SignIn);
+export default connect(mapStateToProps, { resetPassword })(ResetPassword);

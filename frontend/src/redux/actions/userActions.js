@@ -39,6 +39,52 @@ export const logout = async () => {
   }
 };
 
+export const forgotPassword = (email, history) => dispatch => {
+  console.log(history);
+  return axios
+    .post(
+      `${baseUrl}/forgotPassword`,
+      { email },
+      // { withCredentials: true, credentials: 'include' },
+    )
+    .then(res => {
+      console.log(res);
+      // dispatch({
+      //   type: LOGIN_USER,
+      //   payload: res.data,
+      // });
+      history.push('/reset-password');
+    })
+    .catch(err => {
+      console.log(err);
+      console.log(err.response.data);
+      dispatch({ type: SET_ERRORS, payload: err.response.data.message });
+    });
+};
+
+export const resetPassword = (token, password, passwordConfirm, history) => dispatch => {
+  console.log(history);
+  return axios
+    .patch(
+      `${baseUrl}/resetPassword/${token}`,
+      { password, passwordConfirm },
+      // { withCredentials: true, credentials: 'include' },
+    )
+    .then(res => {
+      console.log(res);
+      // dispatch({
+      //   type: LOGIN_USER,
+      //   payload: res.data,
+      // });
+      // history.push('/reset-password');
+    })
+    .catch(err => {
+      console.log(err);
+      console.log(err.response.data);
+      dispatch({ type: SET_ERRORS, payload: err.response.data.message });
+    });
+};
+
 export const getAllUsers = () => dispatch => {
   return axios
     .get(`${baseUrl}`)
