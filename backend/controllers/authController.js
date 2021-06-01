@@ -182,14 +182,18 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3) email unencrypted token to the user, we will compare it later with the encrypted one in the db (see resetPassword below)
+  // const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+  // const emailBody = `forgot password? submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\n If you didn't forget your password, please ignore this email.`;
+
+  // 3) email unencrypted token to the user, we will compare it later with the encrypted one in the db (see resetPassword below)
   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-  const emailBody = `forgot password? submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\n If you didn't forget your password, please ignore this email.`;
+  const emailBody = `Wachtwoord vergeten? submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\n If you didn't forget your password, please ignore this email.`;
 
   // 4) try to send the email with the resetURL and the emailBody
   try {
     await sendEmail({
       email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
+      subject: 'Wachtwoord Reset Token (10 min geldig)',
       message: emailBody,
     });
 
