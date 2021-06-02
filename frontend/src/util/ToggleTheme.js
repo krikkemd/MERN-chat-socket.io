@@ -39,7 +39,7 @@ const ToggleTheme = ({ theme }) => {
       : dispatch({ type: SET_LIGHT_THEME });
   };
 
-  const buttonLabel = theme === 'light' || theme === 'false' ? '🌞' : '🌛';
+  const buttonLabel = theme === 'light' || theme === 'false' ? '🌛' : '🌞';
 
   return (
     <FormGroup className={classes.container}>

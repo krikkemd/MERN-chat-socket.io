@@ -18,6 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { CLEAR_ERRORS } from '../redux/types';
+import { createAlert } from '../util/helperFunctions';
 
 const Copyright = () => {
   return (
@@ -82,7 +83,7 @@ const ForgotPassword = props => {
     e.preventDefault();
     console.log(fields);
     props.forgotPassword(email, props.history);
-    setFields({ ...fields });
+    setFields({ ...fields, email: '' });
   };
 
   return (
@@ -95,6 +96,7 @@ const ForgotPassword = props => {
         <Typography component='h1' variant='h5'>
           DNK
         </Typography>
+        {props.success !== '' && createAlert('success', props.success)}
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant='outlined'
@@ -143,6 +145,7 @@ const mapStateToProps = state => {
   return {
     user: state.user,
     errors: state.user.errors,
+    success: state.user.success,
   };
 };
 

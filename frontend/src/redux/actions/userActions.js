@@ -1,4 +1,11 @@
-import { LOGIN_USER, GET_ALL_USERS, UPDATE_CONNECTED_USERLIST, SET_ERRORS } from '../types';
+import {
+  LOGIN_USER,
+  GET_ALL_USERS,
+  UPDATE_CONNECTED_USERLIST,
+  SET_ERRORS,
+  SET_SUCCESS,
+  CLEAR_SUCCESS,
+} from '../types';
 import axios from '../../config/axios';
 
 const baseUrl = `${process.env.REACT_APP_API_URL}/api/v1/users`;
@@ -49,11 +56,20 @@ export const forgotPassword = (email, history) => dispatch => {
     )
     .then(res => {
       console.log(res);
+      dispatch({ type: SET_SUCCESS, payload: res.data.message });
+
+      setTimeout(() => {
+        dispatch({ type: CLEAR_SUCCESS });
+      }, 3500);
+
+      setTimeout(() => {
+        history.push('/reset-password');
+      }, 4000);
+
       // dispatch({
       //   type: LOGIN_USER,
       //   payload: res.data,
       // });
-      history.push('/reset-password');
     })
     .catch(err => {
       console.log(err);
@@ -72,11 +88,17 @@ export const resetPassword = (token, password, passwordConfirm, history) => disp
     )
     .then(res => {
       console.log(res);
-      // dispatch({
-      //   type: LOGIN_USER,
-      //   payload: res.data,
-      // });
-      // history.push('/reset-password');
+      // alert(res.data.message);
+
+      dispatch({ type: SET_SUCCESS, payload: res.data.message });
+
+      setTimeout(() => {
+        dispatch({ type: CLEAR_SUCCESS });
+      }, 3500);
+
+      setTimeout(() => {
+        history.push('/');
+      }, 4000);
     })
     .catch(err => {
       console.log(err);

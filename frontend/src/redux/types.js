@@ -46,6 +46,10 @@ export const MARK_MESSAGES_READ = ' MARK_MESSAGES_READ';
 export const SET_LIGHT_THEME = 'SET_LIGHT_THEME';
 export const SET_DARK_THEME = 'SET_DARK_THEME';
 
+// SUCCESS ALERT
+export const SET_SUCCESS = 'SET_SUCCESS';
+export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
+
 // ERROR TYPES
 export const SET_ERRORS = 'SET_ERRORS';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';

@@ -173,7 +173,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get the user based on email
   const user = await User.findOne({ email: req.body.email });
 
-  if (!user) return next(new AppError('No user found with that email.', 404));
+  if (!user) return next(new AppError('Ongeldig emailadres.', 404));
 
   // 2) Generate random reset token (instance method defined in the model)
   const resetToken = user.createPasswordResetToken();
@@ -187,12 +187,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 3) email unencrypted token to the user, we will compare it later with the encrypted one in the db (see resetPassword below)
   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-  const emailBody = `Beste ${
-    user.email
-  }, \n\n Bent u uw wachtwoord niet vergeten, negeer dan deze email! .\n Hieronder vind u uw reset token, kopieer en plak deze in het "Reset Token veld", en verzin een nieuw wachtwoord van minimaal 10 karakters op de pagina: ${
-    req.protocol
-  }://chat.dnk.nl/api/v1/users/reset-password/. \n
-  Reset Token: ${resetToken.bold()}  (verloopt binnen 10 minuten)
+  const emailBody = `Beste ${user.email}, \n\n Bent u uw wachtwoord niet vergeten, negeer dan deze email! .\n Hieronder vind u uw reset token, kopieer en plak deze in het "Reset Token veld", en verzin een nieuw wachtwoord van minimaal 10 karakters op de pagina: ${req.protocol}://chat.dnk.nl/api/v1/users/reset-password/. \n
+  Reset Token: ${resetToken}  (verloopt binnen 10 minuten)
   `;
 
   // 4) try to send the email with the resetURL and the emailBody
@@ -203,14 +199,19 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       message: emailBody,
     });
 
-    res.status(200).json({ status: 'success', message: 'Reset token sent to email.' });
+    res.status(200).json({
+      status: 'success',
+      message: 'Reset token verstuurd naar email, controleer uw inbox.',
+    });
   } catch (err) {
     // If there is an error sending the email. remove the token and token expiry time from the db.
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
-    return res.status(500).json({ status: 'failed', message: 'Error sending email.', error: err });
+    return res
+      .status(500)
+      .json({ status: 'failed', message: 'Error bij het versturen van de email.', error: err });
   }
 });
 
@@ -226,7 +227,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetExpires: { $gt: Date.now() },
   });
 
-  if (!user) return next(new AppError('Reset token invalid or expired.', 400));
+  if (!user) return next(new AppError('Reset token ongeldig of verlopen.', 400));
 
   // 3) If there is a user, and the resetToken is not expired, set the new password.
   user.password = req.body.password;
@@ -238,9 +239,11 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // 4) Update passwordChangedAt property for the user
   // the passwordChangedAt property is updated in the userModel with a pre save hook
 
-  return res
-    .status(200)
-    .json({ status: 'success', message: 'Password changed successfully. You can login now.' });
+  return res.status(200).json({
+    status: 'success',
+    message:
+      'Wachtwoord successvol gewijzigd, u wordt automatisch doorgestuurd naar de inlogpagina.',
+  });
 });
 
 // Let logged in user update his/her password

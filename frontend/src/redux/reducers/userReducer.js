@@ -1,6 +1,8 @@
 import {
   SET_ERRORS,
   CLEAR_ERRORS,
+  SET_SUCCESS,
+  CLEAR_SUCCESS,
   LOGIN_USER,
   SET_CURRENT_USER,
   GET_ALL_USERS,
@@ -16,6 +18,7 @@ const initialState = {
   user: {},
   loading: true,
   errors: [],
+  success: '',
 };
 
 export default function userReducer(state = initialState, action) {
@@ -110,6 +113,18 @@ export default function userReducer(state = initialState, action) {
         ...state,
         loading: false,
         errors: [],
+      };
+    case SET_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        success: action.payload,
+      };
+    case CLEAR_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        success: '',
       };
 
     default:

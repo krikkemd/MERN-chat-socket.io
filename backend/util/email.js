@@ -20,7 +20,7 @@ const sendEmail = async options => {
 
   // 2) define email options
   const mailOptions = {
-    from: 'ICT Helpdesk DNK<helpdesk@dnk.nl>',
+    from: `ICT Helpdesk DNK<${process.env.EMAIL_FROM}>`,
     to: options.email,
     subject: options.subject,
     // html,
