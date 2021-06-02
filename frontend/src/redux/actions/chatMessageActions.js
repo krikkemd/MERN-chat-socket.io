@@ -12,6 +12,8 @@ import {
   LEAVE_CHATROOM,
   ADD_USERS_TO_CHATROOM,
   SET_NO_ACTIVE_CHATROOM,
+  SET_ALERT,
+  CLEAR_ALERT,
 } from '../types';
 import axios from '../../config/axios';
 
@@ -229,8 +231,21 @@ export const createChatMessage = chatMessage => dispatch => {
     })
     .catch(err => {
       console.log(err.response);
-      // Redirect to log in page when not logged in
-      window.location.replace('/login');
+      // Message too long
+      if (
+        err.response.data.error.errors.body.message &&
+        err.response.data.error.errors.body.message === 'Maximaal 2000 karakters per bericht'
+      ) {
+        dispatch({ type: SET_ALERT, payload: err.response.data.error.errors.body.message });
+
+        // Clear Alert
+        setTimeout(() => {
+          dispatch({ type: CLEAR_ALERT });
+        }, 3000);
+      } else {
+        // Redirect to log in page when not logged in
+        window.location.replace('/login');
+      }
     });
 };
 

@@ -7,6 +7,9 @@ import { connect } from 'react-redux';
 // Redux Actions
 import { createChatMessage } from '../redux/actions/chatMessageActions';
 
+// Helper functions
+import { createAlert } from '../util/helperFunctions';
+
 // MUI
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -62,6 +65,7 @@ const ChatInput = props => {
       ) : (
         ''
       )}
+      {props.alert !== '' && createAlert('error', props.alert)}
     </>
   );
 };
@@ -70,6 +74,7 @@ const mapStateToProps = state => {
   return {
     socket: state.socket.socket,
     chatMessages: state.chat.chatMessages,
+    alert: state.chat.alert,
     user: state.user.user,
     activeChatRoom: state.chat.activeChatRoom,
   };

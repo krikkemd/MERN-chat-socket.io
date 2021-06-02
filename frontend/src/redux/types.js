@@ -54,6 +54,10 @@ export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 export const SET_ERRORS = 'SET_ERRORS';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
 
+// ALERTS
+export const SET_ALERT = 'SET_ALERT';
+export const CLEAR_ALERT = 'CLEAR_ALERT';
+
 // SOCKET TYPES
 export const SEND_USER_SOCKET = 'SEND_USER_SOCKET';
 export const SEND_BACK_USER_SOCKET = 'SEND_BACK_USER_SOCKET';

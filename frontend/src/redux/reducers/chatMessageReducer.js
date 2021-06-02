@@ -14,6 +14,8 @@ import {
   TOGGLE_CONTACTS,
   SET_NO_ACTIVE_CHATROOM,
   ADDED_USERS_TO_CHATROOM,
+  SET_ALERT,
+  CLEAR_ALERT,
 } from '../types';
 
 const initialState = {
@@ -24,6 +26,7 @@ const initialState = {
   unreadMessages: [],
   totalUnread: 0,
   toggleFriendList: 'contacts',
+  alert: '',
   // loading: true,
 };
 export default function chatMessageReducer(state = initialState, action) {
@@ -315,6 +318,18 @@ export default function chatMessageReducer(state = initialState, action) {
       return {
         ...state,
         toggleFriendList: 'contacts',
+      };
+    }
+    case SET_ALERT: {
+      return {
+        ...state,
+        alert: action.payload,
+      };
+    }
+    case CLEAR_ALERT: {
+      return {
+        ...state,
+        alert: '',
       };
     }
     default:
