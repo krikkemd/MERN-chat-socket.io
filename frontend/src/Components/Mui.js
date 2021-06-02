@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme => ({
   chatMessages: {
     height: '64vh',
     overflowY: 'auto',
+    overflowX: 'hidden',
     borderBottom: '1px solid lightgrey',
   },
   input: {
