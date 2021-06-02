@@ -23,8 +23,8 @@ const sendEmail = async options => {
     from: 'ICT Helpdesk DNK<helpdesk@dnk.nl>',
     to: options.email,
     subject: options.subject,
+    // html,
     text: options.message,
-    //   html:
   };
   // 3) actually send the email
   await transport.sendMail(mailOptions);

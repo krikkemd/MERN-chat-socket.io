@@ -1,7 +1,7 @@
 import { SET_LIGHT_THEME, SET_DARK_THEME } from '../types';
 
 const initialState = {
-  theme: 'dark',
+  theme: localStorage.getItem('dark-mode'),
 };
 
 export default function socketReducer(state = initialState, action) {

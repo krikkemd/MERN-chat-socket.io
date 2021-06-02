@@ -21,12 +21,25 @@ const ToggleTheme = ({ theme }) => {
   const [checked, setChecked] = React.useState(false);
   const dispatch = useDispatch();
 
-  const toggleChecked = () => {
-    setChecked(prev => !prev);
-    theme === 'light' ? dispatch({ type: SET_DARK_THEME }) : dispatch({ type: SET_LIGHT_THEME });
+  const [dark, setDark] = React.useState(localStorage.getItem('dark-mode') === 'true');
+
+  React.useEffect(() => {
+    localStorage.setItem('dark-mode', dark);
+  }, [dark]);
+
+  const toggleDarkMode = () => {
+    setDark(!dark);
   };
 
-  const buttonLabel = theme === 'light' ? '🌞' : '🌛';
+  const toggleChecked = () => {
+    setChecked(prev => !prev);
+    toggleDarkMode();
+    theme === 'light' || theme === 'false'
+      ? dispatch({ type: SET_DARK_THEME })
+      : dispatch({ type: SET_LIGHT_THEME });
+  };
+
+  const buttonLabel = theme === 'light' || theme === 'false' ? '🌞' : '🌛';
 
   return (
     <FormGroup className={classes.container}>

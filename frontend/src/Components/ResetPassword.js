@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Redux
 import { connect, useDispatch } from 'react-redux';
@@ -58,6 +58,10 @@ const ResetPassword = props => {
   // console.log(props.user);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({ type: CLEAR_ERRORS });
+  }, []);
 
   // Local State
   const [fields, setFields] = useState({
@@ -121,7 +125,7 @@ const ResetPassword = props => {
             required
             fullWidth
             name='password'
-            label='Wachtwoord'
+            label='Nieuw wachtwoord'
             type='password'
             id='password'
             autoComplete='current-password'
@@ -139,8 +143,8 @@ const ResetPassword = props => {
             required
             fullWidth
             name='passwordConfirm'
-            label='Confirmatie Wachtwoord'
-            type='passwordConfirm'
+            label='Herhaal nieuw wachtwoord'
+            type='password'
             id='passwordConfirm'
             autoComplete='current-passwordConfirm'
             value={fields.passwordConfirm}

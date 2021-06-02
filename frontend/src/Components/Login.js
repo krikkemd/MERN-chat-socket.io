@@ -103,7 +103,7 @@ const SignIn = props => {
             required
             fullWidth
             id='email'
-            label='Email Address'
+            label='Email Adres'
             name='email'
             autoComplete='email'
             value={fields.email}
@@ -120,7 +120,7 @@ const SignIn = props => {
             required
             fullWidth
             name='password'
-            label='Password'
+            label='Wachtwoord'
             type='password'
             id='password'
             autoComplete='current-password'

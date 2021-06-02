@@ -33,7 +33,11 @@ function App(props) {
   return (
     <Router>
       <ThemeProvider
-        theme={props.theme === 'light' ? createMuiTheme(lightTheme) : createMuiTheme(darkTheme)}>
+        theme={
+          props.theme === 'light' || props.theme === 'false'
+            ? createMuiTheme(lightTheme)
+            : createMuiTheme(darkTheme)
+        }>
         <Paper style={{ height: '100vh' }}>
           <div className='app'>
             <Switch>
