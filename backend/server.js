@@ -15,7 +15,7 @@ process.on('uncaughtException', err => {
 
 const express = require('express');
 const app = express();
-// const server = require('https').createServer(options, app); // https
+// const server = require('https').createServer(options, app); // https (production)
 const server = require('http').createServer(app); // http (development)
 const path = require('path');
 const cookieParser = require('cookie-parser');

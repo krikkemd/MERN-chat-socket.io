@@ -46,6 +46,17 @@ export const logout = async () => {
   }
 };
 
+export const deleteCookie = async () => {
+  try {
+    const res = await axios.get(`${baseUrl}/logout`);
+
+    if ((res.data.status = 'success'))
+      window.location.replace(`${process.env.REACT_APP_FRONTEND_URL}/login`);
+  } catch (err) {
+    alert('Error logging out!, please try again.');
+  }
+};
+
 export const forgotPassword = (email, history) => dispatch => {
   console.log(history);
   return axios

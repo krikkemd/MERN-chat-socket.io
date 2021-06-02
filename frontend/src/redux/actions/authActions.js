@@ -1,5 +1,6 @@
 import { SET_ERRORS, CLEAR_ERRORS, SET_CURRENT_USER } from '../types';
 import axios from '../../config/axios';
+import { deleteCookie } from './userActions';
 
 const baseUrl = `${process.env.REACT_APP_API_URL}/api/v1/getCurrentLoggedInUser`;
 
@@ -23,6 +24,7 @@ export const getCurrentLoggedInUser = () => dispatch => {
     })
     // no current user
     .catch(err => {
+      deleteCookie();
       if (err.response.data) {
         console.log(err.response.data);
         dispatch({
