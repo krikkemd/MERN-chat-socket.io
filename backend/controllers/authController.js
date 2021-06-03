@@ -21,7 +21,7 @@ const signJWT = userId => {
 //   expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
 //   secure: false,
 //   httpOnly: true,
-// sameSite: 'none',
+// samesite: 'strict',
 // };
 
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -42,7 +42,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
     secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
-    // sameSite: 'none',
+    samesite: 'strict',
   });
 
   return res.status(201).json({
@@ -79,7 +79,7 @@ exports.login = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
     secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
-    // sameSite: 'none',
+    samesite: 'strict',
   });
 
   user.password = undefined;
@@ -277,7 +277,7 @@ exports.updateMyPassword = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60),
     secure: process.env.NODE_ENV === 'production' ? true : false,
     httpOnly: true,
-    // sameSite: 'none',
+    samesite: 'strict',
   });
 
   return res.status(200).json({

@@ -124,7 +124,7 @@ const ChatMessageArea = props => {
             scrollIntoLastMessage.current.childNodes[9].scrollIntoView({
               behavior: 'smooth',
             });
-          }, 150);
+          }, 250);
         } else if (props.chatMessages.length > 0) {
           scrollIntoLastMessage.current.childNodes[props.chatMessages.length - 1].scrollIntoView({
             behavior: 'smooth',
