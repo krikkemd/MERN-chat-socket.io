@@ -58,17 +58,17 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   // In development we want as much information about the error as possible
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'production') {
     sendErrorsInDevelopment(err, res);
   }
 
   // In production we send more generic errors
-  else if (process.env.NODE_ENV === 'production') {
-    let error = { ...err, name: err.name };
-    if (error.name === 'CastError') error = handleCastError(error);
-    if (error.code === 11000) error = handleDuplicateFieldValue(error);
-    if (error.name === 'ValidationError') error = handleValidationError(error);
+  // else if (process.env.NODE_ENV === 'production') {
+  //   let error = { ...err, name: err.name };
+  //   if (error.name === 'CastError') error = handleCastError(error);
+  //   if (error.code === 11000) error = handleDuplicateFieldValue(error);
+  //   if (error.name === 'ValidationError') error = handleValidationError(error);
 
-    sendErrorsInProduction(error, res);
-  }
+  //   sendErrorsInProduction(error, res);
+  // }
 };
