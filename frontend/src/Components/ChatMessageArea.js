@@ -40,11 +40,11 @@ const useStyles = makeStyles(theme => {
     messageBody: {
       backgroundColor: theme.palette.primary.main,
       color: '#fff',
-      paddingTop: 12.5,
-      paddingBottom: 12.5,
+      paddingTop: 7.5,
+      paddingBottom: 7.5,
       paddingLeft: 20,
       paddingRight: 20,
-      borderRadius: 100 / 2,
+      borderRadius: 100 / 5,
       boxShadow:
         '0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%)',
       display: 'inline-flex',
@@ -211,6 +211,30 @@ const ChatMessageArea = props => {
     }
   });
 
+  // let colors = [ 'salmon',   'blue',    'green',   'purple',   'pink',   'red',   'yellow',  'teal', 'purple', 'lime']
+  // let colors = ['#ffa97a', '#6bcbef', '#7affa9', '#e752ab', '#ff7b7a', '#ff7b7a', '#ffec7a', '#54d4a6', '#c9a6ff', '#19e619'];
+  let colors = [
+    '#ffa97a',
+    '#6bcbef',
+    '#7affa9',
+    '#e752ab',
+    '#ff7b7a',
+    '#ff7b7a',
+    '#ffec7a',
+    '#54d4a6',
+    '#c9a6ff',
+    '#19e619',
+  ];
+
+  // #d8dbd5
+  let indexes = [];
+
+  props.activeChatRoom?.members?.map((member, i) => {
+    indexes.push(member.username);
+  });
+
+  // console.log(indexes);
+
   return (
     <>
       <List ref={scrollIntoLastMessage}>
@@ -221,10 +245,14 @@ const ChatMessageArea = props => {
                 <Grid container>
                   <Grid item xs={12}>
                     {/* username */}
-                    <ListItemText
-                      style={{ display: message.systemMessage === true && 'none' }}
-                      align={props.user._id === message.userId ? 'right' : 'left'}
-                      secondary={message.username}></ListItemText>
+                    {/* <ListItemText
+                      style={{
+                        display: message.systemMessage === true && 'none',
+                        color: colors[indexes.indexOf(message.username)],
+                      }}
+                      align={props.user._id === message.userId ? 'right' : 'left'}>
+                      {message.username}
+                    </ListItemText> */}
 
                     {/* chat message body */}
                     <ListItemText
@@ -234,20 +262,36 @@ const ChatMessageArea = props => {
                         className={classes.messageBody}
                         align={props.user._id === message.userId ? 'right' : 'left'}
                         style={{
-                          backgroundColor: props.user._id !== message.userId && '#9c27b0',
+                          backgroundColor: props.user._id !== message.userId && '#7e7e7e',
                         }}>
-                        {message.body}
+                        <span
+                          style={{
+                            color: colors[indexes.indexOf(message.username)],
+                          }}>{`${message.username}`}</span>
+                        <br />
+                        <span>{`${message.body}`}</span>
+
+                        <br />
+                        <span
+                          className={message.systemMessage ? 'leftGroup-timestamp' : ''}
+                          style={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '0.75rem',
+                            marginLeft: 'auto',
+                          }}>
+                          {moment(message.createdAt).fromNow()}
+                        </span>
                       </ListItemText>
                     </ListItemText>
                   </Grid>
 
                   {/* timestamp */}
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <ListItemText
                       className={message.systemMessage ? 'leftGroup-timestamp' : ''}
                       align={props.user._id === message.userId ? 'right' : 'left'}
                       secondary={moment(message.createdAt).fromNow()}></ListItemText>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </ListItem>
             );

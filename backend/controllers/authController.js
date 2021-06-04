@@ -187,7 +187,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 3) email unencrypted token to the user, we will compare it later with the encrypted one in the db (see resetPassword below)
   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-  const emailBody = `Beste ${user.email}, \n\n Bent u uw wachtwoord niet vergeten, negeer dan deze email! .\n Hieronder vind u uw reset token, kopieer en plak deze in het "Reset Token veld", en verzin een nieuw wachtwoord van minimaal 10 karakters op de pagina: ${req.protocol}://chat.dnk.nl/api/v1/users/reset-password/. \n
+  const emailBody = `Beste ${user.email}, \n\n Bent u uw wachtwoord niet vergeten, negeer dan deze email! .\n Hieronder vind u uw reset token, kopieer en plak deze in het "Reset Token veld", en verzin een nieuw wachtwoord van minimaal 10 karakters op de pagina: ${req.protocol}://chat.dnk.nl/reset-password/. \n
   Reset Token: ${resetToken}  (verloopt binnen 10 minuten)
   `;
 
