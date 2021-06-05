@@ -289,7 +289,11 @@ const CreateGroupModal = props => {
           <ListItemText style={{ textAlign: 'center' }}>
             <Tooltip title='Nieuwe Groep Maken' placement='top-start' arrow interactive>
               {/* Add Group */}
-              {props.theme === 'dark' ? <GroupAddIcon /> : <GroupAddIcon color='primary' />}
+              {props.theme === 'dark' || props.theme === 'true' ? (
+                <GroupAddIcon />
+              ) : (
+                <GroupAddIcon color='primary' />
+              )}
             </Tooltip>
           </ListItemText>
         </ListItem>

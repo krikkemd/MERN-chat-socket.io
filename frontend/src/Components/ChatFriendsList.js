@@ -241,7 +241,11 @@ const ChatFriendsList = props => {
             <ListItemText style={{ textAlign: 'center' }}>
               <Tooltip title='Contacten' placement='top-start' arrow interactive>
                 {/* Contacts */}
-                {props.theme === 'dark' ? <PeopleAltIcon /> : <PeopleAltIcon color='primary' />}
+                {props.theme === 'dark' || props.theme === 'true' ? (
+                  <PeopleAltIcon />
+                ) : (
+                  <PeopleAltIcon color='primary' />
+                )}
               </Tooltip>
             </ListItemText>
           </ListItem>
@@ -268,7 +272,11 @@ const ChatFriendsList = props => {
                     arrow
                     interactive>
                     {/* Chats */}
-                    {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                    {props.theme === 'dark' || props.theme === 'true' ? (
+                      <MessageIcon />
+                    ) : (
+                      <MessageIcon color='primary' />
+                    )}
                   </Tooltip>
                 </ListItemText>
               </Badge>
@@ -276,7 +284,11 @@ const ChatFriendsList = props => {
               <ListItemText style={{ textAlign: 'center' }}>
                 <Tooltip title='Berichten' placement='top-start' arrow interactive>
                   {/* Chats */}
-                  {props.theme === 'dark' ? <MessageIcon /> : <MessageIcon color='primary' />}
+                  {props.theme === 'dark' || props.theme === 'true' ? (
+                    <MessageIcon />
+                  ) : (
+                    <MessageIcon color='primary' />
+                  )}
                 </Tooltip>
               </ListItemText>
             )}
