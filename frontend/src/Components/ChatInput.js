@@ -23,11 +23,19 @@ import IconButton from '@material-ui/core/IconButton';
 const ChatInput = props => {
   // Local State
   const [chatMessage, setChatMessage] = useState('');
-  // const [chosenEmoji, setChosenEmoji] = useState(null);
   const [open, setOpen] = useState(false);
   const [pageX, setPageX] = useState(0);
   const [pageY, setPageY] = useState(0);
   const inputEl = useRef(null);
+
+  window.addEventListener('click', e => {
+    if (e.pageX < 525 || e.pageX > 835) {
+      setOpen(false);
+    }
+    if (e.pageY < 460 || e.pageY > 834) {
+      setOpen(false);
+    }
+  });
 
   //   Local funcions
   const onEmojiClick = (event, emojiObject) => {
@@ -116,6 +124,7 @@ const ChatInput = props => {
                 fullWidth
                 onClick={() => setOpen(false)}
                 autoFocus={true}
+                autoComplete='off'
                 value={chatMessage}
                 onChange={handleChange}
                 inputRef={inputEl}
