@@ -28,6 +28,7 @@ const ChatInput = props => {
   const [pageY, setPageY] = useState(0);
   const inputEl = useRef(null);
 
+  // Close emoji box when clicked outside the box
   window.addEventListener('click', e => {
     if (e.pageX < 525 || e.pageX > 835) {
       setOpen(false);

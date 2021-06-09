@@ -33,6 +33,7 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles(theme => {
   console.log(theme);
@@ -43,7 +44,7 @@ const useStyles = makeStyles(theme => {
       paddingTop: 7.5,
       paddingBottom: 7.5,
       paddingLeft: 20,
-      paddingRight: 20,
+      paddingRight: 15,
       borderRadius: 100 / 5,
       boxShadow:
         '0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%)',
@@ -56,8 +57,6 @@ const ChatMessageArea = props => {
   const dispatch = useDispatch();
   const classes = useStyles();
 
-  console.log(classes);
-
   const {
     user,
     socket,
@@ -66,6 +65,7 @@ const ChatMessageArea = props => {
     emitLastChatMessage,
     emitDeleteChatMessageFromServerToAllClients,
     getAllUserChatRooms,
+    deleteChatMessage,
     getAllUnreadMessages,
     markMessagesRead,
   } = props;
@@ -268,6 +268,30 @@ const ChatMessageArea = props => {
                           style={{
                             color: colors[indexes.indexOf(message.username)],
                           }}>{`${message.username}`}</span>
+
+                        {props.user._id === message.userId && (
+                          <ClearIcon
+                            className='delete__icon'
+                            onClick={() => {
+                              console.log(message.body);
+
+                              if (
+                                window.confirm('Weet u zeker dat u het bericht wilt verwijderen?')
+                              ) {
+                                console.log(`dit bericht wordt verwijderd: ${message.body}`);
+                                deleteChatMessage(message._id);
+                                getAllUserChatRooms(`members=${user._id}`);
+                              }
+                            }}
+                            style={{
+                              marginLeft: 10,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        )}
+
                         <br />
                         <span>{`${message.body}`}</span>
 
