@@ -197,7 +197,7 @@ const ChatFriendsList = props => {
   // unread fucking messages
 
   props.chatRooms.map(room => {
-    console.log('code runs hereee');
+    // console.log('code runs hereee');
     room.chatMessages.map(message => {
       props.unreadMessages.map(unreadMessage => {
         if (unreadMessage.roomId === message.chatRoomId) {

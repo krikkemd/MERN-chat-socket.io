@@ -105,22 +105,25 @@ exports.markMessagesRead = catchAsync(async (req, res, next) => {
   });
 
   // return an empty array if all the messages are read (markedAsRead)
-  return res
-    .status(200)
-    .json({
-      status: 'success',
-      results: unreadMessages.length,
-      data: unreadMessages,
-      chatRoomId: req.body.chatRoomId,
-    });
+  return res.status(200).json({
+    status: 'success',
+    results: unreadMessages.length,
+    data: unreadMessages,
+    chatRoomId: req.body.chatRoomId,
+  });
 });
 
 exports.deleteChatMessage = catchAsync(async (req, res, next) => {
   console.log('running deleteChatMessage');
   const chatMessageId = req.params.id;
-  const chatMessage = await ChatMessage.findByIdAndDelete({ _id: chatMessageId });
+  const chatMessage = await ChatMessage.findById({ _id: chatMessageId });
 
   if (!chatMessage) return next(new AppError('No document found with that ID', 404));
+
+  if (req.user._id.toString() !== chatMessage.userId.toString())
+    return next(new AppError('Unauthorized, cannot delete message', 403));
+
+  await chatMessage.deleteOne();
 
   console.log('❌ chat message deleted');
 

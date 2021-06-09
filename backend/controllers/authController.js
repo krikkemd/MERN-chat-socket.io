@@ -126,7 +126,7 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
     return decoded;
   });
 
-  console.log('Token:');
+  console.log('Decoded Token:');
   console.log(decodedToken);
 
   // 3) check if the user still exists in the db. for if user was deleted after token was issued
@@ -144,7 +144,6 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
     }
 
     // 5) Grant access to protected route
-
     req.user = user;
 
     console.log('set req.user:');
