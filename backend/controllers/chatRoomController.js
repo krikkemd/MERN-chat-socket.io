@@ -156,40 +156,54 @@ exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   console.log('req.query:');
   console.log(req.query);
 
-  const reqUserIsMember = req.query.members.all.includes(req.user._id.toString());
-  console.log('req.user is a member?:');
-  console.log(reqUserIsMember);
+  // Set var -> will be true or false depending on if user._id is present in req.query
+  let reqUserIsMember;
 
-  if (reqUserIsMember === false) {
-    console.log('deny access');
-  } else if (reqUserIsMember === true) {
-    console.log('allow access');
+  // set reqUserIsMember depending on the query
+  if (!req.query.members.all) {
+    // Will be true or false
+    reqUserIsMember = req.query.members.includes(req.user._id.toString());
+  } else if (req.query.members.all) {
+    // Will be true or false
+    reqUserIsMember = req.query.members.all.includes(req.user._id.toString());
   }
 
-  const queryObj = { ...req.query };
-  let queryStr = JSON.stringify(queryObj);
-  queryStr = JSON.parse(
-    queryStr.replace(/\b(gte|gt|lte|lt|exists|size|all)\b/g, match => `$${match}`),
-  );
+  console.log('req.user is a member?:');
+  console.log(reqUserIsMember); // the answer
 
-  console.log(queryStr);
+  // Deny access
+  if (reqUserIsMember === false) {
+    console.log('deny access');
+    return next(new AppError('You are not a member of that group', 403));
 
-  // members: { _id: '60546994d69580265440a788', _id: '6024eb027e691904f4b006e4' }
-  // { members: { _id: '603cede2e2d1512304ad4997' } }
+    // Allow access
+  } else if (reqUserIsMember === true) {
+    console.log('allow access');
+    const queryObj = { ...req.query };
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = JSON.parse(
+      queryStr.replace(/\b(gte|gt|lte|lt|exists|size|all)\b/g, match => `$${match}`),
+    );
 
-  // const chatRooms = await ChatRoom.find({ members: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }],})
-  // const chatRooms = await ChatRoom.find({ members: { $in: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }] },})
-  // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
-  // members[all]=6024eb027e691904f4b006e4&members[all]=603cede2e2d1512304ad4997&members[size]=2&name[exists]=false
-  // marlies: 6033a9fae16ec73670656ba2
-  // mickey:  6024eb027e691904f4b006e4
-  // bobby:   603cede2e2d1512304ad4997
+    console.log(queryStr);
 
-  const chatRooms = await ChatRoom.find(queryStr).populate({
-    path: 'chatMessages',
-    options: { sort: { createdAt: 'desc' }, perDocumentLimit: 10 },
-  });
-  res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
+    // members: { _id: '60546994d69580265440a788', _id: '6024eb027e691904f4b006e4' }
+    // { members: { _id: '603cede2e2d1512304ad4997' } }
+
+    // const chatRooms = await ChatRoom.find({ members: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }],})
+    // const chatRooms = await ChatRoom.find({ members: { $in: [{ _id: '603cede2e2d1512304ad4997' }, { _id: '6024eb027e691904f4b006e4' }] },})
+    // {{URL}}/api/v1/rooms?members[all]=605ca93de8a5cd08b04ae4e5&members[all]=6033a9fae16ec73670656ba2
+    // members[all]=6024eb027e691904f4b006e4&members[all]=603cede2e2d1512304ad4997&members[size]=2&name[exists]=false
+    // marlies: 6033a9fae16ec73670656ba2
+    // mickey:  6024eb027e691904f4b006e4
+    // bobby:   603cede2e2d1512304ad4997
+
+    const chatRooms = await ChatRoom.find(queryStr).populate({
+      path: 'chatMessages',
+      options: { sort: { createdAt: 'desc' }, perDocumentLimit: 10 },
+    });
+    res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
+  }
 });
 
 exports.getAllUnreadMessages = catchAsync(async (req, res, next) => {
