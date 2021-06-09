@@ -153,7 +153,18 @@ exports.deleteChatRoom = factoryController.deleteOne(ChatRoom);
 exports.getAllChatRooms = catchAsync(async (req, res, next) => {
   console.log('running getAllChatRooms');
 
+  console.log('req.query:');
   console.log(req.query);
+
+  const reqUserIsMember = req.query.members.all.includes(req.user._id.toString());
+  console.log('req.user is a member?:');
+  console.log(reqUserIsMember);
+
+  if (reqUserIsMember === false) {
+    console.log('deny access');
+  } else if (reqUserIsMember === true) {
+    console.log('allow access');
+  }
 
   const queryObj = { ...req.query };
   let queryStr = JSON.stringify(queryObj);
