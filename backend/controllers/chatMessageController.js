@@ -1,4 +1,5 @@
 const { ChatMessage } = require('../models/ChatMessageModel');
+const { ChatRoom } = require('../models/ChatRoomModel');
 const AppError = require('../util/appError');
 const catchAsync = require('../util/catchAsync');
 
@@ -46,6 +47,25 @@ exports.getSingleChatMessage = catchAsync(async (req, res, next) => {
 
 exports.createChatMessage = catchAsync(async (req, res, next) => {
   console.log('running createChatMessage');
+
+  // get the chatroom the message is send into
+  const chatRoom = await ChatRoom.findById({ _id: req.body.chatRoomId });
+
+  let membersArray = [];
+
+  // push the user id's of the chatroom members inside membersArray
+  chatRoom.members.map(member => membersArray.push(member._id.toString()));
+
+  // Check if the message sender is a member inside the chatroom
+  reqUserIsMember = membersArray.includes(req.user._id.toString());
+
+  console.log('User is a member of the chatroom?:');
+  console.log(reqUserIsMember);
+
+  // return error if the user is not inside the chatroom
+  if (reqUserIsMember === false)
+    return next(new AppError('You are not allowed to perform that action', 403));
+
   const newMessage = await ChatMessage.create({
     chatRoomId: req.body.chatRoomId,
     body: req.body.body,
