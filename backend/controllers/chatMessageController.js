@@ -34,6 +34,10 @@ exports.getSingleChatMessage = catchAsync(async (req, res, next) => {
 
   if (!chatMessage) return next(new AppError('No document found with that ID', 404));
 
+  // Only allow to get single message if you are the author
+  if (req.user._id.toString() !== chatMessage.userId.toString())
+    return next(new AppError('No document or no permission', 403));
+
   return res.status(200).json({
     status: 'success',
     chatMessage,
