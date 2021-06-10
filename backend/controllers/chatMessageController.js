@@ -48,6 +48,8 @@ exports.getSingleChatMessage = catchAsync(async (req, res, next) => {
 exports.createChatMessage = catchAsync(async (req, res, next) => {
   console.log('running createChatMessage');
 
+  //////////////////// CHECK IF USER IS INSIDE CHATROOM ////////////////////////
+
   // get the chatroom the message is send into
   const chatRoom = await ChatRoom.findById({ _id: req.body.chatRoomId });
 
@@ -65,6 +67,8 @@ exports.createChatMessage = catchAsync(async (req, res, next) => {
   // return error if the user is not inside the chatroom
   if (reqUserIsMember === false)
     return next(new AppError('You are not allowed to perform that action', 403));
+
+  //////////////////// CHECK IF USER IS INSIDE CHATROOM ////////////////////////
 
   const newMessage = await ChatMessage.create({
     chatRoomId: req.body.chatRoomId,
@@ -102,19 +106,29 @@ exports.createSystemMessage = catchAsync(async (req, res, next) => {
 });
 
 exports.markMessagesRead = catchAsync(async (req, res, next) => {
-  // const messages = await ChatMessage.updateMany(
-  //   { read: false, chatRoomId: req.body.chatRoomId, userId: req.body.memberId },
-  //   { read: true },
-  //   (err, res) => {
-  //     if (err) return next(new AppError('updateMany went wrong', 500));
-  //     console.log(req.body.memberId);
-
-  //     console.log(req.body.chatRoomId);
-
-  //     console.log('✅ chat messages marked as read');
-  //   },
-  // );
   console.log('running markMessagesRead');
+
+  //////////////////// CHECK IF USER IS INSIDE CHATROOM ////////////////////////
+  // get the chatroom the message is send into
+  const chatRoom = await ChatRoom.findById({ _id: req.body.chatRoomId });
+
+  let membersArray = [];
+
+  // push the user id's of the chatroom members inside membersArray
+  chatRoom.members.map(member => membersArray.push(member._id.toString()));
+
+  // Check if the message sender is a member inside the chatroom
+  reqUserIsMember = membersArray.includes(req.user._id.toString());
+
+  console.log('User is a member of the chatroom?:');
+  console.log(reqUserIsMember);
+
+  // return error if the user is not inside the chatroom
+  if (reqUserIsMember === false)
+    return next(new AppError('You are not allowed to perform that action', 403));
+
+  //////////////////// CHECK IF USER IS INSIDE CHATROOM ////////////////////////
+
   // The message sender is automatically included in the read array, so you've always read your own messages
   // Find all the messages in the chatroom where the req.user._id is not present.
   let unreadMessages = await ChatMessage.find({
