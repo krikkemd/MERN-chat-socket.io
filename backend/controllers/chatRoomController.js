@@ -34,6 +34,24 @@ exports.getSingleChatRoom = catchAsync(async (req, res, next) => {
 
   if (!doc) return next(new AppError('No document found with that ID', 404));
 
+  // ############ check if req.user is in doc.member ###############
+
+  let membersArray = [];
+
+  doc.members.map(member => membersArray.push(member._id.toString()));
+
+  // console.log('🤞🤞✌✌🤞');
+  // console.log(membersArray);
+
+  console.log('req.user._id is a member?');
+  console.log(membersArray.includes(req.user._id.toString()));
+
+  if (membersArray.includes(req.user._id.toString()) === false) {
+    return next(new AppError('You are not a member of that chatroom', 403));
+  }
+
+  // ###########################
+
   return res.status(200).json({
     status: 'success',
     doc,
