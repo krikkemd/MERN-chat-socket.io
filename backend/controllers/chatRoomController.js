@@ -18,10 +18,28 @@ const AppError = require('../util/appError');
 //   res.status(200).json({ status: 'success', results: chatRooms.length, chatRooms });
 // });
 
-exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, {
-  path: 'chatMessages',
-  options: { sort: { createdAt: 'desc' }, limit: 10 },
-}); // Populate chatMessages in the room
+// exports.getSingleChatRoom = factoryController.getSingleDoc(ChatRoom, {
+//   path: 'chatMessages',
+//   options: { sort: { createdAt: 'desc' }, limit: 10 },
+// }); // Populate chatMessages in the room
+
+exports.getSingleChatRoom = catchAsync(async (req, res, next) => {
+  console.log('running getSingleDoc');
+  const docId = req.params.id;
+
+  const doc = await ChatRoom.findById({ _id: docId }).populate({
+    path: 'chatMessages',
+    options: { sort: { createdAt: 'desc' }, limit: 10 },
+  });
+
+  if (!doc) return next(new AppError('No document found with that ID', 404));
+
+  return res.status(200).json({
+    status: 'success',
+    doc,
+  });
+});
+
 exports.createChatRoom = factoryController.createOne(ChatRoom);
 // exports.updateChatRoom = factoryController.updateOne(ChatRoom);
 
