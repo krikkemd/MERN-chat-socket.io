@@ -62,6 +62,39 @@ exports.createChatRoom = factoryController.createOne(ChatRoom);
 // exports.updateChatRoom = factoryController.updateOne(ChatRoom);
 
 // update chatroom is used for adding new members to a chatroom (max 10)
+// exports.updateChatRoom = catchAsync(async (req, res, next) => {
+//   console.log('running updateChatRoom');
+
+//   function hasDuplicates(arr) {
+//     return arr.some(x => arr.indexOf(x) !== arr.lastIndexOf(x));
+//   }
+
+//   console.log('REQ.BODY:');
+//   console.log(req.body);
+//   console.log(req.body.members.length);
+
+//   if (req.body.members.length > 10) {
+//     console.log('Too many members, max 10');
+//     return next(new AppError('Too many members (max 10)', 400));
+//   }
+
+//   if (hasDuplicates(req.body.members)) {
+//     console.log('Duplicate elements found.');
+//     return next(new AppError('Duplicate elements found.', 400));
+//   }
+
+//   const docId = req.params.id;
+//   const doc = await ChatRoom.findByIdAndUpdate(docId, req.body, { new: true, runValidators: true });
+//   if (!doc) return next(new AppError('No document found with that ID', 404));
+
+//   console.log('doc');
+//   console.log(doc);
+
+//   console.log(' ✅ document updated successfully');
+
+//   return res.status(200).json({ status: 'succces', data: doc });
+// });
+
 exports.updateChatRoom = catchAsync(async (req, res, next) => {
   console.log('running updateChatRoom');
 
@@ -84,11 +117,20 @@ exports.updateChatRoom = catchAsync(async (req, res, next) => {
   }
 
   const docId = req.params.id;
-  const doc = await ChatRoom.findByIdAndUpdate(docId, req.body, { new: true, runValidators: true });
-  if (!doc) return next(new AppError('No document found with that ID', 404));
+  // const doc = await ChatRoom.findByIdAndUpdate(docId, req.body, { new: true, runValidators: true });
+  const oldDoc = await ChatRoom.findById(docId);
+  if (!oldDoc) return next(new AppError('No document found with that ID', 404));
 
   console.log('doc');
-  console.log(doc);
+  console.log(oldDoc);
+
+  console.log('req.user._id is the chatroom mod?:');
+  console.log(req.user._id.toString() === oldDoc.moderator.toString());
+
+  if (req.user._id.toString() !== oldDoc.moderator.toString())
+    return next(new AppError('You are not the chatroom mod', 403));
+
+  const doc = await ChatRoom.findByIdAndUpdate(docId, req.body, { new: true, runValidators: true });
 
   console.log(' ✅ document updated successfully');
 
