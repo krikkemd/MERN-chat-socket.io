@@ -112,7 +112,7 @@ const ResetPassword = props => {
             id='token'
             label='Reset Token'
             name='token'
-            autoComplete='token'
+            autoComplete='off'
             value={fields.token}
             onChange={handleChange}
             autoFocus
@@ -130,7 +130,7 @@ const ResetPassword = props => {
             label='Nieuw wachtwoord'
             type='password'
             id='password'
-            autoComplete='current-password'
+            autoComplete='off'
             value={fields.password}
             onChange={handleChange}
             error={props.errors && props.errors.length > 0 ? true : false}
@@ -148,7 +148,7 @@ const ResetPassword = props => {
             label='Herhaal nieuw wachtwoord'
             type='password'
             id='passwordConfirm'
-            autoComplete='current-passwordConfirm'
+            autoComplete='off'
             value={fields.passwordConfirm}
             onChange={handleChange}
             error={props.errors && props.errors.length > 0 ? true : false}

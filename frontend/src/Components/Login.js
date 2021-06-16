@@ -105,7 +105,7 @@ const SignIn = props => {
             id='email'
             label='Email Adres'
             name='email'
-            autoComplete='email'
+            autoComplete='off'
             value={fields.email}
             onChange={handleChange}
             autoFocus
@@ -123,7 +123,7 @@ const SignIn = props => {
             label='Wachtwoord'
             type='password'
             id='password'
-            autoComplete='current-password'
+            autoComplete='off'
             value={fields.password}
             onChange={handleChange}
             error={props.errors && props.errors.length > 0 ? true : false}

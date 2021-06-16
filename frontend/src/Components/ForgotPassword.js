@@ -106,7 +106,7 @@ const ForgotPassword = props => {
             id='email'
             label='Email Adres'
             name='email'
-            autoComplete='email'
+            autoComplete='off'
             value={fields.email}
             onChange={handleChange}
             autoFocus
