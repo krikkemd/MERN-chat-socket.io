@@ -19,11 +19,8 @@ const {
 
 router.route('/').get(protectRoute, getAllChatRooms).post(protectRoute, createChatRoom);
 router.route('/getAllUnreadMessages').get(protectRoute, getAllUnreadMessages);
-router
-  .route('/:id')
-  .get(protectRoute, getSingleChatRoom)
-  .patch(protectRoute, updateChatRoom)
-  .delete(protectRoute, deleteChatRoom);
+router.route('/:id').get(protectRoute, getSingleChatRoom).patch(protectRoute, updateChatRoom);
+// .delete(protectRoute, deleteChatRoom);
 
 router.route('/:id/leaveChatRoom').patch(protectRoute, leaveChatRoom);
 router.route('/:id/joinChatRoom').patch(protectRoute, joinChatRoom);
